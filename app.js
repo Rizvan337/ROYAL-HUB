@@ -6,8 +6,7 @@ dotenv.config();
 const db = require('./config/db')
 const userRouter = require('./routes/userRouter')
 const passport = require('./config/passport')
-
-
+const adminRouter = require('./routes/adminRouter')
 db();
 
 const app = express()
@@ -39,7 +38,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 
 app.use('/',userRouter);
-
+app.use('/admin',adminRouter)
 
 
 
