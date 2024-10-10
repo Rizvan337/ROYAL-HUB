@@ -3,6 +3,7 @@ const router = express.Router()
 const userController = require('../controllers/user/userController')
 const passport = require("passport")
 
+
 router.get('/',userController.loadHomepage)
 router.get('/pageNotFound',userController.pageNotFound)
 router.get('/signup',userController.loadSignup)
@@ -16,7 +17,7 @@ router.get('/auth/google/callback',passport.authenticate('google',{failureRedire
 router.get('/login',userController.loadLogin)
 router.post('/login',userController.login)
 
-// router.get('/logout',userController.logout)
+//router.get('/logout',userController.logout)
 module.exports = router;        
 
 
