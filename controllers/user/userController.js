@@ -1,4 +1,6 @@
 const User = require("../../models/userSchema")
+const Category = require('../../models/categorySchema')
+const Product = require('../../models/productSchema')
 const nodemailer = require('nodemailer')
 const env = require('dotenv').config()
 const bcrypt = require('bcrypt')
@@ -26,21 +28,35 @@ const bcrypt = require('bcrypt')
 
 
 const loadHomepage = async (req, res) => {
-
+    
     try {
-             //if (req.session.user) {
+        //if (req.session.user) {
             // console.log("SESSSIONN:",req.session);
             const user = req.session.user
+
+            const categories = await Category.find({ isListed: true })
+            let productData = await Product.find({
+                isBlocked: false,
+                category: { $in: categories.map(category => category._id) }, quantity: { $gt: 0 }
+            })
+            console.log(productData);
+
+            productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            productData = productData.slice(0, 4);
+
+
             // || req.query.user; // Set to null if user is not logged in
-            console.log(user);
-            res.render('home', { user });
-        //  } else {
-        //     res.redirect('/login');   
-            
-        //  }
+            // console.log(user);
+            res.render('home', { user, products: productData });
+       // } else {
+           // res.redirect('/login');
+
+       // }
 
     } catch (error) {
         console.log("Home page not found");
+        console.log(error);
+        
         res.status(500).send("Server error");
     }
 
@@ -52,10 +68,13 @@ const loadHomepage = async (req, res) => {
 
 
 
+
+
+
 const loadSignup = async (req, res) => {
     try {
         if (req.session.user) {
-            return redirect('/');
+            return res.redirect('/');
         } else {
             return res.render('signup')
         }
@@ -164,7 +183,7 @@ const verifyOtp = async (req, res) => {
             })
             await saveUserData.save()
             req.session.user = saveUserData._id;
-            res.json({ success: true, redirectUrl: '/' })   
+            res.json({ success: true, redirectUrl: '/' })
         }
         else {
             res.status(400).json({ success: false, message: "Invalid OTP, Please try again" })
@@ -235,14 +254,27 @@ const login = async (req, res) => {
         }
         req.session.user = findUser;
 
-        console.log(findUser);
-        res.render("home", { user: findUser })
+
+        // const categories = await Category.find({ isListed: true });
+        // let productData = await Product.find({
+        //     isBlocked: false,
+        //     Category: { $in: categories.map(category => category._id) },
+        //     quantity: { $gt: 0 }
+        // });
+        // productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
+        // productData = productData.slice(0, 4);
+
+
+
+        // // console.log(findUser);
+        // res.render("home", { user: findUser, products: productData })
+        res.redirect('/')
     } catch (error) {
         console.error("login error");
         res.render("login", { message: "login failed.Please try again later" })
     }
 }
- 
+
 const logout = async (req, res) => {
     try {
         req.session.destroy((err) => {
