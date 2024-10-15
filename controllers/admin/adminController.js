@@ -42,7 +42,10 @@ const loadDashboard = async (req,res)=>{
    if(req.session.admin){
     try {
         res.render('dashboard')
-    } catch (error) {
+    }
+    
+    
+    catch (error) {
         res.redirect('/pageerror')
     }
    }
