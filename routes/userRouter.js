@@ -2,8 +2,10 @@ const express = require('express')
 const router = express.Router()
 const userController = require('../controllers/user/userController')
 const passport = require("passport")
+const { userAuth } = require('../middlewares/auth')
+const profileController = require('../controllers/user/profileController')
 
-
+router.get('/shop',userController.loadShop)
 router.get('/', userController.loadHomepage)
 router.get('/pageNotFound', userController.pageNotFound)
 router.get('/signup', userController.loadSignup)
@@ -17,7 +19,20 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 })
 router.get('/login', userController.loadLogin)
 router.post('/login', userController.login)
-//router.get('/userProfile',userController.userProfile)
+router.get('/productDetails',userController.productDetails)
+
+
+
+
+
+//profile controlling
+router.get('/forgot-password',profileController.getForgotPassPage)
+router.post('/forgot-email',profileController.forgotEmail)
+router.post('/verify-passForgot-otp',profileController.verifyForgotPassOtp)
+router.get('/reset-password',profileController.getResetPassPage)
+router.post('/resend-forgot-otp',profileController.resendOtp)
+router.post('/reset-password',profileController.newPassword)
+
 router.get('/logout', userController.logout)
 module.exports = router;
 

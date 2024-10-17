@@ -7,31 +7,9 @@ const bcrypt = require('bcrypt')
 
 
 
-
-// const loadHomepage = async (req, res) => {
-//     try {
-//         const user = req.session.user
-//         if (user) {
-//            const userData = await User.findOne({ _id: user._id })
-//             console.log(userData)
-//            return res.render('home', { user :userData})
-//         } else {
-//             return res.render('home')
-//         }
-
-//     } catch (error) {
-//         console.log("Home page not found");
-//         res.status(500).send("Server error")
-
-//     }
-// }
-
-
-const loadHomepage = async (req, res) => {
-    
+const loadShop = async (req,res)=>{
     try {
-        //if (req.session.user) {
-            // console.log("SESSSIONN:",req.session);
+       
             const user = req.session.user
 
             const categories = await Category.find({ isListed: true })
@@ -45,13 +23,42 @@ const loadHomepage = async (req, res) => {
             productData = productData.slice(0, 4);
 
 
-            // || req.query.user; // Set to null if user is not logged in
-            // console.log(user);
-            res.render('home', { user, products: productData });
-       // } else {
-           // res.redirect('/login');
+           
+            res.render('shop', { user, products: productData });
+      
 
-       // }
+    } catch (error) {
+        console.log("Home page not found");
+        console.log(error);
+        
+        res.status(500).send("Server error");
+    }
+}
+
+
+
+
+
+const loadHomepage = async (req, res) => {
+    
+    try {
+        
+            const user = req.session.user
+
+            const categories = await Category.find({ isListed: true })
+            let productData = await Product.find({
+                isBlocked: false,
+                category: { $in: categories.map(category => category._id) }, quantity: { $gt: 0 }
+            })
+            console.log(productData);
+
+            productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            productData = productData.slice(0, 4);
+
+
+            
+            res.render('home', { user, products: productData });
+      
 
     } catch (error) {
         console.log("Home page not found");
@@ -184,6 +191,7 @@ const verifyOtp = async (req, res) => {
             await saveUserData.save()
             req.session.user = saveUserData._id;
             res.json({ success: true, redirectUrl: '/' })
+           
         }
         else {
             res.status(400).json({ success: false, message: "Invalid OTP, Please try again" })
@@ -255,7 +263,18 @@ const login = async (req, res) => {
         req.session.user = findUser;
 
 
-        // const categories = await Category.find({ isListed: true });
+        
+        res.redirect('/')
+    } catch (error) {
+        console.error("login error");
+        res.render("login", { message: "login failed.Please try again later" })
+    }
+}
+
+
+
+
+// const categories = await Category.find({ isListed: true });
         // let productData = await Product.find({
         //     isBlocked: false,
         //     Category: { $in: categories.map(category => category._id) },
@@ -268,12 +287,9 @@ const login = async (req, res) => {
 
         // // console.log(findUser);
         // res.render("home", { user: findUser, products: productData })
-        res.redirect('/')
-    } catch (error) {
-        console.error("login error");
-        res.render("login", { message: "login failed.Please try again later" })
-    }
-}
+
+
+
 
 const logout = async (req, res) => {
     try {
@@ -291,6 +307,23 @@ const logout = async (req, res) => {
 }
 
 
+const productDetails = async (req,res)=>{
+    try {
+        const productId = req.query.id
+        const productDetails = await Product.findOne({_id:productId})
+        console.log(productDetails)
+       return res.render('product-details',{proData:productDetails})
+    } catch (error) {
+        
+    }
+}
+
+
+
+
+
+
+
 
 module.exports = {
     loadHomepage,
@@ -302,6 +335,9 @@ module.exports = {
     loadLogin,
     login,
     logout,
+    loadShop,
+    productDetails,
+   
 
 }
 
