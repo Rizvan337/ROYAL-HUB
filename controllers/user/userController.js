@@ -250,6 +250,7 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body
         const findUser = await User.findOne({ isAdmin: 0, email })
+        console.log(findUser)
         if (!findUser) {
             return res.render("login", { message: "User not found" })
         }
@@ -293,12 +294,15 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        req.session.destroy((err) => {
-            if (err) {
-                console.log("Sesion destruction error", err.message)
-                return res.redirect('/pageNotFound')
-            } return res.redirect('/login')
-        })
+        req.session.user = null
+
+        // req.session.destroy((err) => {
+        //     if (err) {
+        //         console.log("Sesion destruction error", err.message)
+        //         return res.redirect('/pageNotFound')
+        //     } return res.redirect('/login')
+        // })
+        res.redirect('/login')
     } catch (error) {
         console.log("Logout error", error);
         res.redirect('/pageNotFound')

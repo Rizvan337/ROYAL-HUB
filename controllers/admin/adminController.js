@@ -18,17 +18,23 @@ const loadLogin = (req,res)=>{
 const login = async (req,res)=>{
 try {
     const {email,password} = req.body
+    console.log(req.body);
+    
     const admin = await User.findOne({email,isAdmin:true})
+    console.log(admin);
+    
     if(admin){
-        const passwordMatch = bcrypt.compare(password,admin.password)
+        const passwordMatch = await bcrypt.compare(password,admin.password)
+        console.log(passwordMatch);
+        
         if(passwordMatch){
             req.session.admin = true;
             return res.redirect('/admin')
         } else{
-            return res.redirect('/login')
+            return res.redirect('/admin/login')
         }
     }else{
-        return res.redirect('/login')
+        return res.redirect('/admin/login')
     }
 } catch (error) {
     console.log("Login error",error);
@@ -57,13 +63,15 @@ const loadDashboard = async (req,res)=>{
 
 const logout = async (req,res)=>{
     try {
-        req.session.destroy(err=>{
-            if(err){
-                console.log("Errorn destroying session",err);
-                return res.redirect('/pageerror')
-            }
-            res.redirect('/admin/login')
-        })
+        req.session.admin = null
+        // req.session.destroy(err=>{
+        //     if(err){
+        //         console.log("Errorn destroying session",err);
+        //         return res.redirect('/pageerror')
+        //     }
+        //     res.redirect('/admin/login')
+        // })
+        res.redirect('/admin/login')
     } catch (error) {
         console.log("Unexpected error during logout",error);
         res.redirect('/pageerror')      
