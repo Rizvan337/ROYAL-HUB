@@ -40,13 +40,13 @@
                         images.push(req.files[i].filename)
                     }
                 }
-
+                //checking whether the category is valid or not
                 const categoryId = await Category.findOne({name:products.category})
                 if(!categoryId){
                     return res.status(400).json("Invalid category name")
                 }
 
-                const newProduct = new Product({
+                 const newProduct = new Product({
                     productName:products.productName,
                     description:products.description,
                     
@@ -155,24 +155,6 @@ const getEditProduct = async (req,res)=>{
 
 
 
-// const getEditProduct = async (req, res) => {
-//     try {
-//         const productId = req.params.id; // Get product ID from URL
-       
-
-//         const product = await Product.findById(productId); // Fetch product by ID from the database
-//         const category = await Category.find({});
-//         if (!product) {
-//             // If the product doesn't exist, handle the error
-//             return res.status(404).send('Product not found');
-//         }
-//         res.render('edit-product', { product,category }); // Pass product to the template
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).send('Server Error');
-//     }
-// };
-
 
 const editProduct = async (req,res)=>{
         try {
@@ -184,7 +166,7 @@ const editProduct = async (req,res)=>{
             _id:{$ne:id}
             })
             if(existingProduct){
-                return res.status(400).json({error:"Product with this name already exixts."})
+                return res.status(400).json({error:"Product with this name already exists."})
             }
 
             const images =[]

@@ -1,12 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const userController = require('../controllers/user/userController')
+const profileController = require('../controllers/user/profileController')
 const passport = require("passport")
 const { userAuth } = require('../middlewares/auth')
-const profileController = require('../controllers/user/profileController')
 
-router.get('/shop',userController.loadShop)
+
+
 router.get('/', userController.loadHomepage)
+router.get('/shop',userController.loadShop)
 router.get('/pageNotFound', userController.pageNotFound)
 router.get('/signup', userController.loadSignup)
 router.post('/signup', userController.signup)
@@ -20,12 +22,6 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 router.get('/login', userController.loadLogin)
 router.post('/login', userController.login)
 router.get('/productDetails',userController.productDetails)
-
-
-
-
-
-//profile controlling
 router.get('/forgot-password',profileController.getForgotPassPage)
 router.post('/forgot-email',profileController.forgotEmail)
 router.post('/verify-passForgot-otp',profileController.verifyForgotPassOtp)

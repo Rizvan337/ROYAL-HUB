@@ -5,6 +5,7 @@ const Category = require('../../models/categorySchema')
 
 const categoryInfo = async (req,res)=>{
     try {
+            //checking page number from query
             const page = parseInt(req.query.page) || 1;
             const limit = 4;
             const skip = (page-1)*limit;
@@ -31,7 +32,7 @@ const addCategory = async (req,res)=>{
     try {
         const existingCategory = await Category.findOne({name})
         if(existingCategory){
-            return res.status(400).json({error:"Category lready exists"})
+            return res.status(400).json({error:"Category Already exists"})
         }
         const newCategory = new Category({
             name,
