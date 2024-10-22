@@ -66,6 +66,13 @@
       color: red;
       display: block;
     }
+    .searchbut{
+background-color: white;
+
+font-size: 15px;
+border: none;
+    }
+    
   </style>
 </head>
 <body>
@@ -78,8 +85,8 @@
     <header class="card-header text-center mb-20">
       <form action="/admin/category/" method="get" class="d-inline">
         <div class="input-group input-group-sm border border-1 border-grey rounded-pill" style="width: 500px; margin-left: 230px">
-          <input type="text" class="form-control border-0 rounded-pill mt-3" placeholder="Search categories" name="search"/>
-          <button class="btn" type="submit">Search</button>
+          <input type="text" class="form-control border-0 rounded-pill mt-3 " placeholder="Search categories" name="search"/>
+          <button class="searchbut" type="submit">Search</button>
         </div>
       </form>
     </header>
@@ -113,10 +120,10 @@
                     <th class="text-center"></th>
                     <th>Name</th>
                     <th>Description</th>
-                    <th>Offer Price</th>
-                    <th>Offer</th>
-                    <th>Status</th>
-                    <th>List/Unlist</th>
+                    <!-- <th>Offer Price</th> -->
+                    <th>Offer</th> 
+                     <th class="status">Status</th>
+                    <th class="listng">List/Unlist</th>
                     <th class="text-start">Edit</th>
                   </tr>
                 </thead>
@@ -128,14 +135,14 @@
                     <td class="text-start"><%=category.description%></td>
                     <td>
                     </td>
-                    <td class="text-start">
+                    <!-- <td class="text-start">
                       <button class="btn btn-info" style="width: 100px">
                         <a href="#" class="text-white">Add Offer</a>
                       </button>
                       <button class="btn btn-info"style="width: 100px">
                         <a href="#" class="text-white">Remove</a>
                       </button>
-                    </td>
+                    </td> -->
                     <td class="text-start">
                       <%if(category.isListed){%>
                       <span class="badge rounded-pill alert-success" style="width: 60px">Listed</span>

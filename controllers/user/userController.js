@@ -4,36 +4,109 @@ const Product = require('../../models/productSchema')
 const nodemailer = require('nodemailer')
 const env = require('dotenv').config()
 const bcrypt = require('bcrypt')
+const HttpStatus = require('../../utils/httpStatusCodes')
 
 
 
-const loadShop = async (req,res)=>{
+
+
+
+
+
+
+const shoptrue = async (req,res)=>{
     try {
+       return res.render('shoptrue',{user:req.user||null})
+    } catch (error) {
+        
+    }
+}
+
+
+
+
+
+
+
+
+// const loadShop = async (req,res)=>{
+//     try {
        
-            const user = req.session.user
+//             const user = req.session.user
 
-            const categories = await Category.find({ isListed: true })
-            let productData = await Product.find({
-                isBlocked: false,
-                category: { $in: categories.map(category => category._id) }, quantity: { $gt: 0 }
-            })
-            console.log(productData);
+//             const categories = await Category.find({ isListed: true })
+//             let productData = await Product.find({
+//                 isBlocked: false,
+//                 category: { $in: categories.map(category => category._id) }, quantity: { $gt: 0 }
+//             })
+//             console.log(productData);
 
-            productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            productData = productData.slice(0, 4);
+//             productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+//             productData = productData.slice(0, 4);
 
 
            
-            res.render('shop', { user, products: productData });
+//             res.render('shop', { user, products: productData });
       
 
-    } catch (error) {
-        console.log("Home page not found");
-        console.log(error);
+//     } catch (error) {
+//         console.log("Home page not found");
+//         console.log(error);
         
-        res.status(500).send("Server error");
+//         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server error");
+//     }
+// }
+
+
+
+
+
+
+const loadShop = async (req, res) => {
+    try {
+        const user = req.session.user;
+
+        // Get filters from query params
+        const categoryFilters = req.query.categories ? req.query.categories.split(',') : [];
+        const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
+        const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : Number.MAX_SAFE_INTEGER;
+
+        // Fetch categories
+        const categories = await Category.find({ isListed: true });
+
+        // Build product filter query
+        let filterQuery = {
+            isBlocked: false,
+            quantity: { $gt: 0 },
+            salePrice: { $gte: minPrice, $lte: maxPrice }
+        };
+
+        if (categoryFilters.length > 0) {
+            filterQuery.category = { $in: categoryFilters };
+        }
+
+        // Fetch filtered products
+        let productData = await Product.find(filterQuery);
+
+        // Sort and limit products (for example: newest first)
+        productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        productData = productData.slice(0, 12);
+
+        res.render('shop', { user, products: productData, categories });
+    } catch (error) {
+        console.log("Shop page not found", error);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server error");
     }
-}
+};
+
+
+
+
+
+
+
+
+
 
 
 
@@ -64,7 +137,7 @@ const loadHomepage = async (req, res) => {
         console.log("Home page not found");
         console.log(error);
         
-        res.status(500).send("Server error");
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server error");
     }
 
 };
@@ -87,7 +160,7 @@ const loadSignup = async (req, res) => {
         }
     } catch (error) {
         console.log("Home page is loading");
-        res.status(500).send("Server Error")
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server Error")
 
     }
 }
@@ -194,11 +267,11 @@ const verifyOtp = async (req, res) => {
            
         }
         else {
-            res.status(400).json({ success: false, message: "Invalid OTP, Please try again" })
+            res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Invalid OTP, Please try again" })
         }
     } catch (error) {
         console.error("Error verifying OTP", error)
-        res.status(500).json({ success: false, message: "An error occured" })
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "An error occured" })
     }
 }
 
@@ -212,7 +285,7 @@ const resendOtp = async (req, res) => {
     try {
         const userData = req.session.userData;
         if (!userData || !userData.email) {
-            return res.status(400).json({ success: false, message: "Email not found in session" });
+            return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Email not found in session" });
         }
         const { email } = userData;
 
@@ -224,13 +297,13 @@ const resendOtp = async (req, res) => {
         const emailSent = await sendVerificationEmail(email, otp);
         if (emailSent) {
             console.log("Resend OTP:", otp);
-            res.status(200).json({ success: true, message: "OTP Resent Successfully" });
+            res.status(HttpStatus.OK).json({ success: true, message: "OTP Resent Successfully" });
         } else {
-            res.status(503).json({ success: false, message: "Failed to resend OTP. Please try again." });
+            res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ success: false, message: "Failed to resend OTP. Please try again." });
         }
     } catch (error) {
         console.error("Error resending OTP:", error);
-        res.status(500).json({ success: false, message: "Internal server error. Please try again." });
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error. Please try again." });
     }
 };
 
@@ -240,6 +313,7 @@ const loadLogin = async (req, res) => {
             return res.render('login')
         } else {
             res.redirect('/')
+            
         }
     } catch (error) {
         res.redirect("/pageNotFound")
@@ -341,7 +415,7 @@ module.exports = {
     logout,
     loadShop,
     productDetails,
-   
+    shoptrue,
 
 }
 

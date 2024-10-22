@@ -15,8 +15,10 @@ router.post('/signup', userController.signup)
 router.post("/verify-otp",userController.verifyOtp)
 router.post("/resend-otp", userController.resendOtp)
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), (req, res) => {
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup',failureMessage: true }), (req, res) => {
     req.session.user = req.user;
+   
+
     res.redirect('/');
 })
 router.get('/login', userController.loadLogin)
@@ -28,6 +30,11 @@ router.post('/verify-passForgot-otp',profileController.verifyForgotPassOtp)
 router.get('/reset-password',profileController.getResetPassPage)
 router.post('/resend-forgot-otp',profileController.resendOtp)
 router.post('/reset-password',profileController.newPassword)
+
+
+router.get('/shopTrue',userController.shoptrue)
+
+
 
 router.get('/logout', userController.logout)
 module.exports = router;

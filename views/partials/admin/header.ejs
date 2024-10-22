@@ -17,39 +17,236 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <style>
 body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     background-color: #ffffff;
 }
-.navbar {
-    /* background-color: #8da7ab; */
-    background-color: rgb(20, 13, 13);
+
+.navbar, .main-header {
+    background-color: #141313;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
 }
+
 .navbar-aside {
-    /* background-color: #b0d5de; */
-    background-color: black;
+    width: 240px;
+    background-color: #000;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: 20px;
 }
+
+.menu-aside {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.menu-item {
+    margin: 10px 0;
+}
+
 .menu-item a.menu-link {
-    /* color: #310505; */
-    color: rgb(175, 175, 98);
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: #afaf62;
+    text-decoration: none;
+    font-size: 14px;
 }
 
 .menu-item a.menu-link:hover,
 .menu-item a.menu-link.active {
-    background-color: #6e7e6e; 
-   
+    background-color: #6e7e71;
     color: #ffffff;
-  
-}
-.dropdown-menu {
-    background-color: #eeeff1;
+    border-radius: 5px;
 }
 
-.dropdown-item:hover {
-    background-color: #33053d;
-    
-    color: #f8f1f1;
+.menu-item .icon {
+    margin-right: 10px;
+}
+
+.main-wrap {
+    margin-left: 240px;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
+
+.main-header .col-nav ul.nav {
+    display: flex;
+    align-items: center;
+}
+
+.main-header .col-nav .dropdown-toggle {
+    margin-left: 20px;
+}
+
+.main-header .col-search {
+    display: none;
+}
+
+.screen-overlay {
+    display: none;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    background-color: #ffb400;
+    color: white;
+    border: none;
+    font-size: 14px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #ff9800;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-small {
+    padding: 5px 12px;
+    font-size: 12px;
+}
+
+.btn-large {
+    padding: 12px 20px;
+    font-size: 16px;
 }
 
 
+
+/* Search Button */
+.search-btn {   
+    background-color: #1ae43c;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.search-btn:hover {
+    background-color: #100f11;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .main-wrap {
+        margin-left: 200px;
+    }
+
+    .navbar-aside {
+        width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-aside {
+        position: fixed;
+        left: -100%;
+        transition: left 0.3s ease;
+    }
+
+    .navbar-aside.open {
+        left: 0;
+    }
+
+    .main-wrap {
+        margin-left: 0;
+    }
+
+    .main-header .col-nav ul.nav {
+        display: none;
+    }
+
+    .main-header .col-search {
+        display: block;
+        flex: 1;
+    }
+
+    .btn-mobile {
+        display: inline-block;
+    }
+}
+
+@media (max-width: 576px) {
+    .menu-item a.menu-link {
+        font-size: 12px;
+    }
+}
+
+/* Header Adjustments */
+.main-header .nav-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+
+
+
+
+/* Styling for the Logout Button */
+.btn-logout {
+    padding: 10px 20px;
+    background-color: #eee9e9; 
+    color: #e2e8ec; 
+    border-radius: 4px;
+    border: none;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+   margin-left: 850px;
+}
+
+.btn-logout:hover {
+    background-color: #fa0f0f; /* Darker red on hover */
+    color: white;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between; /* Aligns search on the left and logout on the right */
+    align-items: center;
+    padding: 10px;
+}
+
+.col-search {
+    flex-grow: 1; /* Ensures the search bar takes available space */
+}
+
+.col-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+
+
+/* //chatgpt */
 </style>
 </head>
 <body>
@@ -125,7 +322,7 @@ body {
         </nav>
     </aside>
     <main class="main-wrap">
-        <header class="main-header navbar">
+        <!-- <header class="main-header navbar">
             <div class="col-search">
             </div>
             <div class="col-nav">
@@ -140,4 +337,20 @@ body {
                     </li>
                 </ul>
             </div>
+        </header> -->
+
+         <header class="main-header navbar">
+            <div class="col-search">
+                <input type="text" class="search-input" placeholder="Search...">
+                <button class="search-btn">Search</button>
+            </div>
+            <div class="col-nav">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a href="/admin/logout" class="btn-logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
         </header>
+        
+        

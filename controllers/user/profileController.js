@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer')
 const bcrypt = require('bcrypt')
 const env = require('dotenv').config()
 const session = require('express-session')
-
+const HttpStatus = require('../../utils/httpStatusCodes')
 
 
 function generateOtp(){
@@ -105,7 +105,7 @@ const verifyForgotPassOtp = async (req,res)=>{
         res.render('forgotPass-otp', { message: "OTP is not matching" });
         }
     } catch (error) {
-        res.status(500).json({success:false,message:"An Error Occured. Please try again later."})
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({success:false,message:"An Error Occured. Please try again later."})
     }
 }
 
@@ -128,13 +128,13 @@ const resendOtp = async (req,res)=>{
         const emailSent = await sendVerificationEmail(email,otp)
         if(emailSent){
             console.log("Resend OTP:",otp);
-            res.status(200).json({success:true,message:"Resend OTP Successfull"})
+            res.status(HttpStatus.OK).json({success:true,message:"Resend OTP Successfull"})
             
         }
         
     } catch (error) {
         console.error("Error in resend otp:",error)
-        res.status(500).json({success:false,message:"Internal server error"})
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({success:false,message:"Internal server error"})
         
     }
 }

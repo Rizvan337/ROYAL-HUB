@@ -18,7 +18,7 @@ passport.use(new GoogleStrategy({
                 return done(null,user)
             }else{
                 
-                    // If no Google ID match, check if the email already exists in the database
+                   
                     let existingUser = await User.findOne({ email: profile.emails[0].value });
                     if (existingUser) {
                         return done(null, existingUser); 
@@ -54,5 +54,44 @@ passport.deserializeUser((id,done)=>{
         done(err,null)
     })
 })
+
+
+
+
+
+// passport.use(new GoogleStrategy({
+//     clientID: process.env.GOOGLE_CLIENT_ID,
+//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//     callbackURL: process.env.GOOGLE_CALLBACK_URL // No hardcoding here
+// },
+//     async (accessToken, refreshToken, profile, done) => {
+//         try {
+//             let user = await User.findOne({ googleId: profile.id });
+//             if (user) {
+//                 return done(null, user);
+//             } else {
+//                 let existingUser = await User.findOne({ email: profile.emails[0].value });
+//                 if (existingUser) {
+//                     return done(null, existingUser);
+//                 }
+//             }
+
+//             user = new User({
+//                 name: profile.displayName,
+//                 email: profile.emails[0].value,
+//                 googleId: profile.id,
+//             });
+//             await user.save();
+//             return done(null, user);
+//         } catch (error) {
+//             return done(error, null);
+//         }
+//     }
+// ));
+
+
+
+
+
 
 module.exports = passport;

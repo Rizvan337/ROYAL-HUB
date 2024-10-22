@@ -11,7 +11,7 @@ const userAuth = (req,res,next)=>{
         }
     })
     .catch(error=>{
-        console.log("Errorn in user auth middleare");
+        console.log("Error in user auth middleare");
         res.status(500).send("Internal Server error")
     })
         

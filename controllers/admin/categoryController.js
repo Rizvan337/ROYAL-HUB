@@ -1,5 +1,5 @@
 const Category = require('../../models/categorySchema')
-
+const HttpStatus = require('../../utils/httpStatusCodes')
 
 
 
@@ -32,7 +32,7 @@ const addCategory = async (req,res)=>{
     try {
         const existingCategory = await Category.findOne({name})
         if(existingCategory){
-            return res.status(400).json({error:"Category Already exists"})
+            return res.status(HttpStatus.BAD_REQUEST).json({error:"Category Already exists"})
         }
         const newCategory = new Category({
             name,
@@ -41,7 +41,7 @@ const addCategory = async (req,res)=>{
         await newCategory.save()
         return res.json({message:"Category added successfully"})
     } catch (error) {
-        return res.status(500).json({error:"Internal server error"})
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error:"Internal server error"})
     }
 }
 
@@ -71,7 +71,7 @@ const getEditCategory = async (req,res)=>{
     try {
         const id = req.query.id
         const category = await Category.findOne({_id:id})
-        res.render('edit-category',{category:category})
+            res.render('edit-category',{category:category})
     } catch (error) {
         res.redirect('/pageerror')
     }
@@ -84,7 +84,7 @@ const editCategory = async (req,res)=>{
         const {categoryName,description} = req.body;
         const existingCategory = await Category.findOne({name:categoryName})
         if(existingCategory){
-            return res.status(400).json({error:"Category exists, Please choose another name"})
+            return res.status(HttpStatus.BAD_REQUEST).json({error:"Category exists, Please choose another name"})
         }
         const updateCategory = await Category.findByIdAndUpdate(id,{
             name:categoryName,
@@ -94,10 +94,10 @@ const editCategory = async (req,res)=>{
         if(updateCategory){
             res.redirect('/admin/category')
         }else{
-            res.status(404).json({error:"Category not found"})
+            res.status(HttpStatus.NOT_FOUND).json({error:"Category not found"})
         }
     } catch (error) {
-        res.status(500).json({error:"Internal server error"})
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error:"Internal server error"})
     }
 }
 

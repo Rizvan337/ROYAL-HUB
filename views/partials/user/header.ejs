@@ -90,6 +90,44 @@
     top: -30px;
     
 }
+
+
+
+
+
+
+
+
+/* Profile container styling */
+.header__nav__option .dropdown .profile {
+    width: 10px; /* Set a fixed width for profile image */
+    height: 10px; /* Set a fixed height for profile image */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image covers the space properly */
+    margin-bottom: 5px; /* Add some space between the image and the name */
+}
+
+/* Align the name with the image */
+.header__nav__option .sign-in-link {
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Dropdown profile links */
+.header__nav__option .dropdown-content {
+    right: 0;
+    min-width: 160px;
+}
+
+/* Ensure consistent dropdown content */
+.header__nav__option .dropdown-content a {
+    padding: 12px 16px;
+    text-align: left;
+    width: 100%;
+}
+
         
     </style>
 
@@ -124,7 +162,7 @@
 
                                     <div class="d-flex flex-column align-items-center justify-content-center">
 
-                                        <a href="#"><img src="img/profile.png" alt=""></a>
+                                        <a href="#"><img class="" src="img/profile.png" alt=""></a>
                                         <a href="#" class="sign-in-link ">
                                             <%=user.name %>
                                         </a>

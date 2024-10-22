@@ -51,10 +51,25 @@
   }
 
 
+   /* Product Card */
+   .product-cart-wrap {
+      border: 1px solid #eee;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .product-cart-wrap:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Product Image Styling */
   .product-img-action-wrap {
       position: relative;
   }
-
 
   .product-img {
       position: relative;
@@ -62,43 +77,58 @@
       overflow: hidden;
   }
 
-
-  .product-cart-wrap {
-      border: 1px solid #eee;
-      padding: 20px;
-      margin-bottom: 30px;
+  .product-img img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      transition: transform 0.3s ease;
   }
 
+  .product-img:hover img {
+      transform: scale(1.1);
+  }
 
+  /* Product Content */
   .product-content-wrap h6 {
       font-size: 18px;
       color: #333;
       margin-bottom: 5px;
+      font-weight: 600;
   }
-
 
   .product-content-wrap h5 {
       font-size: 16px;
-      color: #ff6b6b;
+      color: #28a745; /* Green color for price */
       margin-bottom: 10px;
+      font-weight: 700;
   }
-
 
   .product-content-wrap a {
       display: inline-block;
       padding: 8px 12px;
-      background-color: #ff6b6b;
+      background-color: #28a745; /* Green button for "Add to Cart" */
       color: white;
       text-transform: uppercase;
       font-size: 14px;
       border-radius: 4px;
       text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.3s;
   }
-
 
   .product-content-wrap a:hover {
-      background-color: #ff4c4c;
+      background-color: #218838;
+      transform: translateY(-2px);
   }
+ 
+
+
+
+
+
+
+
+
 </style>
 <!-- <section class="hero">
   <div class="hero__slider owl-carousel">
@@ -176,7 +206,6 @@
 </section> -->
 
 
-
 <section class="product spad">
   <div class="container">
       <div class="row">
@@ -192,11 +221,11 @@
                   <div class="product-cart-wrap mb-30">
                       <div class="product-img-action-wrap">
                           <div class="product-img product-img-zoom">
-                               <!-- detailed page for the product  -->
+                                <!-- detailed page for the product  -->
                               <a href="/productDetails?id=<%=products[i]._id%>">
                                   <img class="default-img" src="/uploads/re-image/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>">
                               </a>
-         <!-- change -->
+       
                     </div> 
                       </div> 
                       <div class="product-action-1">
@@ -219,19 +248,5 @@
   </div>
 </section>
 <%- include("../../views/partials/user/footer") %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
