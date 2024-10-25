@@ -2,10 +2,10 @@ const Category = require('../../models/categorySchema')
 const HttpStatus = require('../../utils/httpStatusCodes')
 
 
-
+//display category details
 const categoryInfo = async (req,res)=>{
     try {
-            //checking page number from query
+            
             const page = parseInt(req.query.page) || 1;
             const limit = 4;
             const skip = (page-1)*limit;
@@ -27,6 +27,8 @@ const categoryInfo = async (req,res)=>{
     }
 }
 
+
+//add category
 const addCategory = async (req,res)=>{
     const {name,description} = req.body
     try {
@@ -45,21 +47,23 @@ const addCategory = async (req,res)=>{
     }
 }
 
-
+//List category 
 const getListCategory = async (req,res)=>{
     try {
-        let id = req.query.id
-        await Category.updateOne({_id:id},{$set:{isListed:false}})
+        let categoryId = req.query.id
+        await Category.updateOne({_id:categoryId},{$set:{isListed:false}})
         res.redirect('/admin/category')
     } catch (error) {
         res.redirect('/pageerror')
     }
 }
 
+
+//unlist category
 const getUnlistCategory = async (req,res)=>{
     try {
-        let id = req.query.id
-        await Category.updateOne({_id:id},{$set:{isListed:true}})
+        let categoryId = req.query.id
+        await Category.updateOne({_id:categoryId},{$set:{isListed:true}})
         res.redirect('/admin/category')
     } catch (error) {
         res.redirect('/pageerror')
@@ -67,26 +71,27 @@ const getUnlistCategory = async (req,res)=>{
 }
 
 
+//edit category page
 const getEditCategory = async (req,res)=>{
     try {
-        const id = req.query.id
-        const category = await Category.findOne({_id:id})
+        const categoryId = req.query.id
+        const category = await Category.findOne({_id:categoryId})
             res.render('edit-category',{category:category})
     } catch (error) {
         res.redirect('/pageerror')
     }
 }
 
-
+//edit category
 const editCategory = async (req,res)=>{
     try {
-        const id = req.params.id
+        const categoryId = req.params.id
         const {categoryName,description} = req.body;
         const existingCategory = await Category.findOne({name:categoryName})
         if(existingCategory){
             return res.status(HttpStatus.BAD_REQUEST).json({error:"Category exists, Please choose another name"})
         }
-        const updateCategory = await Category.findByIdAndUpdate(id,{
+        const updateCategory = await Category.findByIdAndUpdate(categoryId,{
             name:categoryName,
             description:description,
         },{new:true})

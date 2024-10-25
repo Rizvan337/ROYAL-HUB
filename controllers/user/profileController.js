@@ -5,7 +5,7 @@ const env = require('dotenv').config()
 const session = require('express-session')
 const HttpStatus = require('../../utils/httpStatusCodes')
 
-
+//generate otp
 function generateOtp(){
     const digits = "1234567890"
     let otp =""
@@ -15,6 +15,7 @@ function generateOtp(){
     return otp;
 }
 
+//sending verification email 
 const sendVerificationEmail = async (email,otp)=>{
     try {
         const transporter = nodemailer.createTransport({
@@ -43,7 +44,7 @@ const sendVerificationEmail = async (email,otp)=>{
     }
 }
 
-
+//password hashing
 const securePassword = async (password)=>{
     try {
         
@@ -56,6 +57,7 @@ const securePassword = async (password)=>{
 
 }
 
+//forgot password page
 const getForgotPassPage = async (req,res)=>{
     try {
       res.render('forgot-password',{user:req.user||null})
@@ -64,7 +66,7 @@ const getForgotPassPage = async (req,res)=>{
     }
 }
 
-
+//sending email to renew forgot password
 const forgotEmail = async (req,res)=>{
     try {
         const {email} = req.body;
@@ -94,14 +96,13 @@ const forgotEmail = async (req,res)=>{
 
 
 
-
+//verifying forgott password otp 
 const verifyForgotPassOtp = async (req,res)=>{
     try {
         const enteredOtp = req.body.otp;
         if(enteredOtp===req.session.userOtp){
             res.json({success:true,redirectUrl:"/reset-password"})
         }else{
-        //    res.json({success:false,message:"OTP is not matching"})
         res.render('forgotPass-otp', { message: "OTP is not matching" });
         }
     } catch (error) {
@@ -109,7 +110,7 @@ const verifyForgotPassOtp = async (req,res)=>{
     }
 }
 
-
+//reset password page
 const getResetPassPage = async (req,res)=>{
     try {
         res.render('reset-password',{user:req.user||null})
@@ -118,7 +119,7 @@ const getResetPassPage = async (req,res)=>{
     }
 }
 
-
+//resend otp
 const resendOtp = async (req,res)=>{
     try {
         const otp = generateOtp()
@@ -139,7 +140,7 @@ const resendOtp = async (req,res)=>{
     }
 }
 
-
+//new password setting
 const newPassword = async (req,res)=>{
     try {
         const {newPass,confirmPass} = req.body
@@ -152,7 +153,6 @@ const newPassword = async (req,res)=>{
             
            const updateResult = await User.updateOne({email:email},{$set:{password:passwordHash}})
             console.log("Update result:", updateResult)
-           // res.redirect('/login',{user:req.user||null})
             if (updateResult.modifiedCount > 0) {
 
                 req.session.destroy((err)=>{

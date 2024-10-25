@@ -23,13 +23,16 @@
     <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" type="text/css">
     <style>
+        .spad {
+            background-color: rgb(245, 234, 234);
+        }
         .header__nav__option .sign-in-link:link,
         .header__nav__option .sign-in-link:visited {
             /* font-size: 16px; */
             color: #333;
             /* margin-right: -15px; */
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 900;
             /* width: fit-content; */
             /* display: inline-block; */
         }
@@ -91,20 +94,13 @@
     
 }
 
-
-
-
-
-
-
-
 /* Profile container styling */
 .header__nav__option .dropdown .profile {
-    width: 10px; /* Set a fixed width for profile image */
-    height: 10px; /* Set a fixed height for profile image */
-    border-radius: 50%; /* Makes the image circular */
-    object-fit: cover; /* Ensures the image covers the space properly */
-    margin-bottom: 5px; /* Add some space between the image and the name */
+    width: 10px; 
+    height: 10px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    margin-bottom: 5px; 
 }
 
 /* Align the name with the image */
@@ -127,8 +123,7 @@
     text-align: left;
     width: 100%;
 }
-
-        
+      
     </style>
 
 
@@ -136,9 +131,9 @@
 
 <body>
 
-    <header class="header">
+    <header class="header d-flex justify-content-center h-auto">
         <div class="container">
-            <div class="row">
+            <div class="row align-items-center h-auto">
                 <div class="col-lg-3 col-md-3">
                     <div class="header__logo">
                         <a href="#"><img src="img/royalwhitelogo.jpeg" alt=""></a>
@@ -173,11 +168,11 @@
                                     </div>
                                 </div>
                                 <% } else { %>
-                                    <div class="d-flex justify-content-center align-items-center g-4 ">
+                                    <div class="d-flex justify-content-center align-items-center g-4">
 
                                         <div class="d-flex justify-content-center align-items-center ">
-                                            <a href="/signup" class="sign-in-link ">Sign Up</a>
-                                            <a href="/login" class="sign-in-link">Log in</a>
+                                            <a href="/signup" class="sign-in-link">Sign Up</a>
+                                            <a href="/login" class="sign-in-link p-3">Log in</a>
                                         </div>
                                         
                                         <% } %>

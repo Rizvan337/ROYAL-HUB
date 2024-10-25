@@ -7,13 +7,6 @@ const bcrypt = require('bcrypt')
 const HttpStatus = require('../../utils/httpStatusCodes')
 
 
-
-
-
-
-
-
-
 const shoptrue = async (req,res)=>{
     try {
        return res.render('shoptrue',{user:req.user||null})
@@ -22,46 +15,7 @@ const shoptrue = async (req,res)=>{
     }
 }
 
-
-
-
-
-
-
-
-// const loadShop = async (req,res)=>{
-//     try {
-       
-//             const user = req.session.user
-
-//             const categories = await Category.find({ isListed: true })
-//             let productData = await Product.find({
-//                 isBlocked: false,
-//                 category: { $in: categories.map(category => category._id) }, quantity: { $gt: 0 }
-//             })
-//             console.log(productData);
-
-//             productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-//             productData = productData.slice(0, 4);
-
-
-           
-//             res.render('shop', { user, products: productData });
-      
-
-//     } catch (error) {
-//         console.log("Home page not found");
-//         console.log(error);
-        
-//         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server error");
-//     }
-// }
-
-
-
-
-
-
+//shop page
 const loadShop = async (req, res) => {
     try {
         const user = req.session.user;
@@ -88,7 +42,7 @@ const loadShop = async (req, res) => {
         // Fetch filtered products
         let productData = await Product.find(filterQuery);
 
-        // Sort and limit products (for example: newest first)
+        // Sort and limit products
         productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         productData = productData.slice(0, 12);
 
@@ -100,18 +54,7 @@ const loadShop = async (req, res) => {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+//home page
 const loadHomepage = async (req, res) => {
     
     try {
@@ -150,7 +93,7 @@ const loadHomepage = async (req, res) => {
 
 
 
-
+//signup page
 const loadSignup = async (req, res) => {
     try {
         if (req.session.user) {
@@ -168,7 +111,7 @@ const loadSignup = async (req, res) => {
 
 
 
-
+//page not found
 const pageNotFound = async (req, res) => {
     try {
         res.render('page-404')
@@ -176,11 +119,11 @@ const pageNotFound = async (req, res) => {
         res.redirect('/pageNotFound')
     }
 }
-
+//generating otp
 function generateOtp() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
-
+//send email to verify
 async function sendVerificationEmail(email, otp) {
     try {
         const transporter = nodemailer.createTransport({
@@ -208,7 +151,7 @@ async function sendVerificationEmail(email, otp) {
     }
 }
 
-
+//signup user
 const signup = async (req, res) => {
     try {
         const { name, phone, email, password, cPassword } = req.body
@@ -237,7 +180,7 @@ const signup = async (req, res) => {
         res.redirect("/pageNoFound")
     }
 }
-
+//password hashing
 const securePassword = async (password) => {
     try {
         const passwordHash = await bcrypt.hash(password, 10)
@@ -246,7 +189,7 @@ const securePassword = async (password) => {
 
     }
 }
-
+//verifying otp
 const verifyOtp = async (req, res) => {
     try {
         const { otp } = req.body
@@ -291,7 +234,7 @@ const resendOtp = async (req, res) => {
 
         // Generate new OTP
         const otp = generateOtp();
-        req.session.userOtp = otp; // Store OTP in session
+        req.session.userOtp = otp; 
 
         // Send OTP via email
         const emailSent = await sendVerificationEmail(email, otp);
@@ -306,7 +249,7 @@ const resendOtp = async (req, res) => {
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error. Please try again." });
     }
 };
-
+//login page
 const loadLogin = async (req, res) => {
     try {
         if (!req.session.user) {
@@ -319,7 +262,7 @@ const loadLogin = async (req, res) => {
         res.redirect("/pageNotFound")
     }
 }
-
+//login user
 const login = async (req, res) => {
     try {
         const { email, password } = req.body
@@ -346,36 +289,10 @@ const login = async (req, res) => {
     }
 }
 
-
-
-
-// const categories = await Category.find({ isListed: true });
-        // let productData = await Product.find({
-        //     isBlocked: false,
-        //     Category: { $in: categories.map(category => category._id) },
-        //     quantity: { $gt: 0 }
-        // });
-        // productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
-        // productData = productData.slice(0, 4);
-
-
-
-        // // console.log(findUser);
-        // res.render("home", { user: findUser, products: productData })
-
-
-
-
+//logout user
 const logout = async (req, res) => {
     try {
         req.session.user = null
-
-        // req.session.destroy((err) => {
-        //     if (err) {
-        //         console.log("Sesion destruction error", err.message)
-        //         return res.redirect('/pageNotFound')
-        //     } return res.redirect('/login')
-        // })
         res.redirect('/login')
     } catch (error) {
         console.log("Logout error", error);
@@ -384,7 +301,7 @@ const logout = async (req, res) => {
     }
 }
 
-
+//prouct detail page
 const productDetails = async (req,res)=>{
     try {
         const productId = req.query.id
@@ -395,13 +312,6 @@ const productDetails = async (req,res)=>{
         
     }
 }
-
-
-
-
-
-
-
 
 module.exports = {
     loadHomepage,

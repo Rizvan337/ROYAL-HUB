@@ -7,7 +7,7 @@
     const HttpStatus = require('../../utils/httpStatusCodes')
 
 
-
+//prouct adding page
     const getProductAddPage = async (req,res)=>{
         try {
             const category = await Category.find({isListed:true})
@@ -21,74 +21,7 @@
         }
     }
 
-    // const addProducts = async (req,res)=>{
-    //     try {
-    //         const products = req.body
-    //         const productExists = await Product.findOne({
-    //             productName:products.productName,
-
-    //         })
-
-    //         if(!productExists){
-    //             const images = []
-    //             if(req.files && req.files.length>0){
-    //                 for(let i=0;i<req.files.length;i++){
-    //                     const originalImagePath = req.files[i].path
-
-    //                     const resizedImagePath = path.join('public','uploads','product-images',req.files[i].filename)
-    //                     await sharp(originalImagePath).resize({width:440,height:440}).toFile(resizedImagePath)
-    //                     images.push(req.files[i].filename)
-    //                 }
-    //             }
-    //             //checking whether the category is valid or not
-    //             const categoryId = await Category.findOne({name:products.category})
-    //             if(!categoryId){
-    //                 return res.status(HttpStatus.BAD_REQUEST).json("Invalid category name")
-    //             }
-
-    //              const newProduct = new Product({
-    //                 productName:products.productName,
-    //                 description:products.description,
-                    
-    //                 category:categoryId._id,
-    //                 regularPrice:products.regularPrice,
-    //                 salePrice:products.salePrice,
-    //                 createdOn:new Date(),
-    //                 quantity:products.quantity,
-    //                productImage:images,
-    //                 status:"Available",
-    //             })
-    //             console.log(newProduct)
-    //             await newProduct.save()
-    //             return res.redirect("/admin/addProducts")
-    //         }else{
-    //             return res.status(HttpStatus.BAD_REQUEST).json("Product already exists,Please try with another name")
-    //         }
-    //     } catch (error) {
-    //         console.error("Error saving product",error)
-           
-    //         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Error saving product: " + error.message);
-    //     }
-    // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//adding products
     const addProducts = async (req, res) => {
         try {
             const products = req.body;
@@ -121,7 +54,7 @@
                     quantity: products.quantity,
                     productImage: images,
                     status: "Available",
-                    addedBy: req.session.user.email // Set the addedBy field to the current user's email
+                    addedBy: req.session.user.email 
                 });
     
                 await newProduct.save();
@@ -136,23 +69,7 @@
     };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//display all products in product section
 const getAllProducts = async (req,res)=>{
     try {
         const search = req.query.search || "";
@@ -190,25 +107,22 @@ const getAllProducts = async (req,res)=>{
     }
 }
 
-
+//block proucts
 const blockProduct = async (req,res)=>{
     try {
-        const id = req.query._id
-        await Product.updateOne({_id:id},{$set:{isBlocked:true}})
+        const productId = req.query._id
+        await Product.updateOne({_id:productId},{$set:{isBlocked:true}})
         res.redirect('/admin/products')
     } catch (error) {
         res.redirect('/pageerror')
     }
 }
 
-
-
-
-
+//unblocking products
 const unblockProduct = async (req,res)=>{
     try {
-        const id = req.query._id
-        await Product.updateOne({_id:id},{$set:{isBlocked:false}})
+        const productId = req.query._id
+        await Product.updateOne({_id:productId},{$set:{isBlocked:false}})
         res.redirect('/admin/products')
     } catch (error) {
         res.redirect('/pageerror')
@@ -216,12 +130,12 @@ const unblockProduct = async (req,res)=>{
 }
 
 
-
+//Edit product page with current details
 const getEditProduct = async (req,res)=>{
     try {
         
-        const id = req.query.id  
-        const product = await Product.findOne({_id:id}).populate('category')
+        const productId = req.query.id  
+        const product = await Product.findOne({_id:productId}).populate('category')
         const category = await Category.find({})
         
         res.render('edit-product',{
@@ -235,15 +149,15 @@ const getEditProduct = async (req,res)=>{
 
 
 
-
+//Edit products
 const editProduct = async (req,res)=>{
         try {
-            const id = req.params.id
-            const product = await Product.findOne({_id:id})
+            const productId = req.params.id
+            const product = await Product.findOne({_id:productId})
             const data = req.body
             const existingProduct = await Product.findOne({
             productName:data.productName,
-            _id:{$ne:id}
+            _id:{$ne:productId}
             })
             if(existingProduct){
                 return res.status(HttpStatus.BAD_REQUEST).json({error:"Product with this name already exists."})
@@ -282,7 +196,7 @@ const editProduct = async (req,res)=>{
 }
 
 
-
+//delete a image of a product
 const deleteSingleImage = async (req,res)=>{
     try {
         const {imageNameToServer,productIdToServer} = req.body

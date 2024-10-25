@@ -2,12 +2,13 @@ const User = require('../../models/userSchema')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
+//page error
 const pageerror = async (req,res)=>{
     res.render("admin-error")
 }
 
 
-
+//load login page of admin
 const loadLogin = (req,res)=>{
     if(req.session.admin){
         return res.redirect('/admin')
@@ -15,6 +16,7 @@ const loadLogin = (req,res)=>{
     res.render('admin-login',{message:null})
 }
 
+//login to enter to admin dashboard
 const login = async (req,res)=>{
 try {
     const {email,password} = req.body
@@ -43,7 +45,7 @@ try {
 }
 }
 
-
+//Load dashboard
 const loadDashboard = async (req,res)=>{
    if(req.session.admin){
     try {
@@ -60,17 +62,10 @@ const loadDashboard = async (req,res)=>{
 }
 
 
-
+//logout
 const logout = async (req,res)=>{
     try {
         req.session.admin = null
-        // req.session.destroy(err=>{
-        //     if(err){
-        //         console.log("Errorn destroying session",err);
-        //         return res.redirect('/pageerror')
-        //     }
-        //     res.redirect('/admin/login')
-        // })
         res.redirect('/admin/login')
     } catch (error) {
         console.log("Unexpected error during logout",error);
