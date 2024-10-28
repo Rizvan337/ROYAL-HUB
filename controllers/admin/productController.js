@@ -186,7 +186,7 @@ const editProduct = async (req,res)=>{
             if (req.files && req.files.length > 0) {
                updateFields.$push = {productImage:{$each:images}}
             }
-            await Product.findByIdAndUpdate(id,updateFields,{new:true})
+            await Product.findByIdAndUpdate(productId,updateFields,{new:true})
             
             res.redirect("/admin/products")
         } catch (error) {

@@ -9,7 +9,10 @@ const HttpStatus = require('../../utils/httpStatusCodes')
 
 const shoptrue = async (req,res)=>{
     try {
-       return res.render('shoptrue',{user:req.user||null})
+        
+        const products = await Product.find({})
+        const categories = await Category.find({isListed:true})
+       return res.render('shoptrue',{ totalProducts:products.length,products,categories,user:req.user||null})
     } catch (error) {
         
     }
