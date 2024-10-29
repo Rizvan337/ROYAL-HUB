@@ -54,7 +54,7 @@
                     quantity: products.quantity,
                     productImage: images,
                     status: "Available",
-                    addedBy: req.session.user.email 
+                    
                 });
     
                 await newProduct.save();

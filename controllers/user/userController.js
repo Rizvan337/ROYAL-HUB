@@ -22,30 +22,20 @@ const shoptrue = async (req,res)=>{
 const loadShop = async (req, res) => {
     try {
         const user = req.session.user;
-
-        // Get filters from query params
         const categoryFilters = req.query.categories ? req.query.categories.split(',') : [];
         const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
         const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : Number.MAX_SAFE_INTEGER;
-
-        // Fetch categories
         const categories = await Category.find({ isListed: true });
-
-        // Build product filter query
         let filterQuery = {
             isBlocked: false,
             quantity: { $gt: 0 },
             salePrice: { $gte: minPrice, $lte: maxPrice }
         };
-
         if (categoryFilters.length > 0) {
             filterQuery.category = { $in: categoryFilters };
         }
-
-        // Fetch filtered products
         let productData = await Product.find(filterQuery);
-
-        // Sort and limit products
+        
         productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         productData = productData.slice(0, 12);
 
