@@ -343,7 +343,7 @@ function validateForm() {
         isValid = false;
     }
 
-    // Sale Price Validation (Optional, but should be a valid number if entered)
+    // Sale Price Validation 
     if (salePrice !== "" && (isNaN(salePrice) || parseFloat(salePrice) <= 0)) {
         displayErrorMessage('salePrice-error', 'Sale price should be a positive number.');
         isValid = false;
@@ -366,7 +366,7 @@ function validateForm() {
         isValid = false;
     }
 
-    // Image Validation (At least one image should be uploaded)
+    // Image Validation 
     if (images.length === 0) {
         displayErrorMessage('images-error', 'Please upload at least one image.');
         isValid = false;
