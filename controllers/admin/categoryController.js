@@ -2,7 +2,7 @@ const Category = require('../../models/categorySchema')
 const HttpStatus = require('../../utils/httpStatusCodes')
 
 
-//display category details
+//display category details(pagination)
 const categoryInfo = async (req,res)=>{
     try {
             
@@ -47,7 +47,7 @@ const addCategory = async (req,res)=>{
     }
 }
 
-//List category 
+//unlist category 
 const getListCategory = async (req,res)=>{
     try {
         let categoryId = req.query.id
@@ -59,7 +59,7 @@ const getListCategory = async (req,res)=>{
 }
 
 
-//unlist category
+//list category
 const getUnlistCategory = async (req,res)=>{
     try {
         let categoryId = req.query.id
