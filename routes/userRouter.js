@@ -2,8 +2,9 @@ const express = require('express')
 const router = express.Router()
 const userController = require('../controllers/user/userController')
 const profileController = require('../controllers/user/profileController')
+const cartController = require('../controllers/user/cartController')
 const passport = require("passport")
-const { userAuth } = require('../middlewares/auth')
+const { adminAuth,userAuth } = require('../middlewares/auth')
 
 
 
@@ -34,8 +35,11 @@ router.post('/reset-password',profileController.newPassword)
 
 router.get('/shopTrue',userController.shoptrue)
 
-
-
+//Cart 
+router.post('/addToCart',userAuth,cartController.addToCart)
+router.get('/cart',cartController.getCart)
+router.post('/updateCart/:productId',cartController.updateCart)
+router.post('/removeCart/:productId',cartController.deleteFromCart)
 router.get('/logout', userController.logout)
 module.exports = router;
 

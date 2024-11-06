@@ -47,6 +47,9 @@ const productSchema = new Schema({
         required: true,
         default: "Available"
     },
+    stock:{
+        type:Number
+    }
 },)
 
 const Product = mongoose.model("Product", productSchema)

@@ -1,5 +1,6 @@
  <%- include("../../views/partials/admin/header") %>
-<div class="content-header row">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+ <div class="content-header row">
     <div class="d-flex justify-content-between align-items-center">
         <h2 class="content-title card-title">Customers</h2>
        
@@ -33,11 +34,11 @@
                                 <td><%=data[i].phone%></td>
                                 <td> 
                                     <%if(data[i].isBlocked===false){%>
-                                        <button class="btn btn-danger" style="width: 80px;">
-                                            <a href="/admin/blockCustomer?id=<%=data[i]._id%>" class="text-white" style="text-decoration: none;">Block</a>
+                                        <button class="btn" style="width: 80px; background-color: red;" onclick="confirmation('<%= data[i]._id %>')">
+                                            Block
                                         </button>
                                         <%}else{%>
-                                        <button class="btn btn-success" style="width: 80px;">
+                                        <button class="btn btn-success" style="width: 80px;background-color: rgb(100, 170, 100); ">
                                             <a href="/admin/unblockCustomer?id=<%=data[i]._id%>" class="text-white" style="text-decoration: none;">Unblock</a>
                                         </button> 
                                         <%}%>
@@ -59,4 +60,26 @@
                 </ul>
             </nav>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+ function confirmation(userId) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'You are about to block this user!',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, block!',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/admin/blockCustomer?id=${userId}`;
+            }
+        });
+    }
+        </script>
         <%- include("../../views/partials/admin/footer") %>
+
+
+

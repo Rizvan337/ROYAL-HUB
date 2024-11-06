@@ -1,4 +1,5 @@
 <%- include("../../views/partials/user/header") %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
   .btn {
@@ -7,7 +8,7 @@
       font-size: 16px;
       font-weight: bold;
       color: #fff;
-      background-color: #ff6b6b;
+      background-color: #4cae4c;;
       border: none;
       border-radius: 5px;
       transition: background-color 0.3s, transform 0.3s;
@@ -17,7 +18,7 @@
 
 
   .btn:hover {
-      background-color: #ff4c4c;
+      background-color: #4cae4c;;
       transform: translateY(-2px);
   }
 
@@ -239,7 +240,12 @@
                       <div class="product-content-wrap">
                           <h6><%=products[i].productName%></h6>
                           <h5><%=products[i].salePrice%></h5>
-                          <a href="/addToCart?id=<%=products[i]._id%>">Add to Cart</a>
+                          <form action="/addToCart" method="POST" class="add-to-cart-form" style="display: inline;">
+                            <input type="hidden" name="productId" value="<%= products[i]._id %>">
+                            <input type="hidden" name="quantity" value="1"> 
+                            <button type="submit" class="btn">Add to Cart</button>
+                        </form>
+                        
                       </div>
                   </div>
               </div>
@@ -247,6 +253,45 @@
       </div>
   </div>
 </section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addToCartForms = document.querySelectorAll('.add-to-cart-form');
+        
+        addToCartForms.forEach(form => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault(); 
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new URLSearchParams(new FormData(form)),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+
+                    Swal.fire({
+                        title: 'Product added to cart!',
+                        text: 'Would you like to go to the cart or continue shopping?',
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: 'Go to Cart',
+                        cancelButtonText: 'Continue Shopping'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "/cart";
+                        }
+                    });
+                })
+                .catch(error => console.error('Error adding to cart:', error));
+            });
+        });
+    });
+</script>
+
 <%- include("../../views/partials/user/footer") %>
 
 

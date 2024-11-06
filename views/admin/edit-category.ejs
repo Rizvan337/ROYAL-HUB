@@ -20,3 +20,13 @@
     </div>
 </div>
 <%- include("../../views/partials/admin/footer") %>
+<%if (typeof error !== 'undefined' && error){%>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    Swal.fire({
+        icon:'error',
+        title:'oops...',
+        text:'<%= error%>'
+    })
+</script>
+<%}%>

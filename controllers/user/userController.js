@@ -53,7 +53,6 @@ const loadHomepage = async (req, res) => {
     try {
         
             const user = req.session.user
-
             const categories = await Category.find({ isListed: true })
             let productData = await Product.find({
                 isBlocked: false,
@@ -268,8 +267,8 @@ const login = async (req, res) => {
             return res.render('login', { message: "User is blocked by Admin" })
         }
         const passwordMatch = await bcrypt.compare(password, findUser.password)
-        if (!passwordMatch) {
-            return res.render("login", { message: "Incorrect password" })
+        if (!passwordMatch||!findUser) {
+            return res.render("login", { message: "Incorrect username or password " })
         }
         req.session.user = findUser;
 
@@ -305,6 +304,10 @@ const productDetails = async (req,res)=>{
         
     }
 }
+
+
+
+
 
 module.exports = {
     loadHomepage,

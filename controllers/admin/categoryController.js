@@ -31,13 +31,15 @@ const categoryInfo = async (req,res)=>{
 //add category
 const addCategory = async (req,res)=>{
     const {name,description} = req.body
+    const lowerCaseName = name.toLowerCase()
     try {
-        const existingCategory = await Category.findOne({name})
+        
+        const existingCategory = await Category.findOne({name:lowerCaseName}).collation({locale:'en',strength:2})
         if(existingCategory){
             return res.status(HttpStatus.BAD_REQUEST).json({error:"Category Already exists"})
         }
         const newCategory = new Category({
-            name,
+            name:lowerCaseName,
             description,
         })
         await newCategory.save()
@@ -89,7 +91,11 @@ const editCategory = async (req,res)=>{
         const {categoryName,description} = req.body;
         const existingCategory = await Category.findOne({name:categoryName})
         if(existingCategory){
-            return res.status(HttpStatus.BAD_REQUEST).json({error:"Category exists, Please choose another name"})
+            return res.render('edit-category',{
+                category:{_id:categoryId,name:categoryName,description:description},
+                error:"Category exists, Please choose another name"
+            })
+
         }
         const updateCategory = await Category.findByIdAndUpdate(categoryId,{
             name:categoryName,
