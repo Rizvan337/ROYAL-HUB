@@ -43,12 +43,41 @@ searchHistory:[{
     category:{
         type:Schema.Types.ObjectId,
         ref:"Category",
-    },
-    searchOn:{
+    },searchOn:{
         type:Date,
         default:Date.now
     }
-}]
+}],
+    cart:[{
+        type:Schema.Types.ObjectId,
+        ref:"Cart"
+    }],
+    wallet:{
+        type:Number,
+        default:0,
+    },
+    whishlist:[{
+        type:Schema.Types.ObjectId,
+        ref:"Whishlist"
+    }],
+    orderHistory:[{
+        type:Schema.Types.ObjectId,
+        ref:"Order"
+    }],
+    referralCode:{
+        type:String
+    },
+    redeemed:{
+        type:Boolean
+    },
+    redeemedUsers:[{
+        type:Schema.Types.ObjectId,
+        ref:"User"
+    }], 
+    profileImageUrl:{
+        type:String,default:'/default-profile.jpg'
+    },
+    address: { type: String, required: false },
 
 })
 

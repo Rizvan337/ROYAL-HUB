@@ -26,7 +26,11 @@ items:[{
     type:Number,
     default:0,
     required:true
-  }  
+  },status:{
+    type:String,
+    default:"placed"
+  },
+    
     
 }]
 })

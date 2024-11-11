@@ -1,26 +1,27 @@
 const Product = require('../../models/productSchema')
 const User = require('../../models/userSchema')
 const Cart = require('../../models/cartSchema')
-const HttpStatus = require('../../utils/httpStatusCodes')
+const HttpStatus = require('../../utils/httpStatusCodes');
+const { checkout } = require('../../routes/userRouter');
 
 
 
 
 const addToCart = async (req, res) => {
     try {
-        const userId = req.session.user;
-        const { productId, quantity } = req.body;
-        const product = await Product.findById(productId);
+        const userId = req.session.user
+        const { productId, quantity } = req.body
+        const product = await Product.findById(productId)
         if (!product) {
-            return res.status(HttpStatus.NOT_FOUND).send({ message: "Product not found" });
+            return res.status(HttpStatus.NOT_FOUND).send({ message: "Product not found" })
         }
-        let cart = await Cart.findOne({ user: userId });
+        let cart = await Cart.findOne({ user: userId })
         if (!cart) {
-            cart = new Cart({ user: userId, items: [] });
+            cart = new Cart({ user: userId, items: [] })
         }
 
-        const existingItemIndex = cart.items.findIndex(item => item.item.toString() === productId);
-        const requestedQuantity = parseInt(quantity);
+        const existingItemIndex = cart.items.findIndex(item => item.item.toString() === productId)
+        const requestedQuantity = parseInt(quantity)
 
         if (existingItemIndex > -1) {
             const currentQuantity = cart.items[existingItemIndex].qty;
@@ -60,15 +61,15 @@ const addToCart = async (req, res) => {
 // //get cart
 const getCart = async (req,res)=>{
     try {
-        const userId = req.session.user
-        if(!userId){
+        const user = req.session.user
+        if(!user){
             res.redirect('/login')
         }
-        const cart = await Cart.findOne({ user: userId }).populate({ path: 'items.item',
+        const cart = await Cart.findOne({ user}).populate({ path: 'items.item',
             select: 'productImage productName salePrice'});
 
         if(!cart || cart.items.length==0){
-       return res.render('addtocart',{cart:null,subtotal:0.00})
+       return res.render('addtocart',{cart:null,subtotal:0.00,user})
         }
         
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
@@ -77,7 +78,7 @@ const getCart = async (req,res)=>{
          res.render('addtocart',{
             cart,
             subtotal,
-            user:req.user||null,
+            user,
             products: cart.items.map(i => i.item)
         })
     } catch (error) {
@@ -144,7 +145,13 @@ const deleteFromCart = async (req,res)=>{
     }
 }
 
-
+const checkOut = async (req,res)=>{
+    try {
+        res.render('checkout')
+    } catch (error) {
+        
+    }
+}
 
 
 
@@ -155,4 +162,5 @@ getCart,
 addToCart,
 updateCart,
 deleteFromCart,
+checkOut,
 }

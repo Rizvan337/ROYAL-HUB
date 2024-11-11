@@ -1,0 +1,189 @@
+<%- include("../../views/partials/user/header") %>
+
+<!-- Custom CSS for a more modern look -->
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9f9f9;
+  }
+
+  .breadcrumb-wrap {
+    background-color: #f0f0f0;
+    padding: 15px 0;
+  }
+
+  .breadcrumb a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  .breadcrumb a:hover {
+    color: #0056b3;
+  }
+
+  .dashboard-menu {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .dashboard-menu .nav-link {
+    color: #343a40;
+    font-weight: 500;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f1f1f1;
+    transition: all 0.3s ease;
+  }
+
+  .dashboard-menu .nav-link:hover,
+  .dashboard-menu .nav-link.active {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: white;
+    padding: 20px;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+  }
+
+  .profile-img-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .upload-btn {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    padding: 5px 7px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .upload-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-custom {
+    border-radius: 30px;
+    padding: 10px 20px;
+    transition: background-color 0.3s;
+  }
+
+  .btn-custom:hover {
+    background-color: #0056b3;
+    color: #fff;
+  }
+
+  .table th, .table td {
+    vertical-align: middle;
+  }
+
+  .badge {
+    font-size: 0.85rem;
+  }
+</style>
+
+<main class="main">
+  <!-- Breadcrumb -->
+  <div class="page-header breadcrumb-wrap">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Profile</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Profile Section -->
+  <section class="profile-section py-5">
+    <div class="container">
+      <div class="row gx-4 gy-4">
+        <!-- Sidebar Menu -->
+        <aside class="col-lg-3">
+          <div class="dashboard-menu">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="/userProfile">
+                  <i class="fas fa-user-circle me-2"></i> My Profile
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#address">
+                  <i class="fas fa-map-marker-alt me-2"></i> My Address
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#orders">
+                  <i class="fas fa-box me-2"></i> Orders
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#wallet">
+                  <i class="fas fa-wallet me-2"></i> Wallet
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-danger" href="/logout">
+                  <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </a>
+              </li>
+            </ul>
+          </div>
+        </aside>
+
+        <!-- Profile Content -->
+        <div class="col-lg-9">
+          <div class="card">
+            <div class="card-header">
+              <h5>Welcome, <%= user.name %></h5>
+            </div>
+            <div class="card-body text-center">
+              <!-- Profile Photo Upload
+              <form action="/user/uploadProfilePhoto" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                  <label for="profileImage" class="form-label">Upload Profile Photo:</label>
+                  <input type="file" class="form-control" id="profileImage" name="profileImage" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+              </form> -->
+              
+              <h4 class="mb-2"><%= user.name %></h4>
+              <p class="text-muted">Phone: <%= user.phone %> | Email: <%= user.email %></p>
+              <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href="/editProfile" class="btn btn-custom btn-outline-primary">Edit Profile</a>
+                <a href="/changePassword" class="btn btn-custom btn-outline-secondary">Change Password</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include("../../views/partials/user/footer") %>

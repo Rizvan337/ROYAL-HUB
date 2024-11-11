@@ -60,7 +60,7 @@
                 await newProduct.save();
                 return res.redirect("/admin/addProducts");
             } else {
-                return res.status(HttpStatus.BAD_REQUEST).json("Product already exists, Please try with another name");
+                return res.status(HttpStatus.BAD_REQUEST).json({error:"Product already exists, Please try with another name"});
             }
         } catch (error) {
             console.error("Error saving product", error);

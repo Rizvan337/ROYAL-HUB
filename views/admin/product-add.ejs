@@ -308,7 +308,7 @@ function validateForm() {
     const description = document.getElementById('descriptionid').value.trim();
     const regularPrice = document.getElementsByName('regularPrice')[0].value.trim();
     const salePrice = document.getElementsByName('salePrice')[0].value.trim();
-    // const color = document.getElementsByName('color')[0].value.trim();
+    
     const category = document.getElementsByName('category')[0].value.trim();
     const images = document.getElementById('input1').files;
     const quantity = document.getElementsByName('quantity')[0].value.trim();
@@ -383,6 +383,7 @@ function clearErrorMessages() {
         errorMessages[i].innerText = "";
     }
 }
+
 
 </script>
      

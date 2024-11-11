@@ -1,0 +1,97 @@
+<%- include("../../views/partials/user/header") %>
+<section class="content-main mt-80 mb-80">
+   <div class="card mx-auto card-login col-4">
+       <div class="card-body">
+           <h4 class="card-title mb-4">Email</h4>
+           <form id="verifyEmailForm" method="post" action="" onsubmit="return validateLoginForm()">
+               <div class="mb-3">
+                   <input class="form-control" name="email" placeholder="Email" type="text" id="email">
+                   <div class="error-message" id="email-error"></div>
+               </div>
+               <div class="mb-4">
+                   <button type="submit" class="btn btn-primary w-100">Verify</button>
+               </div>
+           </form>
+         
+          
+       </div>
+   </div>
+</section>
+<script>
+   function validateLoginForm() {
+       const emailInput = document.getElementById('email');
+       const emailError = document.getElementById('email-error');
+       const emailValue = emailInput.value.trim();
+       const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+
+       if (emailValue === '') {
+           emailError.textContent = 'Please enter your email.';
+           emailInput.classList.add('is-invalid');
+           return false;
+       } else if (!emailValue.match(emailPattern)) {
+           emailError.textContent = 'Please enter a valid email address';
+           emailInput.classList.add('is-invalid');
+           return false;
+       } else {
+           emailError.textContent = '';
+           emailInput.classList.remove('is-invalid');
+           return true;
+       }
+   }
+
+
+   $('#verifyEmailForm').on('submit', function (event) {
+        event.preventDefault();
+
+        // Validate the email before sending the AJAX request
+        const isValid = validateLoginForm();
+        if (!isValid) return;
+
+        const emailValue = $('#email').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '/change-pass',
+            data: { email: emailValue },
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'OTP Sent',
+                        text: 'Check your email for the OTP.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = response.redirectUrl;
+                    });
+                } else if (response.message === "User with this email already exists") {
+                    // Show alert if user already exists
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'User Exists',
+                        text: 'A user with this email already exists. Please use a different email.',
+                    });
+                } else {
+                    // Handle other errors
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message,
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Server Error',
+                    text: 'An error occurred. Please try again.',
+                });
+            }
+        });
+    });
+
+
+</script>
+
+

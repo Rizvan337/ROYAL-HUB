@@ -1,4 +1,5 @@
 const User = require('../../models/userSchema')
+const Address = require('../../models/addressSchema')
 const nodemailer = require('nodemailer')
 const bcrypt = require('bcrypt')
 const env = require('dotenv').config()
@@ -180,10 +181,107 @@ const newPassword = async (req,res)=>{
 
 
 
+const userProfile = async (req,res)=>{
+    try {
+        const userId = req.session.user
+        const userData = userId
+        console.log(userId);
+        
+        res.render('userProfile',{user:userData})
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 
 
+const addressManage = async (req,res)=>{
+    try {
+        res.render('address-manage')
+    } catch (error) {
+        console.error(error)
+    }
+}
 
+const changePassword = async (req,res)=>{
+    try {
+        const user = req.session.user
+        res.render('change-pass',{user})
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+const changePasswordReady = async (req,res)=>{
+    try {
+        const {email} = req.body
+        const userExists = await User.findOne({email})
+        if(userExists){
+            const otp = generateOtp()
+            const emailSent = await sendVerificationEmail(email,otp)
+            if(emailSent){
+                req.session.userOtp = otp
+                req.session.userData = req.body
+                req.session.email = email
+                res.render('change-pass-otp',{user:userExists})
+                console.log("OTP:",otp);
+                
+            }else{
+                res.json({success:false,message:"Failed to sent OTP. Please try again"})
+            }
+        }else{
+            res.render('change-pass',{user:null,message:"User with this email already exists"})
+        }
+    } catch (error) {
+        console.log("Error in change password",error)
+        res.redirect('/pageNotFound')
+    }
+} 
+const verifyResetOtp = async (req,res)=>{
+    try {
+        const enteredOtp = req.body.otp
+        if(enteredOtp===req.session.userOtp){
+            res.json({success:true,redirectUrl:'/reset-password'})
+        }else{
+            res.json({sucess:false,message:"Otp not matching"})
+        }
+    } catch (error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({success:false,message:"An Error Occured.Please Try Again"})
+    }
+}
+
+
+const editProfile = async (req,res)=>{
+    try {
+        res.render('editProfile')
+    } catch (error) {
+        
+    }
+}
+
+const myOrders = async (req,res)=>{
+    try {
+        res.render('myOrders')
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+
+const addAddress = async (req,res)=>{
+    try {
+        const {name,address,city,landMark,pin,state,country,phone} = req.body
+        console.log(name,address,city,landMark,pin,state,country,phone)
+        const newAddress = new Address({
+            userId:req.body.userId,
+            address:req.body.address
+        })
+        await newAddress.save()
+        res.status(HttpStatus.OK).json({message:"Added new address"})
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 
 module.exports = {
@@ -193,5 +291,12 @@ module.exports = {
     getResetPassPage,
     resendOtp,
     newPassword,
-
+    userProfile, 
+    changePassword,
+    changePasswordReady,
+    addressManage,
+    myOrders,
+    addAddress,
+    verifyResetOtp,
+    editProfile,
 }
