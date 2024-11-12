@@ -1,0 +1,137 @@
+<%- include("../../views/partials/user/header") %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<main class="main address-page">
+  <div class="container">
+    <div class="address-container">
+      <h3 class="text-center mb-4">Your Address Book</h3>
+
+      <!-- Add Address Button -->
+      <div class="text-center mb-4">
+        <button type="button" class="btn add-address-btn" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+          + Add New Address
+        </button>
+      </div>
+
+      <!-- Display Existing Addresses -->
+      <div class="address-list">
+        <% if (addresses && addresses.length > 0) { %>
+          <% addresses.forEach(address => { %>
+            <div class="address-item border rounded p-3 mb-3">
+              <div>
+                <h5 class="address-title"><%= address.title %></h5>
+                <p><%= address.street %>, <%= address.city %>, <%= address.state %> - <%= address.zip %></p>
+                <p><strong>Contact:</strong> <%= address.name %> (<%= address.phone %>)</p>
+              </div>
+              <div class="address-actions">
+                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editAddressModal<%= address._id %>">Edit</button>
+                <a href="/deleteAddress/<%= address._id %>" class="btn btn-danger btn-sm delete-address-btn" data-id="<%= address._id %>">Delete</a>
+
+              </div>
+            </div>
+
+            <!-- Edit Address Modal -->
+            <div class="modal fade" id="editAddressModal<%= address._id %>" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Edit Address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <form action="/editAddress/<%= address._id %>" method="POST" class="needs-validation" novalidate>
+                    <div class="modal-body">
+                      <input type="text" class="form-control mb-2" name="title" value="<%= address.title %>" required minlength="3" maxlength="50">
+                      <input type="text" class="form-control mb-2" name="name" value="<%= address.name %>" required pattern="[A-Za-z ]{3,50}">
+                      <input type="tel" class="form-control mb-2" name="phone" value="<%= address.phone %>" required pattern="^[0-9]{10}$">
+                      <input type="text" class="form-control mb-2" name="street" value="<%= address.street %>" required>
+                      <input type="text" class="form-control mb-2" name="city" value="<%= address.city %>" required pattern="[A-Za-z ]{2,30}">
+                      <input type="text" class="form-control mb-2" name="state" value="<%= address.state %>" required pattern="[A-Za-z ]{2,30}">
+                      <input type="text" class="form-control" name="zip" value="<%= address.zip %>" required pattern="^[0-9]{5,6}$">
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <p class="text-center">No addresses found. Add your first address!</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Address Modal -->
+  <div class="modal fade" id="addAddressModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Address</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form action="/addAddress" method="POST" class="needs-validation" novalidate>
+          <div class="modal-body">
+            <input type="text" class="form-control mb-2" name="title" placeholder="Address Title" required minlength="3" maxlength="50">
+            <input type="text" class="form-control mb-2" name="name" placeholder="Name" required pattern="[A-Za-z ]{3,50}">
+            <input type="tel" class="form-control mb-2" name="phone" placeholder="Phone" required pattern="^[0-9]{10}$">
+            <input type="text" class="form-control mb-2" name="street" placeholder="Street" required>
+            <input type="text" class="form-control mb-2" name="city" placeholder="City" required pattern="[A-Za-z ]{2,30}">
+            <input type="text" class="form-control mb-2" name="state" placeholder="State" required pattern="[A-Za-z ]{2,30}">
+            <input type="text" class="form-control" name="zip" placeholder="Pin Code" required pattern="^[0-9]{5,6}$">
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Add Address</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Bootstrap form validation
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+
+
+
+
+  document.querySelectorAll('.delete-address-btn').forEach(button => {
+    button.addEventListener('click', function (event) {
+      event.preventDefault(); 
+
+      const addressId = this.getAttribute('data-id'); 
+      const deleteUrl = `/deleteAddress/${addressId}`; 
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you really want to delete this address?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = deleteUrl;
+        }
+      });
+    });
+  });
+</script>
+
+<%- include("../../views/partials/user/footer") %>

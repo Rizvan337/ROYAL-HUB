@@ -46,12 +46,24 @@ router.get('/checkout',cartController.checkOut)
 
 //userProfile
 router.get('/userProfile',userAuth,profileController.userProfile)
+//change password
 router.get('/changePassword',userAuth,profileController.changePassword)
 router.post('/changePassword',userAuth,profileController.changePasswordReady)
 router.post('/verify-resetpass-otp',userAuth,profileController.verifyResetOtp)
-router.get('/editProfile',userAuth,profileController.editProfile)
-router.get('/addressManage',userAuth,profileController.addressManage)
-router.post('/addAddress',userAuth,profileController.addAddress)
+//edit profile details
+router.get('/editProfile',userAuth,profileController.getEditProfile)
+router.post('/editProfile',userAuth,profileController.editProfile)
+//address management
+router.get('/addressManage', userAuth, profileController.getAddresses)
+router.post('/addAddress', userAuth, profileController.addAddress)
+router.post('/editAddress/:id', userAuth, profileController.editAddress)
+router.get('/deleteAddress/:id', userAuth, profileController.deleteAddress)
+//Change email
+router.get('/changeEmail',userAuth,profileController.getChangeEmail)
+router.post('/changeEmail',userAuth,profileController.changeEmail)
+router.post('/verify-email-otp',userAuth,profileController.verifyEmailOtp)
+router.post('/update-email',userAuth,profileController.updateEmail)
+
 router.get('/myOrders',userAuth,profileController.myOrders)
 router.get('/logout', userController.logout)
 module.exports = router;

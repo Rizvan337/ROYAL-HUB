@@ -1,0 +1,178 @@
+<%- include("../../views/partials/user/header") %>
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .otp-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .otp-container {
+        width: 100%;
+        max-width: 400px;
+        padding: 40px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    .otp-container h3 {
+        font-size: 28px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 8px;
+    }
+
+    .otp-input {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+        text-align: center;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+    }
+
+    .otp-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    .btn-primary {
+        width: 100%;
+        font-weight: bold;
+        background-color: #007bff;
+        border-color: #007bff;
+        padding: 12px;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .otp-timer, .resend-btn {
+        display: inline-block;
+        font-size: 14px;
+        color: #555;
+        margin-top: 15px;
+        font-weight: 500;
+    }
+
+    .otp-timer {
+        font-size: 16px;
+    }
+
+    .resend-btn {
+        background: none;
+        border: none;
+        color: #007bff;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .resend-btn:hover {
+        color: #0056b3;
+    }
+
+    .text-muted {
+        font-size: 14px;
+        color: #6c757d;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .alert {
+        font-size: 16px;
+        color: #f44336;
+        background-color: #f8d7da;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="otp-wrapper">
+    <div class="otp-container">
+        <h3>Email Verification</h3>
+        <form action="/verify-email-otp" method="post">
+            <div class="form-group">
+                <label for="otp">Enter OTP:</label>
+                <input type="text" id="otp" name="otp" class="otp-input" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Verify OTP</button>
+            <div class="otp-timer">
+                <span id="otpTimer">OTP Expires in: 1:00</span>
+            </div>
+            <button type="button" onclick="resendOTP()" class="resend-btn">Resend OTP</button>
+
+            <% if (locals.message && message.length > 0) { %>
+                <div class="alert mt-3">
+                    <%= message %>
+                </div>
+            <% } %>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function startOTPTimer(durationInSeconds) {
+        let timer = durationInSeconds;
+        const timerElement = document.getElementById('otpTimer');
+        const countdown = setInterval(function () {
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+
+            timerElement.textContent = `OTP Expires in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+            if (--timer < 0) {
+                clearInterval(countdown);
+                timerElement.textContent = 'OTP Expired';
+                document.querySelector('.resend-btn').style.display = 'inline-block';
+            }
+        }, 1000);
+    }
+
+    function resendOTP() {
+        $.ajax({
+            type: 'POST',
+            url: '/resend-otp',
+            success: function (response) {
+                if (response.success) {
+                    startOTPTimer(60);
+                    document.querySelector('.resend-btn').style.display = 'none'; // Hide resend button until OTP expires
+                } else {
+                    alert('Failed to resend OTP. Please try again.');
+                }
+            },
+            error: function () {
+                alert('Error occurred while resending OTP. Please try again.');
+            }
+        });
+    }
+
+    startOTPTimer(60);
+</script>
+
+<%- include("../../views/partials/user/footer") %>
