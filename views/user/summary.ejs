@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Summary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f7f7;
+            padding: 30px;
+            margin: 0;
+            color: #333;
+        }
+        
+        .summary-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .summary-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ff6f61;
+            text-align: center;
+        }
+
+        .address-section {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .address-section h4 {
+            margin: 0 0 5px 0;
+            color: #4caf50;
+        }
+
+        .address-section p {
+            margin: 5px 0;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .summary-table td {
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .summary-table tr:last-child td {
+            border-bottom: none;
+            font-weight: bold;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .checkout-btn:hover {
+            background-color: #43a047;
+        }
+    </style>
+</head>
+<body>
+    <div class="summary-container">
+        <h3 class="section-title">Order Summary</h3>
+
+        <!-- Selected Address Section -->
+        <div class="address-section">
+            <h4>Delivery Address:</h4>
+            <p><%= address.name %></p>
+            <p><%= address.street %>, <%= address.city %>, <%= address.state %> - <%= address.zip %></p>
+            <p>Mobile: <%= address.mobile %></p>
+        </div>
+
+        <!-- Order Summary Table -->
+        <table class="summary-table">
+            <tr>
+                <td>Subtotal:</td>
+                <td>₹<%= subtotal %></td>
+            </tr>
+            <tr>
+                <td>Tax:</td>
+                <td>₹<%= tax %></td>
+            </tr>
+            <tr>
+                <td>Shipping:</td>
+                <td>₹<%= shipping %></td>
+            </tr>
+            <tr>
+                <td>Total Amount:</td>
+                <td>₹<%= totalAmount %></td>
+            </tr>
+        </table>
+
+        <!-- Payment Method Section (Cash on Delivery Pre-selected) -->
+        <form action="/confirmOrder" method="POST">
+            <input type="hidden" name="paymentMethod" value="COD">
+            <input type="hidden" name="addressId" value="<%= address.id %>">
+
+            <!-- Checkout Button -->
+            <button type="submit" class="checkout-btn">
+                <i class="fas fa-money-bill-wave"></i> Confirm Cash on Delivery
+            </button>
+        </form>
+    </div>
+</body>
+</html>

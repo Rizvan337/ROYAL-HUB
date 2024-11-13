@@ -42,7 +42,9 @@ router.post('/addToCart',userAuth,cartController.addToCart)
 router.get('/cart',cartController.getCart)
 router.post('/updateCart/:productId',cartController.updateCart)
 router.post('/removeCart/:productId',cartController.deleteFromCart)
-router.get('/checkout',cartController.checkOut)
+// Checkout Page
+router.get('/checkout', cartController.getCheckoutPage);
+router.get('/summary',cartController.summaryPage)
 
 //userProfile
 router.get('/userProfile',userAuth,profileController.userProfile)

@@ -1,6 +1,7 @@
 const Product = require('../../models/productSchema')
 const User = require('../../models/userSchema')
 const Cart = require('../../models/cartSchema')
+const Address = require('../../models/addressSchema')
 const HttpStatus = require('../../utils/httpStatusCodes');
 const { checkout } = require('../../routes/userRouter');
 
@@ -145,15 +146,57 @@ const deleteFromCart = async (req,res)=>{
     }
 }
 
-const checkOut = async (req,res)=>{
+// cartController.js
+const getCheckoutPage = async (req, res) => {
     try {
-        res.render('checkout')
+        const user = req.session.user;
+        const userId = user._id 
+        if (!userId) {
+          return res.redirect('/login'); 
+        }
+        const addresses = await Address.find({ userId });
+        console.log(user,userId);
+        
+        const cart = await Cart.findOne({user:userId}).populate({ path: 'items.item',
+            select: 'productImage productName salePrice'});
+            console.log("cart:",cart.items);
+
+        const subtotal = cart.items.reduce((total,item)=>total+item.qty*item.item.salePrice,0);
+        const tax = Math.round(subtotal*0.09)
+        const totalAmount = subtotal + tax;
+        console.log(totalAmount,subtotal);
+        
+        res.render('checkout', {
+          addresses,
+          subtotal,
+          tax,
+          totalAmount,
+        
+        });
+    
+      } catch (error) {
+        console.error('Error fetching addresses:', error);
+        res.status(500).send('Server Error');
+      }
+};
+
+const summaryPage = async (req,res)=>{
+    try {
+        const user = req.session.user
+        const userId = user._id
+        const address = await Address.find({userId})
+        const cart = await Cart.findOne({user:userId}).populate({ path: 'items.item',
+            select: 'productImage productName salePrice'});
+        const subtotal = cart.items.reduce((total,item)=>total+item.qty*item.item.salePrice,0)
+        const tax = Math.round(subtotal*0.09)
+        const shipping = 50
+        const totalAmount = subtotal+tax+shipping
+        
+        res.render('summary',{subtotal,tax,totalAmount,shipping,address})
     } catch (error) {
         
     }
 }
-
-
 
 
 
@@ -162,5 +205,6 @@ getCart,
 addToCart,
 updateCart,
 deleteFromCart,
-checkOut,
+getCheckoutPage,
+summaryPage,
 }
