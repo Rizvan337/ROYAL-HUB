@@ -8,41 +8,203 @@ const HttpStatus = require('../../utils/httpStatusCodes')
 
 
 const shoptrue = async (req,res)=>{
-    try {
-        
-        const products = await Product.find({})
-        const categories = await Category.find({isListed:true})
-       return res.render('shoptrue',{ totalProducts:products.length,products,categories,user:req.user||null})
-    } catch (error) {
-        
+    const { search, category, price, sort } = req.query;
+    let filter = {};
+    let sortOption = {};
+
+    // Filtering based on search and category
+    if (search) {
+        filter.productName = { $regex: search, $options: 'i' };
     }
+    if (category) {
+        filter.category = category;
+    }
+    if (price) {
+        const [minPrice, maxPrice] = price.split('-');
+        filter.salePrice = {
+            $gte: parseInt(minPrice) || 0,
+            $lte: maxPrice ? parseInt(maxPrice) : Infinity
+        };
+    }
+
+    // Sorting logic
+    switch (sort) {
+        case 'popularity':
+            sortOption = { popularity: -1 }; // Assuming you have a 'popularity' field
+            break;
+        case 'low_to_high':
+            sortOption = { salePrice: 1 };
+            break;
+        case 'high_to_low':
+            sortOption = { salePrice: -1 };
+            break;
+        case 'avg_rating':
+            sortOption = { rating: -1 }; // Assuming you have a 'rating' field
+            break;
+        case 'featured':
+            sortOption = { featured: -1 }; // Assuming you have a 'featured' field
+            break;
+        case 'new_arrivals':
+            sortOption = { createdAt: -1 }; // Sort by the date field (e.g., 'createdAt')
+            break;
+        case 'a_to_z':
+            sortOption = { productName: 1 };
+            break;
+        case 'z_to_a':
+            sortOption = { productName: -1 };
+            break;
+        default:
+            sortOption = { _id: -1 }; // Default sort by newest
+    }
+
+    try {
+        // Fetch products with filters and sorting
+        const products = await Product.find(filter).sort(sortOption);
+        const totalProducts = await Product.countDocuments(filter);
+
+        res.render('shoptrue', {
+            products,
+            totalProducts,
+            search,
+            categories: await Category.find(),
+            selectedSort: sort,
+            user:req.session.user
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+
+
 }
 
 //shop page
+//     try {
+//         const user = req.session.user;
+//         const categoryFilters = req.query.categories ? req.query.categories.split(',') : [];
+//         const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
+//         const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : Number.MAX_SAFE_INTEGER;
+//         const categories = await Category.find({ isListed: true });
+//         let filterQuery = {
+//             isBlocked: false,
+//             quantity: { $gt: 0 },
+//             salePrice: { $gte: minPrice, $lte: maxPrice }
+//         };
+//         if (categoryFilters.length > 0) {
+//             filterQuery.category = { $in: categoryFilters };
+//         }
+//         let productData = await Product.find(filterQuery);
+        
+//         productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+//         productData = productData.slice(0, 12);
+
+//         res.render('shop', { user, products: productData, categories });
+//     } catch (error) {
+//         console.log("Shop page not found", error);
+//         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server error");
+//     }
+// const loadShop = async (req, res) => {
+
+
+
+//     try {
+//         // Fetch data from the database or set default values
+//         const search = req.query.search || '';
+//         const selectedSort = req.query.sort || '';
+//         const categoryFilter = req.query.category || '';
+        
+//         // Fetch categories and products from your database
+//         const categories = await Category.find();
+//         const products = await Product.find({
+//             productName: { $regex: search, $options: 'i' },
+//             category: categoryFilter ? categoryFilter : { $exists: true }
+//         });
+
+//         // Total number of products
+//         const totalProducts = await Product.countDocuments();
+
+//         // Render the shop page with the necessary data
+//         res.render('shop', {
+//             search,
+//             categories,
+//             selectedSort,
+//             products,
+//             totalProducts,
+//             user:req.session.user
+//         });
+//     } catch (error) {
+//         console.error('Error loading shop page:', error);
+//         res.status(500).send('Server Error');
+//     }
+
+// };
+
+
+
+
+
 const loadShop = async (req, res) => {
     try {
-        const user = req.session.user;
-        const categoryFilters = req.query.categories ? req.query.categories.split(',') : [];
-        const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
-        const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : Number.MAX_SAFE_INTEGER;
-        const categories = await Category.find({ isListed: true });
-        let filterQuery = {
-            isBlocked: false,
-            quantity: { $gt: 0 },
-            salePrice: { $gte: minPrice, $lte: maxPrice }
-        };
-        if (categoryFilters.length > 0) {
-            filterQuery.category = { $in: categoryFilters };
-        }
-        let productData = await Product.find(filterQuery);
-        
-        productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        productData = productData.slice(0, 12);
+        const search = req.query.search || '';
+        const selectedSort = req.query.sort || '';
+        const categoryFilter = req.query.category || '';
+        const minPrice = parseFloat(req.query.minPrice) || 0;
+     const maxPrice = parseFloat(req.query.maxPrice) || Infinity;
+    
 
-        res.render('shop', { user, products: productData, categories });
+        const query = {
+            productName: { $regex: search, $options: 'i' },
+        };
+        if (categoryFilter) {
+            query.category = categoryFilter;
+          }
+          if (minPrice && maxPrice) {
+            query.salePrice = { $gte: minPrice, $lte: maxPrice };
+          } else if (minPrice) {
+            query.salePrice = { $gte: minPrice };
+          } else if (maxPrice) {
+            query.salePrice = { $lte: maxPrice };
+          }
+        
+        let sortOption = {};
+        switch (selectedSort) {
+            case 'price-low-high':
+                sortOption = { salePrice: 1 };
+                break;
+            case 'price-high-low':
+                sortOption = { salePrice: -1 };
+                break;
+            case 'new-arrivals':
+                sortOption = { createdAt: -1 }; 
+                break;
+            case 'name-asc':
+                sortOption = { productName: 1 };
+                break;
+            case 'name-desc':
+                sortOption = { productName: -1 };
+                break;
+                case 'popularity':
+                sortOption = { popularity: -1 }; 
+                 break;
+            default:
+                sortOption = {}; 
+        }
+        const categories = await Category.find();
+        const products = await Product.find(query).sort(sortOption);
+        const totalProducts = await Product.countDocuments(query);
+        res.render('shop', {
+            search,
+            categories,
+            selectedSort,
+            products,
+            totalProducts,
+            user: req.session.user,
+            categoryFilter,
+            
+        });
     } catch (error) {
-        console.log("Shop page not found", error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server error");
+        console.error('Error loading shop page:', error);
+        res.status(500).send('Server Error');
     }
 };
 

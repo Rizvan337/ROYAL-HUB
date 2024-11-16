@@ -36,19 +36,20 @@ const orderSchema = new Schema({
     finalAmount:{
         type:Number,
         required:true,
+        default:0
     },
     address:{
         type:Schema.Types.ObjectId,
-        ref:"User",
+        ref:"Address",
         required:true
     },
     invoiceDate:{
         type:Date,
-
+        default:Date.now
     },
     status:{
         type:String,
-        reuired:true,
+        required:true,
         enum:["Pending","Processing","Shipped","Delivered","Cancelled","Returned","Return Request"]
     },
     createdOn:{
@@ -59,7 +60,19 @@ const orderSchema = new Schema({
     couponApplied:{
         type:Boolean,
         default:false
-    }
+    },tax:{
+        type:Number,
+        required:true
+    },paymentMethod:{
+        type:String,
+        required:true,      
+    },
+    user: { 
+        type: Schema.Types.ObjectId, 
+        ref: "User", 
+        required: true 
+    },
+    
 
 }) 
 

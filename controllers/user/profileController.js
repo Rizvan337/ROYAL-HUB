@@ -1,11 +1,12 @@
 const User = require('../../models/userSchema')
 const Address = require('../../models/addressSchema')
+const Order = require('../../models/orderSchema')
 const nodemailer = require('nodemailer')
 const bcrypt = require('bcrypt')
 const env = require('dotenv').config()
 const session = require('express-session')
 const HttpStatus = require('../../utils/httpStatusCodes')
-
+const moment = require('moment');
 
 //generate otp
 function generateOtp(){
@@ -283,12 +284,28 @@ const verifyResetOtp = async (req,res)=>{
 
     const myOrders = async (req,res)=>{
         try {
-            res.render('myOrders')
+    const orders = await Order.find({user:req.session.user}).sort({createdAt:-1})
+           res.render('my-orders',{orders:orders,moment})
         } catch (error) {
             console.error(error)
         }
     }
-
+const cancelOrder = async (req,res)=>{
+    const {orderId} = req.params
+    try {
+        const order = await Order.findByIdAndUpdate(orderId,{status:"Cancelled"},{new:true})
+        if (!order) {
+            return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order not found' });
+        }
+        if(req.io){
+            req.io.emit('orderStatusChanged',{orderId:order._id,status:'Cancelled'})
+        }
+        res.json({success:true})
+    } catch (error) {
+        console.error('Error cancelling order:', error);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server Error' });   
+    }
+}
 
 //address management
 const getAddresses = async (req, res) => {
@@ -426,6 +443,7 @@ module.exports = {
     deleteAddress,
     editAddress,
     myOrders,
+    cancelOrder,
     verifyResetOtp,
     getEditProfile,
     editProfile,

@@ -1,5 +1,12 @@
 <%- include("../../views/partials/user/header") %>
+<style>
+    .shop__product__option__right select {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
 
+</style>
 <!-- Breadcrumb Section Begin -->
 <section class="breadcrumb-option">
     <div class="container">
@@ -27,9 +34,20 @@
                 <div class="shop__sidebar">
                     <!-- Search Form Start -->
                     <div class="shop__sidebar__search">
-                        <form action="/shop" method="get">
-                            <input type="text" name="search" placeholder="Search..." value="<%= typeof search !== 'undefined' ? search : '' %>">
-                            <button type="submit"><span class="icon_search"></span></button>
+                        <form action="/shoptrue" method="get">
+                            <input type="hidden" name="search" value="<%= search || '' %>">
+                            <input type="hidden" name="category" value="<%= categories || '' %>">
+                            <select name="sort" onchange="this.form.submit()">
+                                <option value="" <%= selectedSort === '' ? 'selected' : '' %>>Default</option>
+                                <option value="popularity" <%= selectedSort === 'popularity' ? 'selected' : '' %>>Popularity</option>
+                                <option value="low_to_high" <%= selectedSort === 'low_to_high' ? 'selected' : '' %>>Price: Low to High</option>
+                                <option value="high_to_low" <%= selectedSort === 'high_to_low' ? 'selected' : '' %>>Price: High to Low</option>
+                                <option value="avg_rating" <%= selectedSort === 'avg_rating' ? 'selected' : '' %>>Average Ratings</option>
+                                <option value="featured" <%= selectedSort === 'featured' ? 'selected' : '' %>>Featured</option>
+                                <option value="new_arrivals" <%= selectedSort === 'new_arrivals' ? 'selected' : '' %>>New Arrivals</option>
+                                <option value="a_to_z" <%= selectedSort === 'a_to_z' ? 'selected' : '' %>>A - Z</option>
+                                <option value="z_to_a" <%= selectedSort === 'z_to_a' ? 'selected' : '' %>>Z - A</option>
+                            </select>
                         </form>
                     </div>
                     <!-- Search Form End -->
@@ -47,7 +65,7 @@
                                         <div class="shop__sidebar__categories">
                                             <ul class="nice-scroll">
                                                 <% categories.forEach(category => { %>
-                                                    <li><a href="/shop?category=<%= category._id %>"><%= category.name %></a></li>
+                                                    <li><a href="/shoptrue?category=<%= category._id %>"><%= category.name %></a></li>
                                                 <% }); %>
                                             </ul>
                                         </div>
@@ -65,12 +83,12 @@
                                     <div class="card-body">
                                         <div class="shop__sidebar__price">
                                             <ul>
-                                                <li><a href="/shop?price=0-50">$0.00 - $50.00</a></li>
-                                                <li><a href="/shop?price=50-100">$50.00 - $100.00</a></li>
-                                                <li><a href="/shop?price=100-150">$100.00 - $150.00</a></li>
-                                                <li><a href="/shop?price=150-200">$150.00 - $200.00</a></li>
-                                                <li><a href="/shop?price=200-250">$200.00 - $250.00</a></li>
-                                                <li><a href="/shop?price=250+">250.00+</a></li>
+                                                <li><a href="/shoptrue?price=0-50">0.00 - 50.00</a></li>
+                                                <li><a href="/shoptrue?price=50-100">50.00 - 100.00</a></li>
+                                                <li><a href="/shoptrue?price=100-150">100.00 - 150.00</a></li>
+                                                <li><a href="/shoptrue?price=150-200">150.00 - 200.00</a></li>
+                                                <li><a href="/shoptrue?price=200-250">200.00 - 250.00</a></li>
+                                                <li><a href="/shoptrue?price=250+">250.00+</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -96,11 +114,12 @@
                         <div class="col-lg-6 col-md-6 col-sm-6">
                             <div class="shop__product__option__right">
                                 <p>Sort by Price:</p>
-                                <select name="sort" onchange="this.form.submit()">
-                                    <option value="low_to_high">Low To High</option>
-                                    <option value="0_55">$0 - $55</option>
-                                    <option value="55_100">$55 - $100</option>
-                                </select>
+                                <form action="/shoptrue" method="get">
+                                    <select name="sort" onchange="this.form.submit()">
+                                        <option value="low_to_high" <%= selectedSort === 'low_to_high' ? 'selected' : '' %>>Low To High</option>
+                                        <option value="high_to_low" <%= selectedSort === 'high_to_low' ? 'selected' : '' %>>High To Low</option>
+                                    </select>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -121,13 +140,13 @@
                             </div>
                             <div class="product__item__text">
                                 <h6><%= product.productName%></h6>
-                                <a href="/cart/add/<%= product._id %>" class="add-cart">+ Add To Cart</a>
+                                <a href="/addToCart?id=<%= product._id %>">Add to Cart</a>
                                 <div class="rating">
                                     <% for (let i = 1; i <= 5; i++) { %>
                                         <i class="fa <%= i <= product.rating ? 'fa-star' : 'fa-star-o' %>"></i>
                                     <% } %>
                                 </div>
-                                <h5>$<%= product.price %></h5>
+                                <h5><%= product.salePrice %></h5>
                             </div>
                         </div>
                     </div>

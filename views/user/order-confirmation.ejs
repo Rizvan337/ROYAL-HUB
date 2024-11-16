@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f7f7;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            color: #ff6f61;
+            margin-bottom: 20px;
+        }
+        .address-card {
+            background-color: #fafafa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .summary-table td {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        .summary-table tr:last-child td {
+            border-bottom: none;
+            font-weight: bold;
+        }
+        .place-order-btn {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        .place-order-btn:hover {
+            background-color: #43a047;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="section-title">Order Confirmation</h2>
+
+        <!-- Selected Address -->
+        <div class="address-card">
+            <h3>Delivering To:</h3>
+            <p><strong><%= address.name %></strong></p>
+            <p><%= address.street %>, <%= address.city %>, <%= address.state %></p>
+            <p>Pin: <%= address.zip %>, Phone: <%= address.phone %></p>
+        </div>
+
+        <!-- Order Summary -->
+        <h3>Order Summary</h3>
+        <table class="summary-table">
+            <% cartItems.forEach(item => { %>
+                <tr>
+                    <td><%= item.item.productName %> (x<%= item.qty %>)</td>
+                    <td>₹<%= item.qty * item.item.salePrice %></td>
+                </tr>
+            <% }) %>
+            <tr><td>Subtotal:</td><td>₹<%= subtotal %></td></tr>
+            <tr><td>Tax:</td><td>₹<%= tax %></td></tr>
+            <tr><td>Total:</td><td>₹<%= totalAmount %></td></tr>
+        </table>
+
+        <!-- Payment Method -->
+        <div>
+            <h3>Payment Method: <%= paymentMethod %></h3>
+        </div>
+
+        <!-- Place Order Button -->
+        <form method="POST" action="/placeOrder">
+            <input type="hidden" name="selectedAddress" value="<%= address._id %>">
+            <input type="hidden" name="totalAmount" value="<%= totalAmount %>">
+            <input type="hidden" name="paymentMethod" value="<%= paymentMethod %>">
+            <button type="submit" class="place-order-btn">
+                <i class="fas fa-shopping-cart"></i> Confirm & Place Order
+            </button>
+        </form>
+    </div>
+</body>
+</html>

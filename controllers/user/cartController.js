@@ -2,8 +2,10 @@ const Product = require('../../models/productSchema')
 const User = require('../../models/userSchema')
 const Cart = require('../../models/cartSchema')
 const Address = require('../../models/addressSchema')
+const Order = require('../../models/orderSchema')
 const HttpStatus = require('../../utils/httpStatusCodes');
-const { checkout } = require('../../routes/userRouter');
+const moment = require('moment');
+
 
 
 
@@ -20,9 +22,11 @@ const addToCart = async (req, res) => {
         if (!cart) {
             cart = new Cart({ user: userId, items: [] })
         }
-
+        console.log(cart)
         const existingItemIndex = cart.items.findIndex(item => item.item.toString() === productId)
         const requestedQuantity = parseInt(quantity)
+
+        console.log(existingItemIndex,requestedQuantity)
 
         if (existingItemIndex > -1) {
             const currentQuantity = cart.items[existingItemIndex].qty;
@@ -34,8 +38,8 @@ const addToCart = async (req, res) => {
                 return res.status(HttpStatus.OK).send({
                     message: "Product quantity updated to maximum allowed (5)"
                 });
-            } else {
                 cart.items[existingItemIndex].qty = newQuantity;
+            } else {
             }
         } else {
             if (requestedQuantity > 5) {
@@ -100,7 +104,7 @@ const updateCart = async (req, res) => {
         const cart = await Cart.findOne({ user: userId }).populate('items.item', 'salePrice');
         
         if (!cart) {
-            return res.status(404).json({ success: false, message: 'Cart not found' });
+            return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Cart not found' });
         }
 
         const item = cart.items.find(item => item.item._id.toString() === productId);
@@ -112,7 +116,7 @@ const updateCart = async (req, res) => {
             cart.items = cart.items.filter(item => item.item._id.toString() !== productId);
             }
         } else {
-            return res.status(404).json({ success: false, message: 'Item not found in cart' });
+            return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Item not found in cart' });
         }
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
 
@@ -121,7 +125,7 @@ const updateCart = async (req, res) => {
         res.json({ success: true, newSubtotal: subtotal });
     } catch (error) {
         console.error('Error updating cart:', error);
-        res.status(500).json({ success: false, message: 'Failed to update cart' });
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Failed to update cart' });
     }
 };
 
@@ -158,7 +162,7 @@ const getCheckoutPage = async (req, res) => {
         console.log(user,userId);
         
         const cart = await Cart.findOne({user:userId}).populate({ path: 'items.item',
-            select: 'productImage productName salePrice'});
+            select: 'productName salePrice'});
             console.log("cart:",cart.items);
 
         const subtotal = cart.items.reduce((total,item)=>total+item.qty*item.item.salePrice,0);
@@ -168,6 +172,7 @@ const getCheckoutPage = async (req, res) => {
         
         res.render('checkout', {
           addresses,
+          cartItems:cart.items,
           subtotal,
           tax,
           totalAmount,
@@ -176,29 +181,106 @@ const getCheckoutPage = async (req, res) => {
     
       } catch (error) {
         console.error('Error fetching addresses:', error);
-        res.status(500).send('Server Error');
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Server Error');
       }
 };
 
-const summaryPage = async (req,res)=>{
+
+const orderConfirmationPage = async (req, res) => {
     try {
-        const user = req.session.user
-        const userId = user._id
-        const address = await Address.find({userId})
-        const cart = await Cart.findOne({user:userId}).populate({ path: 'items.item',
-            select: 'productImage productName salePrice'});
-        const subtotal = cart.items.reduce((total,item)=>total+item.qty*item.item.salePrice,0)
-        const tax = Math.round(subtotal*0.09)
-        const shipping = 50
-        const totalAmount = subtotal+tax+shipping
-        
-        res.render('summary',{subtotal,tax,totalAmount,shipping,address})
+       const {selectedAddress,paymentMethod} = req.body
+       const user = req.session.user
+       const userId = user._id
+       const address = await Address.findById(selectedAddress)
+       console.log("Address:",address);
+       
+       const cart = await Cart.findOne({user:userId}).populate({path:'items.item',select:'productName salePrice'})
+       console.log("Cart items:",cart.items)
+       const subtotal = cart.items.reduce((total,item)=>total+item.qty*item.item.salePrice,0)
+       const tax = Math.round(subtotal*0.09)
+       const totalAmount = subtotal+tax
+       res.render('order-confirmation',{
+        address,
+        cartItems:cart.items,
+        subtotal,
+        tax,
+        totalAmount,
+        paymentMethod
+       })
     } catch (error) {
-        
+        console.error('Error in orderConfirmationPage:', error);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Server Error');
     }
+};
+
+const placeOrder = async (req,res)=>{
+    
+        try {
+            const { selectedAddress, paymentMethod } = req.body;
+            const user = req.session.user;
+            const userId = user._id;
+            const address = await Address.findById(selectedAddress);
+            const cart = await Cart.findOne({ user: userId }).populate({ path: 'items.item', select: 'productName salePrice stock' });
+    
+            const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
+            const tax = Math.round(subtotal * 0.09);
+            const totalAmount = subtotal + tax;
+    
+            const newOrder = new Order({
+                user: userId,
+                orderItems: cart.items.map(item => ({
+                    product: item.item._id,
+                    quantity: item.qty,
+                    price: item.item.salePrice
+                })),
+                totalPrice: subtotal,
+                tax,
+                finalAmount: totalAmount,
+                address,
+                paymentMethod,
+                status: 'Pending',
+                createdOn: Date.now()
+            });
+            const savedOrder = await newOrder.save()
+              console.log(savedOrder)
+
+            //   for(const item of cart.items){
+            //     const product = await Product(item.item._id)
+            //     if(product){
+            //     if(product.stock<item.qty){
+            //         return res.status(HttpStatus.NOT_FOUND).send(`Insufficient stockfor product:${product.productName}`)
+            //     }
+            //     product.stock -=item.qty
+            //     await product.save()
+            //   }
+            // }
+            await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } });
+            res.redirect(`/invoice/${savedOrder._id}`);
+        } catch (error) {
+            console.error('Error in placeOrder:', error);
+            res.status(500).send('Server Error');
+        }
+    
+};
+
+const getInvoice = async (req,res)=>{
+    try {
+        const orderId = req.params.orderId;
+const order = await Order.findById(orderId).populate('address').populate('orderItems.product'); 
+
+if (!order) {
+  return res.status(404).send('Order not found');
 }
 
-
+res.render('order-invoice', {
+  order,
+  moment: require('moment') 
+});
+    } catch (error) {
+        console.error('Error fetching order:', error);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Server Error');
+    }
+}
 
 module.exports ={
 getCart,
@@ -206,5 +288,7 @@ addToCart,
 updateCart,
 deleteFromCart,
 getCheckoutPage,
-summaryPage,
+orderConfirmationPage,  
+placeOrder,
+getInvoice,
 }

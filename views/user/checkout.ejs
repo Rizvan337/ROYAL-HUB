@@ -170,7 +170,7 @@
         <div class="address-section">
             <h3 class="section-title">Choose Address</h3>
             <button onclick="window.location.href='/addressManage'" class="add-address-btn"><i class="fas fa-plus"></i> Add Address</button>
-            <form method="POST" action="/confirmOrder">
+            <form method="POST" action="/checkout">
                 <% addresses.forEach(address => { %>
                     <div class="address-card">
                         <input type="radio" name="selectedAddress" value="<%= address._id %>" required>
@@ -184,7 +184,7 @@
                         <button formaction="/editAddress/<%= address._id %>" class="edit-btn"><i class="fas fa-edit"></i> Edit</button>
                     </div>
                 <% }) %>
-            </form>
+            
         </div>
 
         <!-- Summary Section -->
@@ -229,5 +229,6 @@
             <button type="submit" class="checkout-btn"><i class="fas fa-shopping-cart"></i> Proceed to Checkout</button>
         </div>
     </div>
+</form>
 </body>
 </html>

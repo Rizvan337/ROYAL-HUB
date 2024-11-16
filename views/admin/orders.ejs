@@ -1,0 +1,173 @@
+<%- include("../../views/partials/admin/header") %>
+<style>
+  /* Add this CSS to your stylesheets to make the table look more professional */
+  .page-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .table-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(216, 203, 203, 0.1);
+  }
+
+  .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px;
+  }
+
+  .orders-table th, .orders-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .orders-table th {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  .orders-table td a {
+    text-decoration: none;
+    color: #03060c;
+    font-weight: 600;
+  }
+
+  .orders-table td a:hover {
+    text-decoration: underline;
+  }
+
+  .orders-table .status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+  }
+
+  .orders-table .status.pending {
+    background-color: #f39c12;
+  }
+
+  .orders-table .status.processing {
+    background-color: #3498db;
+  }
+
+  .orders-table .status.shipped {
+    background-color: #2ecc71;
+  }
+
+  .orders-table .status.delivered {
+    background-color: #1abc9c;
+  }
+
+  .orders-table .status.cancelled {
+    background-color: #e74c3c;
+  }
+
+  .orders-table .status.returned {
+    background-color: #8e44ad;
+  }
+
+  
+
+  .btn {
+    display: inline-block;
+    padding: 5px 10px;
+    font-size: 14px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
+  }
+
+  .btn-save {
+    background-color: #2ecc71;
+    color: white;
+  }
+
+  .btn-save:hover {
+    background-color: #27ae60;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .orders-table th, .orders-table td {
+      font-size: 14px;
+      padding: 10px;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+    }
+
+    .table-container {
+      padding: 15px;
+    }
+  }
+</style>
+
+<h2 class="page-title">All Orders</h2>
+
+<div class="table-container">
+  <table id="ordersTable" class="orders-table">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>User</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Total</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% orders.forEach(order => { %>
+        <tr>
+          <td><a href="/admin/orders/<%= order._id %>" class="order-id-link"><%= order.orderId %></a></td>
+          <td><%= order.user && order.user.name ? order.user.name : 'Unknown User' %></td>
+          <td><%= moment(order.createdAt).format('MMMM Do YYYY') %></td>
+          <td>
+            <form action="/admin/orders/<%= order._id %>/update-status" method="POST" class="status-form">
+              <select name="status">
+                <% ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned", "Return Request"].forEach(status => { %>
+                  <option value="<%= status %>" <%= order.status === status ? 'selected' : '' %>><%= status %></option>
+                <% }) %>
+              </select>
+              <button type="submit" class="btn btn-save">Save</button>
+            </form>
+          </td>
+          <td>$<%= order.finalAmount.toFixed(2) %></td>
+          <td>
+            <a href="/admin/orders/<%= order._id %>/cancel" class="btn btn-cancel">Cancel</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include("../../views/partials/admin/footer") %>
+<script>
+    
+  $(document).ready(function() {
+    $('#ordersTable').DataTable({
+      pageLength: 5,
+      lengthMenu: [5, 10, 20, 50],
+      order: [[2, 'desc']],
+      language: {
+        search: "Search Orders:",
+        lengthMenu: "Show _MENU_ entries",
+        info: "Showing _START_ to _END_ of _TOTAL_ orders"
+      }
+    });
+  });
+
+</script>

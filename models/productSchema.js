@@ -48,9 +48,12 @@ const productSchema = new Schema({
         default: "Available"
     },
     stock:{
-        type:Number
-    }
-},)
+        type:Number,
+        required:true,
+        default:0
+    },
+    
+},{ timestamps: true })
 
 const Product = mongoose.model("Product", productSchema)
 module.exports = Product

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #f3f6f9;
+      padding: 20px;
+    }
+
+    .orders-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      color: #1d3557;
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table th, table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    table thead {
+      background-color: #1d3557;
+      color: #ffffff;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: #1d3557;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #457b9d;
+    }
+
+    .cancel-btn {
+      background-color: #e63946;
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .cancel-btn:hover {
+      background-color: #d62828;
+    }
+  </style>
+</head>
+<body>
+  <div class="orders-container">
+    <h2>My Orders</h2>
+    
+    <% if (orders && orders.length > 0) { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders.forEach(order => { %>
+            <tr>
+              <td><%= order.orderId %></td>
+              <td><%= moment(order.invoiceDate).format('MMMM Do YYYY') %></td>
+              <td>$<%= order.finalAmount.toFixed(2) %></td>
+              <td><span id="status-<%= order._id %>"><%= order.status %></span></td>
+              <td>
+                <% if (order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
+                  <button class="cancel-btn" onclick="cancelOrder('<%= order._id %>')">Cancel</button>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>  
+        </tbody>
+      </table>
+    <% } else { %>
+      <p>No orders found.</p>
+    <% } %>
+
+    <a href="/userProfile" class="btn">Back to Profile</a>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // Listen for order status changes
+    socket.on('orderStatusChanged', (data) => {
+      const { orderId, status } = data;
+      const statusElement = document.querySelector(`#status-${orderId}`);
+      if (statusElement) {
+        statusElement.textContent = status;
+        alert(`Order ${orderId} status changed to ${status}`);
+      }
+    });
+
+    // Cancel order function
+    async function cancelOrder(orderId) {
+      if (confirm('Are you sure you want to cancel this order?')) {
+        try {
+          const response = await fetch(`/orders/${orderId}/cancel`, {
+            method: 'POST',
+          });
+          const result = await response.json();
+
+          if (result.success) {
+            alert('Order cancelled successfully');
+            const statusElement = document.querySelector(`#status-${orderId}`);
+            if (statusElement) {
+              statusElement.textContent = 'Cancelled';
+            }
+          } else {
+            alert('Failed to cancel the order');
+          }
+        } catch (error) {
+          console.error('Error cancelling order:', error);
+          alert('An error occurred. Please try again.');
+        }
+      }
+    }
+  </script>
+</body>
+</html>

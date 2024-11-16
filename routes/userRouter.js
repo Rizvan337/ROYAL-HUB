@@ -37,15 +37,6 @@ router.post('/reset-password',profileController.newPassword)
 
 router.get('/shopTrue',userController.shoptrue)
 
-//Cart 
-router.post('/addToCart',userAuth,cartController.addToCart)
-router.get('/cart',cartController.getCart)
-router.post('/updateCart/:productId',cartController.updateCart)
-router.post('/removeCart/:productId',cartController.deleteFromCart)
-// Checkout Page
-router.get('/checkout', cartController.getCheckoutPage);
-router.get('/summary',cartController.summaryPage)
-
 //userProfile
 router.get('/userProfile',userAuth,profileController.userProfile)
 //change password
@@ -65,8 +56,19 @@ router.get('/changeEmail',userAuth,profileController.getChangeEmail)
 router.post('/changeEmail',userAuth,profileController.changeEmail)
 router.post('/verify-email-otp',userAuth,profileController.verifyEmailOtp)
 router.post('/update-email',userAuth,profileController.updateEmail)
-
-router.get('/myOrders',userAuth,profileController.myOrders)
+//Cart 
+router.post('/addToCart',userAuth,cartController.addToCart)
+router.get('/cart',cartController.getCart)
+router.post('/updateCart/:productId',cartController.updateCart)
+router.post('/removeCart/:productId',cartController.deleteFromCart)
+// Checkout Page
+router.get('/checkout', cartController.getCheckoutPage);
+router.post('/checkout',cartController.orderConfirmationPage)
+router.post('/placeOrder',cartController.placeOrder)
+router.get('/invoice/:orderId',cartController.getInvoice)
+//my-orders
+router.get('/my-orders',profileController.myOrders)
+router.post('/orders/:orderId/cancel',profileController.cancelOrder)
 router.get('/logout', userController.logout)
 module.exports = router;
 

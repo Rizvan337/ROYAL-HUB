@@ -147,7 +147,7 @@
                     <div class="header__nav__option">
                         <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
-                        <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
+                        <a href="./cart"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
                         <!-- <div class="price">$0.00</div> -->
                     </div>
                 </div>
@@ -289,7 +289,13 @@
                                         <input type="text" value="1">
                                     </div>
                                 </div>
-                                <a href="/addToCart" class="primary-btn">add to cart</a>
+                                <!-- <a href="/addToCart/<%= proData._id %>" class="primary-btn">Add to Cart</a> -->
+                                <form action="/addToCart" method="post">
+                                    <input type="hidden" name="productId" value="<%=proData._id %>">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <input type="hidden" name="quantity" value="<%=proData.quantity%>">
+                                    <button type="submit">Add To Cart</button>
+                                </form>
                             </div>
                             <div class="product__details__btns__option">
                                 <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>
