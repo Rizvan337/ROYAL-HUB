@@ -240,13 +240,16 @@
                       <div class="product-content-wrap">
                           <h6><%=products[i].productName%></h6>
                           <h5><%=products[i].salePrice%></h5>
+                          <% if (products[i].stock > 0) { %>
                           <form action="/addToCart" method="POST" class="add-to-cart-form" style="display: inline;">
                             <input type="hidden" name="productId" value="<%= products[i]._id %>">
                             <input type="hidden" name="quantity" value="1"> 
                             <button type="submit" class="btn">Add to Cart</button>
                         </form>
-                        
-                      </div>
+                        <%}else{%>
+                            <button class="btn" disabled style=" color: white; background-color: rgb(185, 175, 175); cursor: not-allowed;">Out of Stock</button>
+                     <%}%>
+                        </div>
                   </div>
               </div>
               <%}%>

@@ -92,6 +92,16 @@
                                    </div>
                                </div>
                            </div>
+
+
+                           <div class="col-lg-4">
+                            <div class="mb-4">
+                                <label class="form-label">Stock</label>
+                                <input name="stock" type="number" value="<%=product.stock || 0%>" class="form-control border" id="stock">
+                                <div id="stock-error" class="error-message"></div>
+                            </div>
+                        </div>
+                        
                            <div class="row">
                              
                               
@@ -227,14 +237,15 @@ function validateForm() {
            console.log("validate form");
            clearErrorMessages();
            const name = document.getElementsByName('productName')[0].value;
-           const description = document.getElementsByName('descriptionData')[0].value;
+           const description = document.getElementsByName('description')[0].value;
            const brand = document.getElementsByName('brand')[0].value;
            const price = document.getElementsByName('regularPrice')[0].value;
            const saleprice = document.getElementsByName('salePrice')[0].value;
-           const color = document.getElementsByName('color')[0].value;
+           
            const category = document.getElementsByName('category')[0].value;
            const images = document.getElementById('input1')
-           const quantity=document.getElementsByName('quantity')
+           const quantity=document.getElementsByName('quantity')[0].value;
+           const stock = document.getElementsByName('stock')[0].value;
 imageDatas = document.getElementById("imageDatas")?.value;
            let isValid = true;    
            if (name.trim() === "") {
@@ -248,13 +259,16 @@ imageDatas = document.getElementById("imageDatas")?.value;
            } 
 
 
-           if ( parseInt(quantity) < 0) {
+           if ( parseInt(quantity.trim() === "" || parseInt(quantity) < 0)) {
                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
                isValid = false;
            }
 
 
-
+           if (stock.trim() === "" || parseInt(stock) < 0) {
+        displayErrorMessage('stock-error', 'Stock must be a valid non-negative number.');
+        isValid = false;
+    }
 
            if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
                displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
@@ -265,10 +279,7 @@ imageDatas = document.getElementById("imageDatas")?.value;
                isValid = false;
            }0
           
-        //    if (color.trim() === "") {
-        //        displayErrorMessage('color-error', 'Please enter a color.');
-        //        isValid = false;
-        //    }
+        
            if (!imageDatas && images.files.length === 0) {
                displayErrorMessage("images-error",'Please select an image.');
                isValid = false;
@@ -283,7 +294,7 @@ imageDatas = document.getElementById("imageDatas")?.value;
        }
 
 
-       function clearErrorMessages() {
+       function clearErrorMessages() {  
            const errorElements = document.getElementsByClassName('error-message');
            Array.from(errorElements).forEach(element => {
                element.innerText = '';

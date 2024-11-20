@@ -9,7 +9,7 @@ const productSchema = new Schema({
     description: {
         type: String,
         required: true,
-    }, 
+    },
     category: {
         type: Schema.Types.ObjectId,
         ref: "Category",
@@ -27,7 +27,7 @@ const productSchema = new Schema({
         type: Number,
         default: 0,
     },
-    
+
     quantity: {
         type: Number,
         required: true,
@@ -47,13 +47,13 @@ const productSchema = new Schema({
         required: true,
         default: "Available"
     },
-    stock:{
-        type:Number,
-        required:true,
-        default:0
+    stock: {
+        type: Number,
+        required: true,
+        default: 0
     },
-    
-},{ timestamps: true })
+
+}, { timestamps: true })
 
 const Product = mongoose.model("Product", productSchema)
 module.exports = Product

@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt')
 const HttpStatus = require('../../utils/httpStatusCodes')
 
 
-const shoptrue = async (req,res)=>{
+const shoptrue = async (req, res) => {
     const { search, category, price, sort } = req.query;
     let filter = {};
     let sortOption = {};
@@ -68,7 +68,7 @@ const shoptrue = async (req,res)=>{
             search,
             categories: await Category.find(),
             selectedSort: sort,
-            user:req.session.user
+            user: req.session.user
         });
     } catch (err) {
         console.error(err);
@@ -78,69 +78,6 @@ const shoptrue = async (req,res)=>{
 
 }
 
-//shop page
-//     try {
-//         const user = req.session.user;
-//         const categoryFilters = req.query.categories ? req.query.categories.split(',') : [];
-//         const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
-//         const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : Number.MAX_SAFE_INTEGER;
-//         const categories = await Category.find({ isListed: true });
-//         let filterQuery = {
-//             isBlocked: false,
-//             quantity: { $gt: 0 },
-//             salePrice: { $gte: minPrice, $lte: maxPrice }
-//         };
-//         if (categoryFilters.length > 0) {
-//             filterQuery.category = { $in: categoryFilters };
-//         }
-//         let productData = await Product.find(filterQuery);
-        
-//         productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-//         productData = productData.slice(0, 12);
-
-//         res.render('shop', { user, products: productData, categories });
-//     } catch (error) {
-//         console.log("Shop page not found", error);
-//         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server error");
-//     }
-// const loadShop = async (req, res) => {
-
-
-
-//     try {
-//         // Fetch data from the database or set default values
-//         const search = req.query.search || '';
-//         const selectedSort = req.query.sort || '';
-//         const categoryFilter = req.query.category || '';
-        
-//         // Fetch categories and products from your database
-//         const categories = await Category.find();
-//         const products = await Product.find({
-//             productName: { $regex: search, $options: 'i' },
-//             category: categoryFilter ? categoryFilter : { $exists: true }
-//         });
-
-//         // Total number of products
-//         const totalProducts = await Product.countDocuments();
-
-//         // Render the shop page with the necessary data
-//         res.render('shop', {
-//             search,
-//             categories,
-//             selectedSort,
-//             products,
-//             totalProducts,
-//             user:req.session.user
-//         });
-//     } catch (error) {
-//         console.error('Error loading shop page:', error);
-//         res.status(500).send('Server Error');
-//     }
-
-// };
-
-
-
 
 
 const loadShop = async (req, res) => {
@@ -149,23 +86,23 @@ const loadShop = async (req, res) => {
         const selectedSort = req.query.sort || '';
         const categoryFilter = req.query.category || '';
         const minPrice = parseFloat(req.query.minPrice) || 0;
-     const maxPrice = parseFloat(req.query.maxPrice) || Infinity;
-    
+        const maxPrice = parseFloat(req.query.maxPrice) || Infinity;
+
 
         const query = {
             productName: { $regex: search, $options: 'i' },
         };
         if (categoryFilter) {
             query.category = categoryFilter;
-          }
-          if (minPrice && maxPrice) {
+        }
+        if (minPrice && maxPrice) {
             query.salePrice = { $gte: minPrice, $lte: maxPrice };
-          } else if (minPrice) {
+        } else if (minPrice) {
             query.salePrice = { $gte: minPrice };
-          } else if (maxPrice) {
+        } else if (maxPrice) {
             query.salePrice = { $lte: maxPrice };
-          }
-        
+        }
+
         let sortOption = {};
         switch (selectedSort) {
             case 'price-low-high':
@@ -175,7 +112,7 @@ const loadShop = async (req, res) => {
                 sortOption = { salePrice: -1 };
                 break;
             case 'new-arrivals':
-                sortOption = { createdAt: -1 }; 
+                sortOption = { createdAt: -1 };
                 break;
             case 'name-asc':
                 sortOption = { productName: 1 };
@@ -183,11 +120,11 @@ const loadShop = async (req, res) => {
             case 'name-desc':
                 sortOption = { productName: -1 };
                 break;
-                case 'popularity':
-                sortOption = { popularity: -1 }; 
-                 break;
+            case 'popularity':
+                sortOption = { popularity: -1 };
+                break;
             default:
-                sortOption = {}; 
+                sortOption = {};
         }
         const categories = await Category.find();
         const products = await Product.find(query).sort(sortOption);
@@ -200,7 +137,7 @@ const loadShop = async (req, res) => {
             totalProducts,
             user: req.session.user,
             categoryFilter,
-            
+
         });
     } catch (error) {
         console.error('Error loading shop page:', error);
@@ -211,29 +148,29 @@ const loadShop = async (req, res) => {
 
 //home page
 const loadHomepage = async (req, res) => {
-    
+
     try {
-        
-            const user = req.session.user
-            const categories = await Category.find({ isListed: true })
-            let productData = await Product.find({
-                isBlocked: false,
-                category: { $in: categories.map(category => category._id) }, quantity: { $gt: 0 }
-            })
-            console.log(productData);
 
-            productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            productData = productData.slice(0, 4);
+        const user = req.session.user
+        const categories = await Category.find({ isListed: true })
+        let productData = await Product.find({
+            isBlocked: false,
+            category: { $in: categories.map(category => category._id) }, quantity: { $gt: 0 }
+        })
+        console.log(productData);
+
+        productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        productData = productData.slice(0, 4);
 
 
-            
-            res.render('home', { user, products: productData });
-      
+
+        res.render('home', { user, products: productData });
+
 
     } catch (error) {
         console.log("Home page not found");
         console.log(error);
-        
+
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server error");
     }
 
@@ -361,7 +298,7 @@ const verifyOtp = async (req, res) => {
             await saveUserData.save()
             req.session.user = saveUserData;
             res.json({ success: true, redirectUrl: '/' })
-           
+
         }
         else {
             res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Invalid OTP, Please try again" })
@@ -388,7 +325,7 @@ const resendOtp = async (req, res) => {
 
         // Generate new OTP
         const otp = generateOtp();
-        req.session.userOtp = otp; 
+        req.session.userOtp = otp;
 
         // Send OTP via email
         const emailSent = await sendVerificationEmail(email, otp);
@@ -410,7 +347,7 @@ const loadLogin = async (req, res) => {
             return res.render('login')
         } else {
             res.redirect('/')
-            
+
         }
     } catch (error) {
         res.redirect("/pageNotFound")
@@ -429,13 +366,13 @@ const login = async (req, res) => {
             return res.render('login', { message: "User is blocked by Admin" })
         }
         const passwordMatch = await bcrypt.compare(password, findUser.password)
-        if (!passwordMatch||!findUser) {
+        if (!passwordMatch || !findUser) {
             return res.render("login", { message: "Incorrect username or password " })
         }
         req.session.user = findUser;
 
 
-        
+
         res.redirect('/')
     } catch (error) {
         console.error("login error");
@@ -456,14 +393,14 @@ const logout = async (req, res) => {
 }
 
 //prouct detail page
-const productDetails = async (req,res)=>{
+const productDetails = async (req, res) => {
     try {
         const productId = req.query.id
-        const productDetails = await Product.findOne({_id:productId})
+        const productDetails = await Product.findOne({ _id: productId })
         console.log(productDetails)
-       return res.render('product-details',{proData:productDetails})
+        return res.render('product-details', { proData: productDetails })
     } catch (error) {
-        
+
     }
 }
 

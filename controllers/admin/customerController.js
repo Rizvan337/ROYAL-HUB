@@ -14,9 +14,9 @@ const customerInfo = async (req, res) => {
                 { email: { $regex: ".*" + search + ".*", $options: 'i' } },
             ],
         })
-        .limit(limit)
-        .skip((page - 1) * limit)
-        .exec();
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .exec();
 
         const count = await User.countDocuments({
             isAdmin: false,
@@ -26,10 +26,10 @@ const customerInfo = async (req, res) => {
             ],
         });
 
-        
+
         console.log('Rendering view: customers');
-        
-       
+
+
         res.render('customers', {
             data: userData,
             totalPages: Math.ceil(count / limit),
@@ -44,10 +44,10 @@ const customerInfo = async (req, res) => {
 };
 
 //block customer
-const customerBlocked = async (req,res)=>{
+const customerBlocked = async (req, res) => {
     try {
         let userId = req.query.id;
-        await User.updateOne({_id:userId},{$set:{isBlocked:true}})
+        await User.updateOne({ _id: userId }, { $set: { isBlocked: true } })
         res.redirect('/admin/users')
     } catch (error) {
         res.redirect('/pageerror')
@@ -55,10 +55,10 @@ const customerBlocked = async (req,res)=>{
 }
 
 //unblock customer
-const customerunBlocked = async (req,res)=>{
+const customerunBlocked = async (req, res) => {
     try {
         let userId = req.query.id;
-        await User.updateOne({_id:userId},{$set:{isBlocked:false}})
+        await User.updateOne({ _id: userId }, { $set: { isBlocked: false } })
         res.redirect('/admin/users')
     } catch (error) {
         res.redirect('/pageerror')
