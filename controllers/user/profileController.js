@@ -286,7 +286,7 @@ const editProfile = async (req, res) => {
 const myOrders = async (req, res) => {
     try {
         const orders = await Order.find({ user: req.session.user }).sort({ createdAt: -1 })
-        res.render('my-orders', { orders: orders, moment })
+        res.render('my-orders', { orders: orders, moment }).populate('orderItems.product').populate('address')
     } catch (error) {
         console.error(error)
     }

@@ -239,7 +239,7 @@
 
                       <div class="product-content-wrap">
                           <h6><%=products[i].productName%></h6>
-                          <h5><%=products[i].salePrice%></h5>
+                          <h5>$<%=products[i].salePrice%></h5>
                           <% if (products[i].stock > 0) { %>
                           <form action="/addToCart" method="POST" class="add-to-cart-form" style="display: inline;">
                             <input type="hidden" name="productId" value="<%= products[i]._id %>">

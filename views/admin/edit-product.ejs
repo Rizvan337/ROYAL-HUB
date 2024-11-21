@@ -133,22 +133,19 @@
                                <div class="card-header">
                                    <h4>Choose images</h4>
                                </div>
-                               <%for(let i=0;i<product.productImage.length;i++){%>
-                                       <div class="col-md-12">
-                                           <div class="mb-4">
-                                               <div class="col-12">
-                                                   <td>
-                                                       <input type="hidden" value="<%=product.productImage[i]%>" id="imageDatas">
-                                                       <img class="rounded" style="width: 50px; height: 60px;"
-                                                           src="/uploads/re-image/<%=product.productImage[i]%>"
-                                                           alt="">
-                                                       <i onclick="deleteSingleImage('<%=product.productImage[i]%>','<%=product._id%>')" style="position: absolute; margin-left: .5rem; cursor: pointer;" class="fa-thin fa-x"></i>
-                                                   </td>
-                                               </div>
-                                              
-                                           </div>
-                                       </div>
-                              <%}%>
+                               <% for (let i = 0; i < product.productImage.length; i++) { %>
+                                <div class="col-md-12">
+                                    <div class="mb-4" style="position: relative;">
+                                        <img class="rounded" style="width: 50px; height: 60px;"
+                                             src="/uploads/re-image/<%= product.productImage[i] %>"
+                                             alt="">
+                                        <i onclick="deleteSingleImage('<%= product.productImage[i] %>', '<%= product._id %>')"
+                                           style="position: absolute; top: 0; right: 0; cursor: pointer; color: red; font-size: 20px;"
+                                           class="fa fa-times-circle"></i>
+                                    </div>
+                                </div>
+                            <% } %>
+                            
                                   
                                <div class="card-body">
                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
@@ -226,66 +223,70 @@
 function validateAndSubmit() {
 if (validateForm()) {
    document.forms[0].submit();
+}else{
+    console.log("Form validation failed!");
 }
 }
 
 
-
+    
 
 function validateForm() {
-   let imageDatas = false
-           console.log("validate form");
-           clearErrorMessages();
-           const name = document.getElementsByName('productName')[0].value;
-           const description = document.getElementsByName('description')[0].value;
-           const brand = document.getElementsByName('brand')[0].value;
-           const price = document.getElementsByName('regularPrice')[0].value;
-           const saleprice = document.getElementsByName('salePrice')[0].value;
-           
-           const category = document.getElementsByName('category')[0].value;
-           const images = document.getElementById('input1')
-           const quantity=document.getElementsByName('quantity')[0].value;
-           const stock = document.getElementsByName('stock')[0].value;
-imageDatas = document.getElementById("imageDatas")?.value;
-           let isValid = true;    
-           if (name.trim() === "") {
-   displayErrorMessage('productName-error', 'Please enter a product name.');
-   isValid = false;
-}
-          
-           if (description=== '') {
-               displayErrorMessage('description-error', 'Please enter a product description.');
-               isValid = false;
-           } 
+    let isValid = true;
+    clearErrorMessages();
 
+    const name = document.getElementsByName('productName')[0].value;
+    const description = document.getElementsByName('description')[0].value;
+    const price = document.getElementsByName('regularPrice')[0].value;
+    const salePrice = document.getElementsByName('salePrice')[0].value;
+    const category = document.getElementsByName('category')[0].value;
+    const quantity = document.getElementsByName('quantity')[0].value;
+    const stock = document.getElementsByName('stock')[0].value;
 
-           if ( parseInt(quantity.trim() === "" || parseInt(quantity) < 0)) {
-               displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-               isValid = false;
-           }
+    // Check if product name is empty
+    if (name.trim() === "") {
+        displayErrorMessage('productName-error', 'Please enter a product name.');
+        isValid = false;
+    }
 
+    // Check if description is empty
+    if (description === '') {
+        displayErrorMessage('description-error', 'Please enter a product description.');
+        isValid = false;
+    }
 
-           if (stock.trim() === "" || parseInt(stock) < 0) {
+    // Validate quantity and stock
+    if (quantity.trim() === "" || parseInt(quantity) < 0) {
+        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+        isValid = false;
+    }
+    if (stock.trim() === "" || parseInt(stock) < 0) {
         displayErrorMessage('stock-error', 'Stock must be a valid non-negative number.');
         isValid = false;
     }
 
-           if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-               displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
-               isValid = false;
-           }
-          if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-               displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-               isValid = false;
-           }0
-          
-        
-           if (!imageDatas && images.files.length === 0) {
-               displayErrorMessage("images-error",'Please select an image.');
-               isValid = false;
-           }
-           return isValid;
-       }
+    // Validate price fields
+    if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
+        displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
+        isValid = false;
+    }
+    if (!/^\d+(\.\d{1,2})?$/.test(salePrice) || parseFloat(salePrice) < 0) {
+        displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
+        isValid = false;
+    }
+
+    // Check for image file uploads
+    const imageInputs = document.querySelectorAll('input[type="file"]');
+    let imageUploaded = false;
+    imageInputs.forEach(input => {
+        if (input.files.length > 0) {
+            imageUploaded = true;
+        }
+    });
+
+    
+    return isValid;
+}
       
        function displayErrorMessage(elementId, message) {
            var errorElement = document.getElementById(elementId);
@@ -401,16 +402,30 @@ function viewImage1(event) {
            }
        };
 
-       function deleteSingleImage(imageId,productId){
-        $.ajax({
-            url:"/admin/deleteImage",
-            method:"post",
-            data:{imageNameToServer:imageId,productIdToServer:productId},
-            success:((response)=>{
-                if(response.status===true){
-                    window.location.reload()
-                }
-            })
-        })
-       }
+       function deleteSingleImage(imageId, productId) {
+    // Prevent default behavior (if needed)
+    event.preventDefault();
+
+    $.ajax({
+        url: "/admin/deleteImage", // Ensure this URL is correct
+        method: "POST", // Use POST method
+        data: {
+            imageNameToServer: imageId,
+            productIdToServer: productId
+        },
+        success: (response) => {
+            if (response.status === true) {
+                // Optionally, you can remove the image from the DOM directly
+                // Find the image container and remove it
+                document.getElementById('image-' + imageId).remove();
+            } else {
+                console.log("Error deleting image.");
+            }
+        },
+        error: (err) => {
+            console.error("Error: ", err);
+        }
+    });
+}
+
 </script>

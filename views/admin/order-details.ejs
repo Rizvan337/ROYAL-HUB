@@ -1,63 +1,83 @@
 <%- include("../../views/partials/admin/header") %>
 
 <style>
-  /* General Page Styling */
+  /* General Styling */
+  body {
+    font-family: "Arial", sans-serif;
+    background-color: #f5f6fa;
+    margin: 0;
+    padding: 0;
+  }
+
   .order-details-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .order-details-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   }
 
   h2, h3 {
     color: #333;
-    margin-bottom: 15px;
-    font-weight: 600;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
   }
 
   .order-id {
-    font-size: 1.5rem;
     color: #4CAF50;
-    margin-bottom: 20px;
+    font-size: 1.3rem;
+    font-style: italic;
   }
 
   /* Table Styling */
   .order-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 16px;
+    margin-bottom: 30px;
+    font-size: 15px;
+    color: #555;
   }
 
   .order-table th, .order-table td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
+    padding: 15px;
+    border: 1px solid #ddd;
+    text-align: center;
   }
 
   .order-table th {
     background-color: #007bff;
-    color: white;
+    color: #ffffff;
+    font-weight: bold;
     text-transform: uppercase;
   }
 
   .order-table tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f9f9f9;
   }
 
   .order-table td {
-    color: #555;
+    font-size: 14px;
   }
 
   /* Status Badge */
   .status-badge {
     display: inline-block;
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 8px 15px;
+    border-radius: 8px;
     color: white;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: capitalize;
   }
 
@@ -85,37 +105,60 @@
     background-color: #e67e22;
   }
 
-  /* Button Styling */
+  /* Additional Information */
+  p {
+    margin: 10px 0;
+    font-size: 14px;
+    color: #666;
+  }
+
+  p strong {
+    color: #333;
+    font-weight: 600;
+  }
+
+  /* Buttons */
   .btn {
     display: inline-block;
-    padding: 8px 15px;
-    margin-top: 20px;
-    font-size: 14px;
-    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
     background-color: #4CAF50;
-    color: white;
+    color: #ffffff;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
 
   .btn:hover {
     background-color: #45a049;
+    transform: scale(1.05);
   }
 
   /* Responsive Design */
   @media (max-width: 768px) {
     .order-details-container {
-      padding: 15px;
+      padding: 20px;
     }
+
     .order-table th, .order-table td {
-      font-size: 14px;
       padding: 10px;
+    }
+
+    h2, h3 {
+      font-size: 1.2rem;
+    }
+
+    .btn {
+      font-size: 14px;
+      padding: 8px 15px;
     }
   }
 </style>
 
 <div class="order-details-container">
-  <h2>Order Details: <span class="order-id"><%= order.orderId %></span></h2>
+  <h2>Order Details</h2>
+  <p class="order-id">Order ID: <%= order.orderId %></p>
 
   <!-- Order Items Table -->
   <table class="order-table">
@@ -129,7 +172,7 @@
     <tbody>
       <% order.orderItems.forEach(item => { %>
         <tr>
-          <td><%= item.product.name %></td>
+          <td><%= item.product.productName %></td>
           <td><%= item.quantity %></td>
           <td>$<%= item.price.toFixed(2) %></td>
         </tr>
@@ -138,7 +181,7 @@
   </table>
 
   <!-- Order Summary -->
-  <h3>Status: 
+  <h3>Order Status: 
     <span class="status-badge status-<%= order.status.toLowerCase() %>">
       <%= order.status %>
     </span>
@@ -147,7 +190,7 @@
   <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
   <p><strong>Invoice Date:</strong> <%= moment(order.invoiceDate).format('MMMM Do YYYY') %></p>
 
-  <!-- Button to Go Back -->
+  <!-- Back to Orders Button -->
   <a href="/admin/orderList" class="btn">Back to Orders</a>
 </div>
 

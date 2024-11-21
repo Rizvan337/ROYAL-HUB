@@ -91,6 +91,7 @@ const loadShop = async (req, res) => {
 
         const query = {
             productName: { $regex: search, $options: 'i' },
+            isBlocked:false,
         };
         if (categoryFilter) {
             query.category = categoryFilter;
@@ -121,12 +122,12 @@ const loadShop = async (req, res) => {
                 sortOption = { productName: -1 };
                 break;
             case 'popularity':
-                sortOption = { popularity: -1 };
+                sortOption = { createdAt: -1 };
                 break;
             default:
                 sortOption = {};
         }
-        const categories = await Category.find();
+        const categories = await Category.find({isListed:true});
         const products = await Product.find(query).sort(sortOption);
         const totalProducts = await Product.countDocuments(query);
         res.render('shop', {
@@ -400,7 +401,8 @@ const productDetails = async (req, res) => {
         console.log(productDetails)
         return res.render('product-details', { proData: productDetails })
     } catch (error) {
-
+        console.error("Error fetching product details:", error);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Internal Server Error");
     }
 }
 

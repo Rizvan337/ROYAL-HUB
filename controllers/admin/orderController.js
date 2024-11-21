@@ -31,64 +31,43 @@ const getOrderDetails = async (req, res) => {
     }
 }
 
-
-
-const cancelOrder = async (req, res) => {
-    const { orderId } = req.params
+const updateOrderStatus = async (req, res) => {
+    const { id } = req.params
+    const { status } = req.body
     try {
-        const order = await Order.findByIdAndUpdate(orderId, { status: 'Cancelled' }, { new: true })
+        const order = await Order.findById(id)
         if (!order) {
-            return res.status(HttpStatus.NOT_FOUND).send('Order not found');
+            req.flash('error', "Order not found")
+            return res.redirect('/admin/orderList')
         }
-        for(let item of order.orderItems){
-            const productId = item.product
-            const quantity = item.quantity
-            const product = await Product.findById(productId)
-            if(product){
-                product.stock += quantity
-                await product.save()
+        if (status === "Cancelled" && order.status !== "Cancelled") {
+            for (let item of order.orderItems) {
+                const productId = item.quantity
+                const quantity = item.quantity
+                await Product.findByIdAndUpdate(productId, { $inc: { stock: quantity } })
             }
         }
-        res.redirect('/admin/orderList')
-    } catch (error) {
-        console.error(error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Server Error');
-    }
-}
 
-
-
-const updateOrderStatus = async (req, res) => {
-    const { id } = req.params;
-    const { status } = req.body;
-
-    try {
-        const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
-
-        if (!order) {
-            req.flash('error', 'Order not found');
-            return res.redirect('/admin/orderList');
-        }
+        order.status = status
+        await order.save()
         if (req.io) {
             req.io.emit('orderStatusChanged', {
                 orderId: order._id,
-                status: order.status,
-            });
+                status: order.status
+            })
         }
-
-        req.flash('success', 'Order status updated successfully');
-        res.redirect('/admin/orderList');
+        req.flash('success', 'Order status updated successfully')
+        return res.redirect('/admin/orderList')
     } catch (error) {
-        console.error('Error updating status:', error);
-        req.flash('error', 'Failed to update order status');
-        res.redirect('/admin/orderList');
+        console.error('Error updating status', error)
+        req.flash('error', 'failed to update status')
+        res.redirect('/admn/orderList')
     }
-};
+}
 
 
 module.exports = {
     getAllOrders,
     getOrderDetails,
-    cancelOrder,
     updateOrderStatus,
 }

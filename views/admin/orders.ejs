@@ -125,7 +125,6 @@
         <th>Date</th>
         <th>Status</th>
         <th>Total</th>
-        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -137,17 +136,15 @@
           <td>
             <form action="/admin/orders/<%= order._id %>/update-status" method="POST" class="status-form">
               <select name="status">
-                <% ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned", "Return Request"].forEach(status => { %>
-                  <option value="<%= status %>" <%= order.status === status ? 'selected' : '' %>><%= status %></option>
+                <% ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].forEach(status => { %>
+                  <option value="<%= status %>" <%= order.status==="Cancelled"?'disabled':''%> <%= order.status === status ? 'disabled' : '' %>  <%= order.status === status ? 'selected' : '' %>><%= status %></option>
                 <% }) %>
               </select>
               <button type="submit" class="btn btn-save">Save</button>
             </form>
           </td>
           <td>$<%= order.finalAmount.toFixed(2) %></td>
-          <td>
-            <a href="/admin/orders/<%= order._id %>/cancel" class="btn btn-cancel">Cancel</a>
-          </td>
+          
         </tr>
       <% }) %>
     </tbody>

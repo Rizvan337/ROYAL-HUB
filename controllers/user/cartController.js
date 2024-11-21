@@ -53,7 +53,9 @@ const addToCart = async (req, res) => {
                 cart.items.push({ item: productId, qty: requestedQuantity, price: product.salePrice });
             }
         }
-
+ if (product.stock < quantity) {
+      return res.status(400).send('Quantity exceeds available stock!');
+    }
         await cart.save();
         console.log('item added to cart', cart);
 
@@ -230,7 +232,7 @@ const placeOrder = async (req, res) => {
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
         const tax = Math.round(subtotal * 0.09);
         const totalAmount = subtotal + tax;
-
+        
         const newOrder = new Order({
             user: userId,
             orderItems: cart.items.map(item => ({

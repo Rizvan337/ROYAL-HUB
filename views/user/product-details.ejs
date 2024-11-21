@@ -240,12 +240,19 @@
                                     
                                     <div class="quantity">
                                         <div class="pro-qty">
-                                            <input type="text" value="1" name="quantity">
+                                            <input 
+                                            type="number" 
+                                            value="1" 
+                                            name="visibleQuantity" 
+                                            min="1" 
+                                            max="<%= proData.stock %>" 
+                                            id="visibleQuantityInput" 
+                                            oninput="updateHiddenQuantity(this)">
                                         </div>
                                     </div>
                                     <form action="/addToCart" method="post" class="add-to-cart-form" id="addToCartForm">
                                         <input type="hidden" name="productId" value="<%= proData._id %>">
-                                        <input type="hidden" min="1" name="quantity" value="1" max="<%= proData.stock %>">
+                                        <input type="hidden" name="quantity" value="1" id="hiddenQuantityInput">
                                         <button class="addbut" type="submit" id="addToCartButton">Add To Cart</button>
                                     </form>
                                 <% } else { %>
@@ -295,7 +302,7 @@
     
 
     <!-- Js Plugins -->
-    <!-- <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery.nice-select.min.js"></script>
     <script src="js/jquery.nicescroll.min.js"></script>
@@ -304,7 +311,7 @@
     <script src="js/jquery.slicknav.js"></script>
     <script src="js/mixitup.min.js"></script>
     <script src="js/owl.carousel.min.js"></script>
-    <script src="js/main.js"></script> -->
+    <script src="js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
@@ -318,6 +325,43 @@
 
 
    <script>
+
+
+
+
+
+
+
+
+
+
+
+function updateHiddenQuantity(input) {
+  const visibleQuantity = parseInt(input.value, 10);
+  const maxStock = parseInt(input.max, 10);
+
+  if (visibleQuantity > maxStock) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Exceeded Stock Limit',
+      text: `Only ${maxStock} items are available in stock.`,
+      toast:true,
+      confirmButtonText: 'Okay',
+      confirmButtonColor: '#4CAF50',
+    }).then(() => {
+      input.value = maxStock; 
+    });
+  } else if (visibleQuantity < 1) {
+    input.value = 1;
+  }
+  document.getElementById('hiddenQuantityInput').value = input.value;
+}
+
+
+
+
+
+
     $(document).ready(function() {
        
         $('#magnifyImg1').extm({
