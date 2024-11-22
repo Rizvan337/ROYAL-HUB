@@ -53,7 +53,7 @@ const addToCart = async (req, res) => {
                 cart.items.push({ item: productId, qty: requestedQuantity, price: product.salePrice });
             }
         }
- if (product.stock < quantity) {
+ if (product.stock < requestedQuantity) {
       return res.status(400).send('Quantity exceeds available stock!');
     }
         await cart.save();
@@ -113,7 +113,6 @@ const updateCart = async (req, res) => {
         }
 
         const item = cart.items.find(item => item.item._id.toString() === productId);
-
         if (item) {
             if (newQty > 0) {
                 item.qty = newQty;
