@@ -12,7 +12,6 @@ const shoptrue = async (req, res) => {
     let filter = {};
     let sortOption = {};
 
-    // Filtering based on search and category
     if (search) {
         filter.productName = { $regex: search, $options: 'i' };
     }
@@ -27,10 +26,9 @@ const shoptrue = async (req, res) => {
         };
     }
 
-    // Sorting logic
     switch (sort) {
         case 'popularity':
-            sortOption = { popularity: -1 }; // Assuming you have a 'popularity' field
+            sortOption = { popularity: -1 }; 
             break;
         case 'low_to_high':
             sortOption = { salePrice: 1 };
@@ -39,13 +37,13 @@ const shoptrue = async (req, res) => {
             sortOption = { salePrice: -1 };
             break;
         case 'avg_rating':
-            sortOption = { rating: -1 }; // Assuming you have a 'rating' field
+            sortOption = { rating: -1 }; 
             break;
         case 'featured':
-            sortOption = { featured: -1 }; // Assuming you have a 'featured' field
+            sortOption = { featured: -1 }; 
             break;
         case 'new_arrivals':
-            sortOption = { createdAt: -1 }; // Sort by the date field (e.g., 'createdAt')
+            sortOption = { createdAt: -1 }; 
             break;
         case 'a_to_z':
             sortOption = { productName: 1 };
@@ -54,11 +52,11 @@ const shoptrue = async (req, res) => {
             sortOption = { productName: -1 };
             break;
         default:
-            sortOption = { _id: -1 }; // Default sort by newest
+            sortOption = { _id: -1 }; 
     }
 
     try {
-        // Fetch products with filters and sorting
+       
         const products = await Product.find(filter).sort(sortOption);
         const totalProducts = await Product.countDocuments(filter);
 

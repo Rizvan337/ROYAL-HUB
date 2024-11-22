@@ -92,7 +92,8 @@
         <tbody>
           <% orders.forEach(order => { %>
             <tr>
-              <td><%= order.orderId %></td>
+              <!-- <td><%= order.orderId %></td> -->
+              <td><a href="/orders/<%= order._id %>" class="order-id-link"><%= order.orderId %></a></td>
               <td><%= moment(order.invoiceDate).format('MMMM Do YYYY') %></td>
               <td>$<%= order.finalAmount.toFixed(2) %></td>
               <td><span id="status-<%= order._id %>"><%= order.status %></span></td>

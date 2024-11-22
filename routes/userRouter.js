@@ -69,6 +69,7 @@ router.get('/invoice/:orderId', cartController.getInvoice)
 //my-orders
 router.get('/my-orders', profileController.myOrders)
 router.post('/orders/:orderId/cancel', profileController.cancelOrder)
+router.get('/orders/:orderId',userAuth, profileController.getUserOrderDetails)
 router.get('/logout', userController.logout)
 module.exports = router;
 
