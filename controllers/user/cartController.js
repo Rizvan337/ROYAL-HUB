@@ -39,7 +39,14 @@ const addToCart = async (req, res) => {
                     message: "Product quantity updated to maximum allowed (5)"
                 });
 
-            } else {
+            }else if(newQuantity>product.stock){
+                await cart.save()
+                return res.status(HttpStatus.OK).json({
+                    message: "Product quantity is greater than stock"
+                });
+            } 
+            
+            else {
                 cart.items[existingItemIndex].qty = newQuantity;
             }
         } else {
@@ -90,6 +97,7 @@ const getCart = async (req, res) => {
             subtotal,
             user,
             products: cart.items.map(i => i.item)
+            
         })
     } catch (error) {
         console.error(error)
