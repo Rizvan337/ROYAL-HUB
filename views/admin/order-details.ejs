@@ -3,42 +3,38 @@
 <style>
   /* General Styling */
   body {
-    font-family: "Arial", sans-serif;
-    background-color: #f5f6fa;
+    font-family: "Roboto", sans-serif;
+    background-color: #eaf2fb; /* Light Blue Background */
     margin: 0;
     padding: 0;
   }
 
   .order-details-container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 30px auto;
-    padding: 25px;
+    padding: 30px;
     background: #ffffff;
     border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .order-details-container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-top: 5px solid #d7dde2; /* Accent Border */
   }
 
   h2, h3 {
-    color: #333;
-    font-weight: bold;
+    color: #696b6d;
+    font-weight: 700;
     margin-bottom: 20px;
   }
 
   h2 {
-    border-bottom: 2px solid #4CAF50;
+    border-bottom: 3px solid #c0c5ca;
     padding-bottom: 10px;
   }
 
   .order-id {
-    color: #4CAF50;
-    font-size: 1.3rem;
-    font-style: italic;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #7f8c8d;
+    margin-bottom: 20px;
   }
 
   /* Table Styling */
@@ -47,38 +43,42 @@
     border-collapse: collapse;
     margin-bottom: 30px;
     font-size: 15px;
-    color: #555;
+    color: #6a6d69;
+    border: 1px solid #ddd;
   }
 
   .order-table th, .order-table td {
     padding: 15px;
-    border: 1px solid #ddd;
-    text-align: center;
+    text-align: left;
+    border-bottom: 1px solid #e1e4ea;
   }
 
   .order-table th {
-    background-color: #007bff;
+    background-color: #c9cfc7;
     color: #ffffff;
-    font-weight: bold;
+    font-weight: 700;
     text-transform: uppercase;
-  }
-
-  .order-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
+    text-align: left;
   }
 
   .order-table td {
-    font-size: 14px;
+    background-color: #f5f9ff; /* Light Blue Tint */
+    color: #2c3e50;
+  }
+
+  .order-table tbody tr:hover {
+    background-color: #dceefd; /* Highlighted Row */
   }
 
   /* Status Badge */
   .status-badge {
     display: inline-block;
-    padding: 8px 15px;
-    border-radius: 8px;
+    padding: 10px 15px;
+    border-radius: 20px;
     color: white;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: capitalize;
+    font-size: 14px;
   }
 
   .status-pending {
@@ -105,15 +105,26 @@
     background-color: #e67e22;
   }
 
-  /* Additional Information */
+  /* Order Summary */
+  .summary-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .summary-container h3 {
+    margin: 0;
+  }
+
   p {
-    margin: 10px 0;
-    font-size: 14px;
-    color: #666;
+    margin: 5px 0;
+    font-size: 15px;
+    color: #34495e;
   }
 
   p strong {
-    color: #333;
+    color: #2c3e50;
     font-weight: 600;
   }
 
@@ -122,8 +133,8 @@
     display: inline-block;
     padding: 10px 20px;
     font-size: 16px;
-    border-radius: 8px;
-    background-color: #4CAF50;
+    border-radius: 5px;
+    background-color: #666869;
     color: #ffffff;
     text-decoration: none;
     font-weight: 600;
@@ -131,7 +142,7 @@
   }
 
   .btn:hover {
-    background-color: #45a049;
+    background-color: #2980b9;
     transform: scale(1.05);
   }
 
@@ -141,17 +152,22 @@
       padding: 20px;
     }
 
-    .order-table th, .order-table td {
-      padding: 10px;
+    h2, h3 {
+      font-size: 1.5rem;
     }
 
-    h2, h3 {
-      font-size: 1.2rem;
+    .order-table th, .order-table td {
+      padding: 10px;
     }
 
     .btn {
       font-size: 14px;
       padding: 8px 15px;
+    }
+
+    .summary-container {
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 </style>
@@ -181,12 +197,15 @@
   </table>
 
   <!-- Order Summary -->
-  <h3>Order Status: 
-    <span class="status-badge status-<%= order.status.toLowerCase() %>">
-      <%= order.status %>
-    </span>
-  </h3>
-  <h3>Total Amount: $<%= order.finalAmount.toFixed(2) %></h3>
+  <div class="summary-container">
+    <h3>
+      Status:
+      <span class="status-badge status-<%= order.status.toLowerCase() %>">
+        <%= order.status %>
+      </span>
+    </h3>
+    <h3>Total: $<%= order.finalAmount.toFixed(2) %></h3>
+  </div>
   <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
   <p><strong>Invoice Date:</strong> <%= moment(order.invoiceDate).format('MMMM Do YYYY') %></p>
 

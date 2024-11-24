@@ -26,7 +26,7 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 })
 router.get('/login', userController.loadLogin)
 router.post('/login', userController.login)
-router.get('/productDetails', userController.productDetails)
+router.get('/product/:slug', userController.productDetails)
 router.get('/forgot-password', profileController.getForgotPassPage)
 router.post('/forgot-email', profileController.forgotEmail)
 router.post('/verify-passForgot-otp', profileController.verifyForgotPassOtp)
@@ -68,8 +68,8 @@ router.post('/placeOrder', cartController.placeOrder)
 router.get('/invoice/:orderId', cartController.getInvoice)
 //my-orders
 router.get('/my-orders', profileController.myOrders)
+router.get('/orders/:id',userAuth,profileController.getUserOrderDetails)
 router.post('/orders/:orderId/cancel', profileController.cancelOrder)
-router.get('/orders/:orderId',userAuth, profileController.getUserOrderDetails)
 router.get('/logout', userController.logout)
 module.exports = router;
 

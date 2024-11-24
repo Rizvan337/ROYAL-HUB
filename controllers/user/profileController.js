@@ -285,7 +285,7 @@ const editProfile = async (req, res) => {
 
 const myOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.session.user }).sort({ createdAt: -1 })
+        const orders = await Order.find({ user: req.session.user }).sort({ createdOn: -1 })
         res.render('my-orders', { orders: orders, moment })
     } catch (error) {
         console.error(error)
@@ -293,25 +293,16 @@ const myOrders = async (req, res) => {
 }
 
 
-
-
-
-
-const getUserOrderDetails = async (req, res) => {
-    const { orderId } = req.params
+const getUserOrderDetails = async (req,res)=>{
     try {
-        const order = await Order.findById(orderId).populate('user').populate('orderItems.product')
-        if (!order) {
-            res.status(HttpStatus.NOT_FOUND).send('Order not found')
-        }
-        return res.render('user-orderdetails', { order, moment })
+        const { id } = req.params
+        const order = await Order.findById(id).populate('orderItems.product')
+        res.render('user-orderdetails',{order,moment})
     } catch (error) {
-        console.error(error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Server Error');
+        console.error('Error fetching order details:', error);
+    res.status(500).send('Server Error');
     }
 }
-
-
 
 const cancelOrder = async (req, res) => {
     const { orderId } = req.params

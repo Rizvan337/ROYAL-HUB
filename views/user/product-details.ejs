@@ -3,9 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Male_Fashion Template">
+    <meta name="description" content="Shop the best products at Royal Hub. High-quality items with amazing deals.">
     <meta name="keywords" content="Male_Fashion, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta name="description" content="Male_Fashion Template"> -->
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Royal hub products</title>
 
@@ -15,14 +16,14 @@
     rel="stylesheet">
 
     <!-- Css Styles -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
-    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
-    <link rel="stylesheet" href="css/nice-select.css" type="text/css">
-    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
-    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="/css/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="/css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
 <style>
     .header__logo{
@@ -71,7 +72,7 @@
             <div class="row">
                 <div class="col-lg-3 col-md-3">
                     <div class="header__logo">
-                        <a href="/"><img src="img/royalwhitelogo.jpeg" alt=""></a>
+                        <a href="/"><img loading="lazy" src="/img/royalwhitelogo.jpeg" alt="Royalhub-logo"></a>
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-6">
@@ -95,9 +96,9 @@
                 </div>
                 <div class="col-lg-3 col-md-3">
                     <div class="header__nav__option">
-                        <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
-                        <a href="#"><img src="img/icon/heart.png" alt=""></a>
-                        <a href="./cart"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
+                        <a href="#" class="search-switch"><img loading="lazy" src="/img/icon/search.png" alt="search-icon"></a>
+                        <a href="#"><img loading="lazy" src="/img/icon/heart.png" alt="whishlist-icon"></a>
+                        <a href="/cart"><img loading="lazy" src="/img/icon/cart.png" alt="cart-icon"> <span>0</span></a>
                         <!-- <div class="price">$0.00</div> -->
                     </div>
                 </div>
@@ -154,17 +155,17 @@
                         <div class="tab-content">
                             <div class="tab-pane active" id="tabs-1" role="tabpanel">
                                 <div class="product__details__pic__item">
-                                    <img id="magnifyImg1" class="imagefit" src="/uploads/re-image/<%=proData.productImage[0]%>" alt="">
+                                    <img loading="lazy" id="magnifyImg1" class="imagefit" src="/uploads/re-image/<%=proData.productImage[0]%>" alt="Image of <%= proData.productName %>">
                                 </div>
                             </div>
                             <div class="tab-pane" id="tabs-2" role="tabpanel">
                                 <div class="product__details__pic__item">
-                                    <img id="magnifyImg2" class="zoom-image" src="/uploads/re-image/<%=proData.productImage[1]%>" alt="">
+                                    <img loading="lazy" id="magnifyImg2" class="zoom-image" src="/uploads/re-image/<%=proData.productImage[1]%>" alt="Image of <%= proData.productName %>">
                                 </div>
                             </div>
                             <div class="tab-pane" id="tabs-3" role="tabpanel">
                                 <div class="product__details__pic__item">
-                                    <img id="magnifyImg3" src="/uploads/re-image/<%=proData.productImage[2]%>" alt="">
+                                    <img loading="lazy" id="magnifyImg3" src="/uploads/re-image/<%=proData.productImage[2]%>" alt="Image of <%= proData.productName %>">
                                 </div>
                             </div>
                             <!-- <div class="tab-pane" id="tabs-4" role="tabpanel">
@@ -183,7 +184,9 @@
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-8">
                         <div class="product__details__text">
-                            <h4><%=proData.productName%></h4>
+                            <a href="/product/<%= proData.slug %>">
+                                <h3><%= proData.productName %></h3>
+                            </a>
                             <div class="rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -302,16 +305,16 @@
     
 
     <!-- Js Plugins -->
-    <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/jquery.nice-select.min.js"></script>
-    <script src="js/jquery.nicescroll.min.js"></script>
-    <script src="js/jquery.magnific-popup.min.js"></script>
-    <script src="js/jquery.countdown.min.js"></script>
-    <script src="js/jquery.slicknav.js"></script>
-    <script src="js/mixitup.min.js"></script>
-    <script src="js/owl.carousel.min.js"></script>
-    <script src="js/main.js"></script>
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/jquery.nice-select.min.js"></script>
+    <script src="/js/jquery.nicescroll.min.js"></script>
+    <script src="/js/jquery.magnific-popup.min.js"></script>
+    <script src="/js/jquery.countdown.min.js"></script>
+    <script src="/js/jquery.slicknav.js"></script>
+    <script src="/js/mixitup.min.js"></script>
+    <script src="/js/owl.carousel.min.js"></script>
+    <script src="/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 

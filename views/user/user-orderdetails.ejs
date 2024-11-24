@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Orders</title>
 <style>
-  /* General Styling */
+  
   body {
     font-family: "Arial", sans-serif;
     background-color: #f5f6fa;
@@ -45,7 +45,7 @@
     font-style: italic;
   }
 
-  /* Table Styling */
+  
   .order-table {
     width: 100%;
     border-collapse: collapse;
@@ -75,7 +75,7 @@
     font-size: 14px;
   }
 
-  /* Status Badge */
+  
   .status-badge {
     display: inline-block;
     padding: 8px 15px;
@@ -109,7 +109,7 @@
     background-color: #e67e22;
   }
 
-  /* Additional Information */
+  
   p {
     margin: 10px 0;
     font-size: 14px;
@@ -121,7 +121,7 @@
     font-weight: 600;
   }
 
-  /* Buttons */
+  
   .btn {
     display: inline-block;
     padding: 10px 20px;
@@ -139,7 +139,7 @@
     transform: scale(1.05);
   }
 
-  /* Responsive Design */
+  
   @media (max-width: 768px) {
     .order-details-container {
       padding: 20px;
@@ -164,7 +164,7 @@
   <h2>Order Details</h2>
   <p class="order-id">Order ID: <%= order.orderId %></p>
 
-  <!-- Order Items Table -->
+  
   <table class="order-table">
     <thead>
       <tr>
@@ -184,7 +184,7 @@
     </tbody>
   </table>
 
-  <!-- Order Summary -->
+ 
   <h3>Order Status: 
     <span class="status-badge status-<%= order.status.toLowerCase() %>">
       <%= order.status %>
@@ -194,9 +194,9 @@
   <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
   <p><strong>Invoice Date:</strong> <%= moment(order.invoiceDate).format('MMMM Do YYYY') %></p>
 
-  <!-- Back to Orders Button -->
+  
   <a href="/my-orders" class="btn">Back to Orders</a>
 </div>
 
 </body>
-</html>
+</html> 

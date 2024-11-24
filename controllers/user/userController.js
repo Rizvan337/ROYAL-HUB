@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer')
 const env = require('dotenv').config()
 const bcrypt = require('bcrypt')
 const HttpStatus = require('../../utils/httpStatusCodes')
+const slugify = require('slugify')
 
 
 const shoptrue = async (req, res) => {
@@ -85,6 +86,9 @@ const loadShop = async (req, res) => {
         const categoryFilter = req.query.category || '';
         const minPrice = parseFloat(req.query.minPrice) || 0;
         const maxPrice = parseFloat(req.query.maxPrice) || Infinity;
+        const page = parseInt(req.query.page)||1
+        const limit = 6
+        const skip = (page-1)*limit        
 
 
         const query = {
@@ -126,8 +130,9 @@ const loadShop = async (req, res) => {
                 sortOption = {};
         }
         const categories = await Category.find({isListed:true});
-        const products = await Product.find(query).sort(sortOption);
+        const products = await Product.find(query).sort(sortOption).skip(skip).limit(limit)
         const totalProducts = await Product.countDocuments(query);
+        const totalPages = Math.ceil(totalProducts/limit)
         res.render('shop', {
             search,
             categories,
@@ -136,6 +141,8 @@ const loadShop = async (req, res) => {
             totalProducts,
             user: req.session.user,
             categoryFilter,
+            totalPages,
+            currentPage:page,
 
         });
     } catch (error) {
@@ -394,8 +401,12 @@ const logout = async (req, res) => {
 //prouct detail page
 const productDetails = async (req, res) => {
     try {
-        const productId = req.query.id
-        const productDetails = await Product.findOne({ _id: productId })
+        // const productId = req.query.id
+        const productSlug = req.params.slug
+        const productDetails = await Product.findOne({slug:productSlug })
+        if (!productDetails) {
+            return res.status(HttpStatus.NOT_FOUND).render('page-404'); // Handle missing product
+        }
         console.log(productDetails)
         return res.render('product-details', { proData: productDetails })
     } catch (error) {

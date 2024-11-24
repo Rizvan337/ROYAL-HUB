@@ -5,16 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Orders</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
   <style>
+    /* General Styles */
     body {
       font-family: 'Nunito', sans-serif;
       background-color: #f3f6f9;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 250px;
+      background-color: #1d3557;
+      color: #fff;
+      padding: 20px 0;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100%;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .sidebar .logo h1 {
+      font-size: 22px;
+      color: #fff;
+      margin: 0;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar ul li {
+      margin: 10px 0;
+    }
+
+    .sidebar ul li a {
+      text-decoration: none;
+      color: #fff;
+      padding: 12px 20px;
+      display: block;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar ul li a:hover,
+    .sidebar ul li a.active {
+      background-color: #457b9d;
+    }
+
+    .sidebar ul li a i {
+      margin-right: 10px;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+      margin-left: 250px;
       padding: 20px;
+      width: calc(100% - 250px);
+      overflow: auto;
     }
 
     .orders-container {
-      max-width: 800px;
-      margin: 0 auto;
       background-color: #ffffff;
       padding: 20px;
       border-radius: 12px;
@@ -26,23 +91,6 @@
       font-size: 26px;
       font-weight: 700;
       margin-bottom: 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    table th, table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #dee2e6;
-    }
-
-    table thead {
-      background-color: #1d3557;
-      color: #ffffff;
     }
 
     .btn {
@@ -75,73 +123,77 @@
   </style>
 </head>
 <body>
-  <div class="orders-container">
-    <h2>My Orders</h2>
-    
-    <% if (orders && orders.length > 0) { %>
-      <table>
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Date</th>
-            <th>Total Amount</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% orders.forEach(order => { %>
-            <tr>
-              <!-- <td><%= order.orderId %></td> -->
-              <td><a href="/orders/<%= order._id %>" class="order-id-link"><%= order.orderId %></a></td>
-              <td><%= moment(order.invoiceDate).format('MMMM Do YYYY') %></td>
-              <td>$<%= order.finalAmount.toFixed(2) %></td>
-              <td><span id="status-<%= order._id %>"><%= order.status %></span></td>
-              <td>
-                <% if (order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
-                  <button class="cancel-btn" onclick="cancelOrder('<%= order._id %>')">Cancel</button>
-                <% } %>
-              </td>
-            </tr>
-          <% }) %>  
-        </tbody>
-      </table>
-    <% } else { %>
-      <p>No orders found.</p>
-    <% } %>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>My Dashboard</h1>
+    </div>
+    <ul>
+      <li><a href="/userProfile" class="active"><i class="fas fa-user-circle"></i> My Profile</a></li>
+      <li><a href="/addressManage"><i class="fas fa-map-marker-alt"></i> My Address</a></li>
+      <li><a href="/my-orders"><i class="fas fa-box"></i> My Orders</a></li>
+      <li><a href="#wallet"><i class="fas fa-wallet"></i> Wallet</a></li>
+      <li><a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+  </aside>
 
-    <a href="/userProfile" class="btn">Back to Profile</a>
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="orders-container">
+      <h2>My Orders</h2>
+      <% if (orders && orders.length > 0) { %>
+        <table id="ordersTable" class="display">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Date</th>
+              <th>Total Amount</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders.forEach(order => { %>
+              <tr>
+                <td><a href="/orders/<%= order._id %>" class="order-id-link"><%= order.orderId %></a></td>
+                <td><%= moment(order.invoiceDate).format('MMMM Do YYYY') %></td>
+                <td>$<%= order.finalAmount.toFixed(2) %></td>
+                <td><span id="status-<%= order._id %>"><%= order.status %></span></td>
+                <td>
+                  <% if (order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
+                    <button class="cancel-btn" onclick="cancelOrder('<%= order._id %>')">Cancel</button>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p>No orders found.</p>
+      <% } %>
+      <a href="/userProfile" class="btn">Back to Profile</a>
+    </div>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script>
-    const socket = io();
-
-    // Listen for order status changes
-    socket.on('orderStatusChanged', (data) => {
-      const { orderId, status } = data;
-      const statusElement = document.querySelector(`#status-${orderId}`);
-      if (statusElement) {
-        statusElement.textContent = status;
-        alert(`Order ${orderId} status changed to ${status}`);
-      }
+    $(document).ready(function () {
+      $('#ordersTable').DataTable({
+        responsive: true,
+        order: [[1, 'desc']],
+        columnDefs: [{ orderable: false, targets: [4] }],
+      });
     });
 
-    // Cancel order function
     async function cancelOrder(orderId) {
       if (confirm('Are you sure you want to cancel this order?')) {
         try {
-          const response = await fetch(`/orders/${orderId}/cancel`, {
-            method: 'POST',
-          });
+          const response = await fetch(`/orders/${orderId}/cancel`, { method: 'POST' });
           const result = await response.json();
-
           if (result.success) {
             alert('Order cancelled successfully');
-            const statusElement = document.querySelector(`#status-${orderId}`);
-            if (statusElement) {
-              statusElement.textContent = 'Cancelled';
-            }
+            document.querySelector(`#status-${orderId}`).textContent = 'Cancelled';
           } else {
             alert('Failed to cancel the order');
           }

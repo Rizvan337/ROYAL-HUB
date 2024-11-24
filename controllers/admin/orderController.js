@@ -41,8 +41,9 @@ const updateOrderStatus = async (req, res) => {
             return res.redirect('/admin/orderList')
         }
         if (status === "Cancelled" && order.status !== "Cancelled") {
-            for (let item of order.orderItems) {
-                const productId = item.quantity
+            for (let item of order.orderItems) {    
+                
+                const productId = item.product
                 const quantity = item.quantity
                 await Product.findByIdAndUpdate(productId, { $inc: { stock: quantity } })
             }
@@ -61,7 +62,7 @@ const updateOrderStatus = async (req, res) => {
     } catch (error) {
         console.error('Error updating status', error)
         req.flash('error', 'failed to update status')
-        res.redirect('/admn/orderList')
+        res.redirect('/admin/orderList')
     }
 }
 
@@ -70,4 +71,5 @@ module.exports = {
     getAllOrders,
     getOrderDetails,
     updateOrderStatus,
+    
 }

@@ -1,0 +1,50 @@
+<style>
+    .dashboard-menu {
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    .dashboard-menu .nav-link {
+        color: #343a40;
+        font-weight: 500;
+        padding: 15px 20px;
+        border-bottom: 1px solid #f1f1f1;
+        transition: all 0.3s ease;
+    }
+    .dashboard-menu .nav-link:hover,
+    .dashboard-menu .nav-link.active {
+        background-color: #007bff;
+        color: #fff;
+    }
+</style>
+<aside class="col-lg-3">
+    <div class="dashboard-menu">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="/userProfile">
+                    <i class="fas fa-user-circle me-2"></i> My Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/addressManage">
+                    <i class="fas fa-map-marker-alt me-2"></i> My Address
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/my-orders">
+                    <i class="fas fa-box me-2"></i> Orders
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#wallet">
+                    <i class="fas fa-wallet me-2"></i> Wallet
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-danger" href="/logout">
+                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+</aside>
