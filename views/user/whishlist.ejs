@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wishlist</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<style>
+    /* General reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+header {
+  background-color: #333;
+  padding: 1rem;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar .logo {
+  color: #fff;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.navbar ul {
+  list-style-type: none;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.wishlist-container {
+  margin: 2rem auto;
+  width: 90%;
+  max-width: 1200px;
+  background-color: #fff;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.wishlist-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.wishlist-table th, .wishlist-table td {
+  padding: 1rem;
+  text-align: center;
+}
+
+.wishlist-table th {
+  background-color: #f4f4f4;
+}
+
+.wishlist-table td img {
+  max-width: 100px;
+  height: auto;
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.product-info img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.old-price {
+  text-decoration: line-through;
+  color: #888;
+  margin-right: 10px;
+}
+
+.new-price {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.stock-status {
+  font-weight: bold;
+}
+
+.add-to-cart, .remove {
+  padding: 10px 20px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+  border-radius: 5px;
+}
+
+.add-to-cart {
+  background-color: #3498db;
+}
+
+.remove {
+  background-color: #e74c3c;
+}
+
+.add-to-cart:hover, .remove:hover {
+  opacity: 0.8;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #333;
+  color: white;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .wishlist-container {
+    padding: 1rem;
+  }
+
+  .wishlist-table td img {
+    width: 40px;
+  }
+}
+
+</style>
+<body>
+  <header>
+    <nav class="navbar">
+      <a href="/" class="logo">YourStore</a>
+      <ul>
+        <li><a href="/wishlist">Wishlist</a></li>
+        <li><a href="/cart">Cart</a></li>
+        <li><a href="/account">My Account</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <div class="wishlist-container">
+    <h1>My Wishlist</h1>
+    <% if (wishlist.length === 0) { %>
+        <p style="text-align: center; font-size: 1.2rem; color: #888;">Your wishlist is empty.</p>
+      <% } else { %>
+    <table class="wishlist-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Unit Price</th>
+          <th>Stock Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% wishlist.forEach(product => { %>
+          <tr>
+            <td>
+              <div class="product-info">
+                <img src="<%= product.image %>" alt="<%= product.name %>">
+                <span><%= product.name %></span>
+              </div>
+            </td>
+            <td>
+              <% if (product.discount) { %>
+                <span class="old-price"><%= product.oldPrice %></span>
+                <span class="new-price"><%= product.newPrice %></span>
+              <% } else { %>
+                <span class="new-price"><%= product.newPrice %></span>
+              <% } %>
+            </td>
+            <td><span class="stock-status"><%= product.stockStatus %></span></td>
+            <td>
+              <button class="btn add-to-cart" onclick="addToCart('<%= product._id %>')">Add to Cart</button>
+              <button class="btn remove" onclick="removeFromWishlist('<%= product._id %>')">Remove</button>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 YourStore. All rights reserved.</p>
+  </footer>
+
+  <script>
+// Function to add item to cart
+function addToCart(productId) {
+  // You can implement this function to send a request to the server
+  // and add the product to the cart.
+  console.log('Added product to cart:', productId);
+  Swal.fire('Success', 'Product added to cart!', 'success');
+}
+
+// Function to remove item from wishlist
+function removeFromWishlist(productId) {
+  // Implement removal logic here
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you really want to remove this product from your wishlist?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, remove it!',
+    cancelButtonText: 'No, keep it'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      console.log('Removed product from wishlist:', productId);
+      Swal.fire('Removed!', 'Your product has been removed from the wishlist.', 'success');
+      // Optionally, refresh the wishlist or remove the product from the DOM
+    }
+  });
+}
+
+  </script>
+</body>
+</html>

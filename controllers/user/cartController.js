@@ -233,13 +233,14 @@ const placeOrder = async (req, res) => {
         const { selectedAddress, paymentMethod } = req.body;
         const user = req.session.user;
         const userId = user._id;
+        console.log("1")
         const address = await Address.findById(selectedAddress);
         const cart = await Cart.findOne({ user: userId }).populate({ path: 'items.item', select: 'productName salePrice stock' });
 
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
         const tax = Math.round(subtotal * 0.09);
         const totalAmount = subtotal + tax;
-        
+        console.log("2")
         const newOrder = new Order({
             user: userId,
             orderItems: cart.items.map(item => ({
@@ -256,8 +257,8 @@ const placeOrder = async (req, res) => {
             createdOn: Date.now()
         });
         const savedOrder = await newOrder.save()
-        console.log(savedOrder)
-
+        // console.log(savedOrder)
+        console.log("3")
 
         for (let item of cart.items) {
             const productId = item.item._id
@@ -268,9 +269,11 @@ const placeOrder = async (req, res) => {
                 await product.save()
             }
         }
-
+        console.log("4")
         await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } });
-        res.redirect(`/invoice/${savedOrder._id}`);
+        console.log("5")
+        res.json({ success: true, message: 'Order placed successfully',orderId:savedOrder._id});
+        // res.redirect(`/${savedOrder._id}`);
     } catch (error) {
         console.error('Error in placeOrder:', error);
         res.status(500).send('Server Error');

@@ -50,7 +50,7 @@ const orderSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned", "Return Request"]
+        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned", "Return Request","Confirmed"]
     },
     createdOn: {
         type: Date,
@@ -66,6 +66,15 @@ const orderSchema = new Schema({
     }, paymentMethod: {
         type: String,
         required: true,
+    },
+    razorpayOrderId:{
+        type:String
+    },
+    razorpayPaymentId:{
+        type:String
+    },
+    razorpaySignature:{
+        type:String
     },
     user: {
         type: Schema.Types.ObjectId,

@@ -177,6 +177,8 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script>
     $(document).ready(function () {
       $('#ordersTable').DataTable({
@@ -187,22 +189,37 @@
     });
 
     async function cancelOrder(orderId) {
-      if (confirm('Are you sure you want to cancel this order?')) {
-        try {
-          const response = await fetch(`/orders/${orderId}/cancel`, { method: 'POST' });
-          const result = await response.json();
-          if (result.success) {
-            alert('Order cancelled successfully');
-            document.querySelector(`#status-${orderId}`).textContent = 'Cancelled';
-          } else {
-            alert('Failed to cancel the order');
-          }
-        } catch (error) {
-          console.error('Error cancelling order:', error);
-          alert('An error occurred. Please try again.');
-        }
+  // Use SweetAlert for confirmation
+  const { isConfirmed } = await Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you really want to cancel this order?",
+    icon: 'warning',
+    showCancelButton: true,
+    toast:true,
+    confirmButtonText: 'Yes, cancel it!',
+    cancelButtonText: 'No, keep it'
+  });
+
+  if (isConfirmed) {
+    try {
+      const response = await fetch(`/orders/${orderId}/cancel`, { method: 'POST' });
+      const result = await response.json();
+      if (result.success) {
+        // Update status on successful cancellation
+        document.querySelector(`#status-${orderId}`).textContent = 'Cancelled';
+        Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success'); // Show success message
+      } else {
+        // Handle failure response
+        Swal.fire('Error', 'Failed to cancel the order. Please try again.', 'error');
       }
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      // Use SweetAlert for error handling
+      Swal.fire('Error', 'An error occurred. Please try again.', 'error');
     }
+  }
+}
+
   </script>
 </body>
 </html>
