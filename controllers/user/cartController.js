@@ -61,15 +61,19 @@ const addToCart = async (req, res) => {
             }
         }
  if (product.stock < requestedQuantity) {
-      return res.status(400).send('Quantity exceeds available stock!');
+    return res.status(HttpStatus.BAD_REQUEST).json({
+        message: "less stock"
+    })
     }
         await cart.save();
         console.log('item added to cart', cart);
 
-        res.status(HttpStatus.OK).json({ message: "Product added to cart successfully" });
+       return res.status(HttpStatus.OK).json({ message: "Product added to cart successfully" });
     } catch (error) {
         console.error(error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Server error");
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            message: "server error"
+        })
     }
 };
 
@@ -97,6 +101,7 @@ const getCart = async (req, res) => {
             subtotal,
             user,
             products: cart.items.map(i => i.item)
+            
             
         })
     } catch (error) {

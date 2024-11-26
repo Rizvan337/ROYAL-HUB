@@ -78,7 +78,7 @@ router.get('/orders/:id',userAuth,profileController.getUserOrderDetails)
 router.post('/orders/:orderId/cancel', profileController.cancelOrder)
 router.get('/whishlist',userAuth,whishListController.getWhishListPage)
 router.post('/addToWhishlist',userAuth,whishListController.addToWhishList)
-
+router.post('/whishlist/remove',userAuth,whishListController.removeFromWhishlist)
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,

@@ -125,6 +125,18 @@
 
 
 
+  .fas.fa-heart {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.fas.fa-heart.not-added {
+    color: #ccc; /* Gray color for empty heart (not in wishlist) */
+}
+
+.fas.fa-heart.added {
+    color: #ff0000; /* Red color for filled heart (added to wishlist) */
+}
 
 
 
@@ -230,10 +242,26 @@
                     </div> 
                       </div> 
                       <div class="product-action-1">
-                          <a href="/addToWishlist?id=<%=products[i]._id%>" class="action-btn hover-up" aria-label="Add to Whishlist">
-                              <i class="fas fa-heart"></i>
+                        <!-- <form method="post" action="/addToWhishlist" id="wishlistForm"> 
+                            <input value="1" type="hidden" name="quantity">
+                            <input type="hidden" name="productId" value="<%=products[i]._id%>">
+                          <i class="fas fa-heart" onclick="submitWhishlistForm()"></i>
+                             <button type="submit" class="btn">Add to Whishlist</button> -->
+                        <!-- </form>  -->
+                        <form method="post" action="/addToWhishlist" id="wishlistForm<%= products[i]._id %>">
+                            <input value="1" type="hidden" name="quantity">
+                            <input type="hidden" name="productId" value="<%= products[i]._id %>">
+                            <i
+                              class="fas fa-heart not-added"
+                              id="wishlistIcon<%= products[i]._id %>"
+                              onclick="submitWhishlistForm('<%= products[i]._id %>')"
+                            ></i>
+                          </form>
+                          
+                          <!-- <a href="/addToWishlist?id=<%=products[i]._id%>" class="action-btn hover-up" aria-label="Add to Whishlist"> -->
+                              <!-- <i class="fas fa-heart"></i>
                              
-                          </a>
+                          </a> -->
                       </div>
 
 
@@ -293,6 +321,77 @@
             });
         });
     });
+    function submitWhishlistForm(productId) {
+        const form = document.getElementById('wishlistForm' + productId);
+        const heartIcon = document.getElementById('wishlistIcon' + productId);
+        
+        // Toggle the heart icon state
+        heartIcon.classList.toggle('added');
+        heartIcon.classList.toggle('not-added');
+        
+        // Submit the form to add the product to the wishlist
+        form.submit();
+    }
+    
+
+
+    async function submitWhishlistForm(productId) {
+  const form = document.getElementById('wishlistForm' + productId);
+  const heartIcon = document.getElementById('wishlistIcon' + productId);
+
+  // Prepare form data
+  const formData = new FormData(form);
+  const data = {};
+  formData.forEach((value, key) => {
+    data[key] = value;
+  });
+
+  try {
+    // Send the request to the server
+    const response = await fetch(form.action, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      // Success message with SweetAlert
+      Swal.fire({
+        toast:true,
+        icon: 'success',
+        title: 'Added to Wishlist',
+        text: result.message,
+        confirmButtonText: 'OK',
+      }).then(() => {
+        // Update heart icon state
+        heartIcon.classList.remove('not-added');
+        heartIcon.classList.add('added');
+      });
+    } else {
+      // Error or already added message
+      Swal.fire({
+        toast:true,
+        position:'top-end',
+        icon: 'info',
+        title: 'Already in Wishlist',
+        text: result.message,
+        confirmButtonText: 'Got it',
+      });
+    }
+  } catch (error) {
+    // Show error SweetAlert if something goes wrong
+    Swal.fire({
+        toast:true,
+      icon: 'error',
+      title: 'Error',
+      text: 'Something went wrong. Please try again later.',
+      confirmButtonText: 'OK',
+    });
+  }
+}
+
 </script>
 
 <%- include("../../views/partials/user/footer") %>

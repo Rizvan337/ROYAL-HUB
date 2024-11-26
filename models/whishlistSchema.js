@@ -24,5 +24,5 @@ const whishlistSchema = new mongoose.Schema({
  }]
 })
 
-const Whishlist = mongoose.model('Whislist',whishlistSchema)
+const Whishlist = mongoose.model('Whishlist',whishlistSchema)
 module.exports = Whishlist
