@@ -9,78 +9,62 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
   <style>
-    /* General Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Nunito', sans-serif;
       background-color: #f3f6f9;
-      margin: 0;
       display: flex;
       height: 100vh;
+      flex-direction: column;
     }
 
-    /* Sidebar Styles */
-    .sidebar {
+    .container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    aside {
       width: 250px;
-      background-color: #1d3557;
-      color: #fff;
-      padding: 20px 0;
+      background-color: #e6eaf0;
+      color: white;
       display: flex;
       flex-direction: column;
-      position: fixed;
-      height: 100%;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      padding-top: 20px;
+      transition: width 0.3s;
+      overflow-y: auto;
     }
 
-    .sidebar .logo {
-      text-align: center;
-      margin-bottom: 30px;
+    aside .nav-item {
+      padding: 15px 20px;
+      transition: background-color 0.3s ease;
     }
 
-    .sidebar .logo h1 {
-      font-size: 22px;
-      color: #fff;
-      margin: 0;
-    }
-
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .sidebar ul li {
-      margin: 10px 0;
-    }
-
-    .sidebar ul li a {
+    aside .nav-link {
+      color: rgb(19, 1, 1);
       text-decoration: none;
-      color: #fff;
-      padding: 12px 20px;
-      display: block;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
     }
 
-    .sidebar ul li a:hover,
-    .sidebar ul li a.active {
-      background-color: #457b9d;
+    aside .nav-link:hover {
+      background-color: #345dce;
+      color: white;
     }
 
-    .sidebar ul li a i {
-      margin-right: 10px;
-    }
-
-    /* Main Content Styles */
     .main-content {
-      margin-left: 250px;
+      flex: 1;
       padding: 20px;
-      width: calc(100% - 250px);
-      overflow: auto;
+      overflow-y: auto;
     }
 
     .orders-container {
-      background-color: #ffffff;
+      background-color: white;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
@@ -89,58 +73,100 @@
     h2 {
       color: #1d3557;
       font-size: 26px;
-      font-weight: 700;
       margin-bottom: 20px;
     }
 
     .btn {
-      display: inline-block;
       background-color: #1d3557;
-      color: #ffffff;
+      color: white;
       padding: 10px 20px;
       border-radius: 8px;
       text-decoration: none;
-      margin-top: 20px;
-      cursor: pointer;
+      display: inline-block;
+      transition: background-color 0.3s ease;
     }
 
     .btn:hover {
       background-color: #457b9d;
     }
+    .nav-lin{
+      color: red;
+      
+    }
 
     .cancel-btn {
       background-color: #ec0417;
-      color: #ffffff;
+      color: white;
       padding: 6px 12px;
       border-radius: 6px;
       cursor: pointer;
       text-decoration: none;
+      transition: background-color 0.3s ease;
     }
 
     .cancel-btn:hover {
       background-color: #d62828;
     }
+
+    @media (max-width: 768px) {
+      aside {
+        width: 70px;
+      }
+
+      .main-content {
+        margin-left: 70px;
+      }
+
+      aside .nav-link {
+        justify-content: center;
+      }
+
+      aside .nav-link i {
+        margin: 0;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo">
-      <h1>My Dashboard</h1>
-    </div>
-    <ul>
-      <li><a href="/userProfile" class="active"><i class="fas fa-user-circle"></i> My Profile</a></li>
-      <li><a href="/addressManage"><i class="fas fa-map-marker-alt"></i> My Address</a></li>
-      <li><a href="/my-orders"><i class="fas fa-box"></i> My Orders</a></li>
-      <li><a href="#wallet"><i class="fas fa-wallet"></i> Wallet</a></li>
-      <li><a href="/logout" class="text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-    </ul>
-  </aside>
+  <div class="container">
+    <aside>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" href="/userProfile">
+            <i class="fas fa-user-circle me-2"></i>
+            <span>My Profile</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/addressManage">
+            <i class="fas fa-map-marker-alt me-2"></i>
+            <span>My Address</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/my-orders">
+            <i class="fas fa-box me-2"></i>
+            <span>Orders</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/getWallet">
+            <i class="fas fa-wallet me-2"></i>
+            <span>Wallet</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-lin text-danger" href="/logout">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <div class="orders-container">
-      <h2>My Orders</h2>
+    <div class="main-content">
+      <div class="orders-container">
+<h2>My Orders</h2>
       <% if (orders && orders.length > 0) { %>
         <table id="ordersTable" class="display">
           <thead>
@@ -160,7 +186,9 @@
                 <td>$<%= order.finalAmount.toFixed(2) %></td>
                 <td><span id="status-<%= order._id %>"><%= order.status %></span></td>
                 <td>
-                  <% if (order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
+                  <% if (order.status === 'Delivered') { %>
+                    <button class="cancel-btn" onclick="returnOrder('<%= order._id %>')">Return</button>
+                  <% } else if (order.status !== 'Cancelled'&&order.status !== 'Returned') { %>
                     <button class="cancel-btn" onclick="cancelOrder('<%= order._id %>')">Cancel</button>
                   <% } %>
                 </td>
@@ -174,52 +202,86 @@
       <a href="/userProfile" class="btn">Back to Profile</a>
     </div>
   </div>
+</div>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <script>
-    $(document).ready(function () {
-      $('#ordersTable').DataTable({
-        responsive: true,
-        order: [[1, 'desc']],
-        columnDefs: [{ orderable: false, targets: [4] }],
-      });
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#ordersTable').DataTable({
+      responsive: true,
+      order: [[1, 'desc']],
+      columnDefs: [{ orderable: false, targets: [4] }],
     });
-
-    async function cancelOrder(orderId) {
-  // Use SweetAlert for confirmation
-  const { isConfirmed } = await Swal.fire({
-    title: 'Are you sure?',
-    text: "Do you really want to cancel this order?",
-    icon: 'warning',
-    showCancelButton: true,
-    toast:true,
-    confirmButtonText: 'Yes, cancel it!',
-    cancelButtonText: 'No, keep it'
   });
 
-  if (isConfirmed) {
+  async function cancelOrder(orderId) {
+// Use SweetAlert for confirmation
+const { isConfirmed } = await Swal.fire({
+  title: 'Are you sure?',
+  text: "Do you really want to cancel this order?",
+  icon: 'warning',
+  showCancelButton: true,
+  toast:true,
+  confirmButtonText: 'Yes, cancel it!',
+  cancelButtonText: 'No, keep it'
+});
+
+if (isConfirmed) {
+  try {
+    const response = await fetch(`/orders/${orderId}/cancel`, { method: 'POST' });
+    const result = await response.json();
+    if (result.success) {
+      // Update status on successful cancellation
+      document.querySelector(`#status-${orderId}`).textContent = 'Cancelled';
+      Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success'); // Show success message
+    } else {
+      // Handle failure response
+      Swal.fire('Error', 'Failed to cancel the order. Please try again.', 'error');
+    }
+  } catch (error) {
+    console.error('Error cancelling order:', error);
+    // Use SweetAlert for error handling
+    Swal.fire('Error', 'An error occurred. Please try again.', 'error');
+  }
+}
+}
+async function returnOrder(orderId) {
+  const {isConfirmed} = await Swal.fire({
+    title: 'Are you sure?',
+  text: "Do you really want to return this order?",
+  icon: 'warning',
+  showCancelButton: true,
+  toast:true,
+  confirmButtonText: 'Yes, return it!',
+  cancelButtonText: 'No, keep it'
+  })  
+  if(isConfirmed){
     try {
-      const response = await fetch(`/orders/${orderId}/cancel`, { method: 'POST' });
-      const result = await response.json();
-      if (result.success) {
-        // Update status on successful cancellation
-        document.querySelector(`#status-${orderId}`).textContent = 'Cancelled';
-        Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success'); // Show success message
-      } else {
-        // Handle failure response
-        Swal.fire('Error', 'Failed to cancel the order. Please try again.', 'error');
-      }
+      const response = await fetch(`/orders/${orderId}/return`, { method: 'POST' });
+    const result = await response.json();
+    if (result.success) {
+      // Update status on successful cancellation
+      document.querySelector(`#status-${orderId}`).textContent = 'Returned';
+      Swal.fire('Returned!', 'Your order has been returned.', 'success'); // Show success message
+    } else {
+      // Handle failure response
+      Swal.fire('Error', 'Failed to return the order. Please try again.', 'error');
+    }
     } catch (error) {
       console.error('Error cancelling order:', error);
-      // Use SweetAlert for error handling
-      Swal.fire('Error', 'An error occurred. Please try again.', 'error');
+    Swal.fire('Error', 'An error occurred. Please try again.', 'error');
     }
   }
 }
 
-  </script>
+</script>
+</body>
+</html>
+
 </body>
 </html>

@@ -81,6 +81,10 @@ const orderSchema = new Schema({
         ref: "User",
         required: true
     },
+    walletUsed:{
+        type:Number,
+        default:0
+    },
 
 
 })

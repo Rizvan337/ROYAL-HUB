@@ -76,10 +76,14 @@ router.get('/invoice/:orderId', cartController.getInvoice)
 router.get('/my-orders', profileController.myOrders)
 router.get('/orders/:id',userAuth,profileController.getUserOrderDetails)
 router.post('/orders/:orderId/cancel', profileController.cancelOrder)
+router.post('/orders/:orderId/return',profileController.returnOrder)
+//whishlist
 router.get('/whishlist',userAuth,whishListController.getWhishListPage)
 router.post('/addToWhishlist',userAuth,whishListController.addToWhishList)
 router.post('/whishlist/remove',userAuth,whishListController.removeFromWhishlist)
-
+//wallet
+router.get('/getWallet',userAuth,profileController.getWallet)
+router.post('/wallet/add-funds',userAuth,profileController.addWalletMoney)
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -180,6 +184,8 @@ router.post('/verify', async (req, res) => {
         res.status(500).json({ status: 'failed', message: 'Error during payment verification or order processing' });
     }
 });
+
+
 
 router.get('/logout', userController.logout)
 module.exports = router;

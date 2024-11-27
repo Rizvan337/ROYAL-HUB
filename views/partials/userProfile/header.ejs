@@ -1,4 +1,4 @@
-<style>
+<!-- <style>
     .dashboard-menu {
         background-color: #fff;
         border-radius: 15px;
@@ -47,4 +47,164 @@
             </li>
         </ul>
     </div>
-</aside>
+</aside> -->
+
+
+
+
+    <style>
+        /* Sidebar Container */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -250px; /* Hidden by default */
+        width: 250px;
+        height: 100%;
+        background-color: #343a40;
+        color: #ffffff;
+        transition: left 0.3s ease;
+        z-index: 1000;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+    }
+
+    /* Sidebar Header */
+    .sidebar-header {
+        padding: 15px;
+        background-color: #212529;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    /* Close Button */
+    .close-btn {
+        background: none;
+        border: none;
+        color: #ffffff;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .close-btn:hover {
+        color: #007bff;
+    }
+
+    /* Sidebar Menu */
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-menu li {
+        border-bottom: 1px solid #495057;
+    }
+
+    .sidebar-menu li a {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        color: #ffffff;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .sidebar-menu li a:hover {
+        background-color: #007bff;
+        color: #ffffff;
+    }
+
+    .sidebar-menu li a i {
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+
+    /* Logout Button Styling */
+    .sidebar-menu li a.logout {
+        color: #dc3545;
+    }
+
+    .sidebar-menu li a.logout:hover {
+        background-color: #dc3545;
+        color: #ffffff;
+    }
+
+    /* Toggle Button for Sidebar */
+    .toggle-sidebar-btn {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        z-index: 1100;
+        transition: background-color 0.3s ease;
+    }
+
+    .toggle-sidebar-btn:hover {
+        background-color: #0056b3;
+    }
+
+    /* Sidebar Open State */
+    .sidebar.open {
+        left: 0;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 200px;
+        }
+    }
+
+    </style>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4>Dashboard</h4>
+            <button class="close-btn" id="closeSidebar">&times;</button>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/userProfile"><i class="fas fa-user-circle"></i> My Profile</a></li>
+            <li><a href="/addressManage"><i class="fas fa-map-marker-alt"></i> My Address</a></li>
+            <li><a href="/my-orders"><i class="fas fa-box"></i> Orders</a></li>
+            <li><a href="getWallet"><i class="fas fa-wallet"></i> Wallet</a></li>
+            <li><a href="/logout" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+    <button class="toggle-sidebar-btn" id="toggleSidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        const sidebar = document.getElementById("sidebar");
+        const toggleBtn = document.getElementById("toggleSidebar");
+        const closeBtn = document.getElementById("closeSidebar");
+
+        // Open Sidebar
+        toggleBtn.addEventListener("click", () => {
+            sidebar.classList.add("open");
+        });
+
+        // Close Sidebar
+        closeBtn.addEventListener("click", () => {
+            sidebar.classList.remove("open");
+        });
+
+        // Close sidebar on outside click (optional)
+        document.addEventListener("click", (event) => {
+            if (!sidebar.contains(event.target) && !toggleBtn.contains(event.target)) {
+                sidebar.classList.remove("open");
+            }
+        });
+    });
+
+    </script>

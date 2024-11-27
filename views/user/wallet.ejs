@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet - Dashboard</title>
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+
+        .dashboard-menu {
+            background: linear-gradient(145deg, #ffffff, #f2f2f2);
+            border-radius: 15px;
+            box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .dashboard-menu .nav-link {
+            color: #6c757d;
+            font-weight: 500;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f1f1f1;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-menu .nav-link:hover,
+        .dashboard-menu .nav-link.active {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+        .card {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+        }
+
+        .badge {
+            font-size: 0.85rem;
+            padding: 5px 10px;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .dashboard-menu .nav-link {
+                padding: 10px 15px;
+            }
+        }
+
+        .pagination {
+    margin-top: 20px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.pagination .page-link {
+    color: #007bff;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="container-fluid my-5">
+    <div class="row">
+        <!-- Sidebar Section -->
+        <aside class="col-lg-3 col-md-4 mb-4">
+            <div class="dashboard-menu">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/userProfile">
+                            <i class="fas fa-user-circle me-2"></i> My Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/addressManage">
+                            <i class="fas fa-map-marker-alt me-2"></i> My Address
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-orders">
+                            <i class="fas fa-box me-2"></i> Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#wallet">
+                            <i class="fas fa-wallet me-2"></i> Wallet
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="/logout">
+                            <i class="fas fa-sign-out-alt me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content Section -->
+        <div class="col-lg-9 col-md-8">
+            <!-- Wallet Balance Section -->
+            <div class="card text-center mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Wallet Balance</h5>
+                    <h2 class="text-success my-3">$<%= wallet.balance.toFixed(2) %></h2>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFundsModal">
+                        Add Funds
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transaction History Section -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Transaction History</h5>
+
+                    <!-- Filters -->
+                    <form class="d-flex mb-3">
+                        <div class="me-3">
+                            <label for="filterType" class="form-label">Filter by Type:</label>
+                            <select id="filterType" class="form-select form-select-sm">
+                                <option value="all">All</option>
+                                <option value="credit">Credits</option>
+                                <option value="debit">Debits</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="filterDate" class="form-label">Sort by Date:</label>
+                            <select id="filterDate" class="form-select form-select-sm">
+                                <option value="desc">Newest First</option>
+                                <option value="asc">Oldest First</option>
+                            </select>
+                        </div>
+                    </form>
+
+                    <!-- Transactions Table -->
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <% wallet.transactions.forEach(transaction => { %>
+                            <tr>
+                                <td><%= moment(transaction.date).format('MMMM Do YYYY') %></td>
+                                <td><%= transaction.description %></td>
+                                <td>
+                                    <span class="badge <%= transaction.type === 'credit' ? 'bg-success' : 'bg-danger' %>">
+                                        <%= transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1) %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <%= transaction.type === 'credit' ? '+' : '-' %>$<%= transaction.amount.toFixed(2) %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Funds Modal -->
+<div class="modal fade" id="addFundsModal" tabindex="-1" aria-labelledby="addFundsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="/wallet/add-funds" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addFundsModalLabel">Add Funds</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" id="amount" name="amount" min="1" step="0.01" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Funds</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination Section -->
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <% if (wallet.hasPrevPage) { %>
+            <li class="page-item">
+                <a class="page-link" href="?page=<%= wallet.currentPage - 1 %>&limit=<%= wallet.totalPages %>">Previous</a>
+            </li>
+        <% } else { %>
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        <% } %>
+
+        <% for (let i = 1; i <= wallet.totalPages; i++) { %>
+            <li class="page-item <%= wallet.currentPage === i ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>&limit=<%= wallet.totalPages %>"><%= i %></a>
+            </li>
+        <% } %>
+
+        <% if (wallet.hasNextPage) { %>
+            <li class="page-item">
+                <a class="page-link" href="?page=<%= wallet.currentPage + 1 %>&limit=<%= wallet.totalPages %>">Next</a>
+            </li>
+        <% } else { %>
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+        <% } %>
+    </ul>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#filterType, #filterDate').change(function () {
+            const type = $('#filterType').val();
+            const dateOrder = $('#filterDate').val();
+            // Fetch filtered data (backend logic should handle this)
+        });
+    });
+</script>
+</body>
+</html>

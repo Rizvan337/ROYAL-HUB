@@ -1,6 +1,7 @@
 const Order = require('../../models/orderSchema')
 const User = require('../../models/userSchema')
 const Product = require('../../models/productSchema')
+const Wallet = require('../../models/walletSchema')
 const HttpStatus = require('../../utils/httpStatusCodes')
 const moment = require('moment')
 const getAllOrders = async (req, res) => {
@@ -35,6 +36,7 @@ const updateOrderStatus = async (req, res) => {
     const { id } = req.params
     const { status } = req.body
     try {
+        const userId = req.session.user
         const order = await Order.findById(id)
         if (!order) {
             req.flash('error', "Order not found")
@@ -48,9 +50,23 @@ const updateOrderStatus = async (req, res) => {
                 await Product.findByIdAndUpdate(productId, { $inc: { stock: quantity } })
             }
         }
-
         order.status = status
         await order.save()
+        if(order.paymentMethod==="Razorpay" && (order.status === "Cancelled" || order.status === "Returned")){
+            const wallet = await Wallet.findOne({userId})
+            if(wallet){
+                wallet.balance += order.finalAmount
+                wallet.transactions.push({
+                    amount:order.finalAmount,
+                    type:"credit",
+                orderId:order._id,
+                description:"Refund for cancel order"
+                })
+                await wallet.save()
+            }
+        }
+
+
         if (req.io) {
             req.io.emit('orderStatusChanged', {
                 orderId: order._id,

@@ -35,10 +35,11 @@
                   class="form-select form-select-sm me-2" 
                   <%= order.status === "Cancelled" ? "disabled title='Order is cancelled and cannot be changed.'" : "" %>
                 >
-                  <% ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].forEach(status => { %>
+                  <% ["Pending", "Processing", "Shipped", "Delivered", "Cancelled","Returned"].forEach(status => { %>
                     <option 
                       value="<%= status %>" 
-                      <%= order.status === 'Cancelled' ? 'disabled' : '' %> 
+                      <%= order.status === 'Cancelled' ? 'disabled' : '' %>
+                      <%= order.status === 'Returned' ? 'disabled' : '' %>  
                       <%= order.status === status ? 'disabled' : '' %> 
                       <%= order.status === status ? 'selected' : '' %>
                     >
@@ -67,7 +68,21 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+
 <script>
+
+
+$(document).on('change', 'select[name="status"]', function() {
+    const form = $(this).closest('form');
+    const button = form.find('button[type="submit"]');
+    button.prop('disabled', $(this).val() === $(this).find('option[selected]').val());
+  });
+
   $(document).ready(function() {
     $('#ordersTable').DataTable({
       pageLength: 5,
@@ -77,7 +92,8 @@
         search: "Search Orders:",
         lengthMenu: "Show _MENU_ entries",
         info: "Showing _START_ to _END_ of _TOTAL_ orders"
-      }
+      },dom: 'Bfrtip', // Add buttons
+      buttons: ['copy', 'excel', 'pdf', 'print']
     });
   });
 </script>

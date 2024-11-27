@@ -3,6 +3,7 @@ const User = require('../../models/userSchema')
 const Cart = require('../../models/cartSchema')
 const Address = require('../../models/addressSchema')
 const Order = require('../../models/orderSchema')
+const Wallet = require('../../models/walletSchema')
 const HttpStatus = require('../../utils/httpStatusCodes');
 const moment = require('moment');
 
@@ -218,6 +219,22 @@ const orderConfirmationPage = async (req, res) => {
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0)
         const tax = Math.round(subtotal * 0.09)
         const totalAmount = subtotal + tax
+        
+        if(paymentMethod === "Wallet"){
+            const wallet = await Wallet.findOne({userId})
+            if(wallet.balance >= totalAmount){
+                wallet.balance -= totalAmount
+                wallet.transactions.push({
+                    amount:totalAmount,
+                    type:'debit',
+                    description:'Order payment',
+                    orderId:    Order._id
+                })
+                await wallet.save()
+            }else{
+                 res.render('checkout', { error: 'Insufficient wallet balance.' });
+            }
+        }
         res.render('order-confirmation', {
             address,
             cartItems: cart.items,

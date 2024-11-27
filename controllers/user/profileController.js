@@ -8,6 +8,7 @@ const env = require('dotenv').config()
 const session = require('express-session')
 const HttpStatus = require('../../utils/httpStatusCodes')
 const moment = require('moment');
+const Wallet = require('../../models/walletSchema')
 
 //generate otp
 function generateOtp() {
@@ -305,6 +306,7 @@ const getUserOrderDetails = async (req,res)=>{
 }
 
 const cancelOrder = async (req, res) => {
+    const userId = req.session.user
     const { orderId } = req.params
     try {
         const order = await Order.findByIdAndUpdate(orderId, { status: "Cancelled" }, { new: true })
@@ -323,6 +325,23 @@ const cancelOrder = async (req, res) => {
             }
           }
 
+          console.log(order.paymentMethod === "Razorpay" || order.paymentMethod === "Wallet")
+          if(order.paymentMethod === "Razorpay" || order.paymentMethod === "Wallet"){
+            const wallet = await Wallet.findOne({userId})
+            console.log("Wallet:",wallet)
+          if(wallet){
+            
+            wallet.balance += order.finalAmount
+            wallet.transactions.push({
+                amount:order.finalAmount,
+                type:"credit",
+                orderId:order._id,
+                description:"Refund for cancel order"
+            })
+          await wallet.save()
+          console.log("After refund, wallet amount:", wallet.balance);
+          }
+        }
         if (req.io) {
             req.io.emit('orderStatusChanged', { orderId: order._id, status: 'Cancelled' })
         }
@@ -330,6 +349,52 @@ const cancelOrder = async (req, res) => {
 
     } catch (error) {
         console.error('Error cancelling order:', error);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server Error' });
+    }
+}
+
+
+const returnOrder = async(req,res)=>{
+    try {
+        const userId = req.session.user
+        const {orderId} = req.params;
+        const order = await Order.findById(orderId)
+        if (!order) {
+            return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order not found' });
+        }
+        if(order.status!=="Delivered"){
+            return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Only delivered orders can be returned' });
+        }
+       order.status = "Returned"
+       await order.save()
+   for(let items of order.orderItems){
+  const productId = items.product;
+  const quantity = items.quantity;
+  const product = await Product.findById(productId)
+if(product){
+    product.stock +=quantity
+    await product.save()
+}
+}
+if(order.paymentMethod==="Razorpay"){
+    const wallet = await Wallet.findOne({userId})
+    if(wallet){
+        wallet.balance += order.finalAmount
+        wallet.transactions.push({
+            amount:order.finalAmount,
+            type:"credit",
+            orderId:order._id,
+            description:"Refund for cancel order"
+        })
+        await wallet.save()
+    }
+}
+    if(req.io){
+        req.io.emit('orderStatusChanged',{orderId:order._id,status:'Returned'})
+    }
+    res.status(HttpStatus.OK).json({ success: true, message: 'Order returned successfully' });
+    } catch (error) {
+        console.error('Error returning order:', error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server Error' });
     }
 }
@@ -455,6 +520,72 @@ const updateEmail = async (req, res) => {
 }
 
 
+const getWallet = async (req, res) => {
+    try {
+        const userId = req.session.user;
+        const { page = 1, limit = 5 } = req.query;
+        const pageNumber = parseInt(page);
+        const pageSize = parseInt(limit);
+        const wallet = await Wallet.findOne({ userId });
+
+        if (!wallet) {
+            res.render('wallet', { wallet: { balance: 0, transactions: [] }, moment });
+            return;
+        }
+        const totalTransactions = wallet.transactions.length;
+        const totalPages = Math.ceil(totalTransactions / pageSize);
+        const transactions = wallet.transactions
+            .sort((a, b) => b.date - a.date)
+            .slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+        res.render('wallet', {
+            wallet: {
+                balance: wallet.balance,
+                transactions,
+                totalTransactions,
+                currentPage: pageNumber,
+                totalPages,
+                hasNextPage: pageNumber < totalPages,
+                hasPrevPage: pageNumber > 1,
+            },
+            moment,
+        });
+    } catch (error) {
+        console.error('Error fetching wallet:', error);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
+
+
+const addWalletMoney = async (req, res) => {
+    const { amount, description } = req.body;
+    const userId = req.session.user;
+
+    try {
+        let wallet = await Wallet.findOne({ userId });
+        if (!wallet) {
+            wallet = new Wallet({
+                userId: userId,
+                balance: 0,
+                transactions: []
+            });
+        }
+        const transaction = {
+            amount: parseFloat(amount),
+            type: 'credit',
+            description: description || 'Added to wallet',
+        };
+        wallet.transactions.push(transaction);
+        wallet.balance += transaction.amount;
+        await wallet.save();
+        res.redirect('/getWallet');
+    } catch (err) {
+        console.error(err);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Internal Server Error");
+    }
+};
+
+
 module.exports = {
     getForgotPassPage,
     forgotEmail,
@@ -472,6 +603,7 @@ module.exports = {
     myOrders,
     getUserOrderDetails,
     cancelOrder,
+    returnOrder,
     verifyResetOtp,
     getEditProfile,
     editProfile,
@@ -479,4 +611,6 @@ module.exports = {
     getChangeEmail,
     changeEmail,
     verifyEmailOtp,
+    getWallet,
+    addWalletMoney,
 }
