@@ -4,6 +4,7 @@ const Cart = require('../../models/cartSchema')
 const Address = require('../../models/addressSchema')
 const Order = require('../../models/orderSchema')
 const Wallet = require('../../models/walletSchema')
+const Coupon = require('../../models/couponSchema')
 const HttpStatus = require('../../utils/httpStatusCodes');
 const moment = require('moment');
 
@@ -183,20 +184,25 @@ const getCheckoutPage = async (req, res) => {
             path: 'items.item',
             select: 'productName salePrice'
         });
-        console.log("cart:", cart.items);
-
+        const grandTotal = cart.grandTotal
+        console.log("grandTotal",grandTotal);
+        const discount = cart.coupon.discount
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
         const tax = Math.round(subtotal * 0.09)
-        const totalAmount = subtotal + tax;
-        console.log(totalAmount, subtotal);
+        // const totalAmount = subtotal + tax;
+        // console.log(totalAmount, subtotal);
 
+        const coupon = await Coupon.find({})
         res.render('checkout', {
             addresses,
             cartItems: cart.items,
             subtotal,
             tax,
-            totalAmount,
-
+            // totalAmount,
+            coupon,
+            discount,
+            grandTotal,
+            cart
         });
 
     } catch (error) {
@@ -212,35 +218,36 @@ const orderConfirmationPage = async (req, res) => {
         const user = req.session.user
         const userId = user._id
         const address = await Address.findById(selectedAddress)
-        console.log("Address:", address);
+        
 
         const cart = await Cart.findOne({ user: userId }).populate({ path: 'items.item', select: 'productName salePrice' })
-        console.log("Cart items:", cart.items)
+        
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0)
-        const tax = Math.round(subtotal * 0.09)
-        const totalAmount = subtotal + tax
+        
+        const discount = cart.coupon.discount
+        const grandTotal = cart.grandTotal
         
         if(paymentMethod === "Wallet"){
             const wallet = await Wallet.findOne({userId})
-            if(wallet.balance >= totalAmount){
-                wallet.balance -= totalAmount
+            if(wallet.balance >= grandTotal){
+                wallet.balance -= grandTotal
                 wallet.transactions.push({
-                    amount:totalAmount,
+                    amount:grandTotal,
                     type:'debit',
                     description:'Order payment',
                     orderId:    Order._id
                 })
                 await wallet.save()
             }else{
-                 res.render('checkout', { error: 'Insufficient wallet balance.' });
+                res.status(500).json({ success: false, message: 'Insufficient wallet balance' });
             }
         }
         res.render('order-confirmation', {
             address,
             cartItems: cart.items,
             subtotal,
-            tax,
-            totalAmount,
+            discount,
+            grandTotal,
             paymentMethod
         })
     } catch (error) {
@@ -255,14 +262,14 @@ const placeOrder = async (req, res) => {
         const { selectedAddress, paymentMethod } = req.body;
         const user = req.session.user;
         const userId = user._id;
-        console.log("1")
+        
         const address = await Address.findById(selectedAddress);
         const cart = await Cart.findOne({ user: userId }).populate({ path: 'items.item', select: 'productName salePrice stock' });
 
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
-        const tax = Math.round(subtotal * 0.09);
-        const totalAmount = subtotal + tax;
-        console.log("2")
+        const discount = cart.coupon.discount
+        const grandTotal = cart.grandTotal
+        const totalPrice = cart.totalPrice
         const newOrder = new Order({
             user: userId,
             orderItems: cart.items.map(item => ({
@@ -270,9 +277,10 @@ const placeOrder = async (req, res) => {
                 quantity: item.qty,
                 price: item.item.salePrice
             })),
-            totalPrice: subtotal,
-            tax,
-            finalAmount: totalAmount,
+            grandTotal,
+            discount,
+            finalAmount: grandTotal,
+            totalPrice,
             address,
             paymentMethod,
             status: 'Pending',
@@ -280,7 +288,7 @@ const placeOrder = async (req, res) => {
         });
         const savedOrder = await newOrder.save()
         // console.log(savedOrder)
-        console.log("3")
+        
 
         for (let item of cart.items) {
             const productId = item.item._id
@@ -291,9 +299,9 @@ const placeOrder = async (req, res) => {
                 await product.save()
             }
         }
-        console.log("4")
-        await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } });
-        console.log("5")
+        
+        await Cart.deleteOne({ user: userId });
+       
         res.json({ success: true, message: 'Order placed successfully',orderId:savedOrder._id});
         // res.redirect(`/${savedOrder._id}`);
     } catch (error) {
@@ -321,6 +329,152 @@ const getInvoice = async (req, res) => {
     }
 }
 
+
+
+
+
+
+
+const applyCoupon = async (req, res) => {
+    try {
+        const { couponCode } = req.body;
+
+        // Retrieve user information from the session
+        
+        const user = req.session.user;
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User not found."
+            });
+        }
+
+        const userId = user._id;
+
+        // Retrieve the cart for the user
+        const cart = await Cart.findOne({ user: userId });
+        if (!cart || cart.items.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Your cart is empty."
+            });
+        }
+
+        // Check if a coupon is already applied to the cart
+        if (cart.coupon.code) {
+            return res.status(400).json({
+                success: false,
+                message: "A coupon is already applied to this cart."
+            });
+        }
+
+        // // Find the coupon in the database
+        const coupon = await Coupon.findOne({ code: couponCode });
+        if (!coupon) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid coupon code."
+            });
+        }
+
+        // Check if the coupon is active and not expired
+        const currentDate = new Date();
+        if (!coupon.isActive || currentDate > coupon.expiryDate) {
+            return res.status(400).json({
+                success: false,
+                message: "This coupon is either inactive or has expired."
+            });
+        }
+
+        // Check if the cart's total price meets the coupon's minimum purchase amount (if applicable)
+        // const cartTotal = cart.totalPrice;
+        // if (cartTotal < coupon.minPurchaseAmount) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: `Minimum purchase amount of ₹${coupon.minPurchaseAmount} is required to apply this coupon.`
+        //     });
+        // }
+
+        // Check if the coupon usage limit is reached
+        if (coupon.usageLimit !== null && coupon.userCount >= coupon.usageLimit) {
+            return res.status(400).json({
+                success: false,
+                message: "This coupon has reached its usage limit."
+            });
+        }
+
+        // Apply discount logic
+        // let discountAmount = 0;
+        // if (coupon.discountType === "percentage") {
+        //     discountAmount = (cartTotal * coupon.discountAmount) / 100;
+        //     if (coupon.maxDiscount && discountAmount > coupon.maxDiscount) {
+        //         discountAmount = coupon.maxDiscount;
+        //     }
+        // } else if (coupon.discountType === "fixed") {
+        //     discountAmount = coupon.discountAmount;
+        // }
+        let discountAmount = 0
+        if(coupon.discountType ==="fixed"){
+            discountAmount = coupon.discountAmount;
+        }
+
+        // Update coupon usage count and users who used it
+        coupon.userCount += 1;
+        coupon.usersUsed.push(userId);
+
+        // Update the cart with the coupon details and discount
+        cart.coupon.code = couponCode;
+        cart.coupon.discount = discountAmount;
+        cart.grandTotal = cart.grandTotal - discountAmount;
+
+        // Save the updated cart and coupon
+        await cart.save();
+        await coupon.save();
+
+        // Return the updated information
+        return res.status(200).json({
+            success: true,
+            message: `Coupon applied successfully. You saved ₹${discountAmount}.`,
+            discountAmount,
+            grandTotal: cart.grandTotal,
+            // totalPrice: cart.totalPrice
+        });
+
+    } catch (error) {
+        console.error("Error applying coupon:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while applying the coupon."
+        });
+    }
+};
+
+const removeCoupon = async (req,res)=>{
+    try {
+        const {couponCode} = req.body
+        const user = req.session.user
+        const userId = user._id
+        const cart = await Cart.findOne({user:userId})
+        if(!cart){
+            res.status(HttpStatus.NOT_FOUND).json({message:"Cart not found"})
+        }
+        cart.coupon.code = null;
+        cart.coupon.discount = 0
+        cart.grandTotal = cart.totalPrice
+        await cart.save()
+        return res.status(HttpStatus.OK).json({
+            success: true,
+            message: "Coupon removed successfully",
+        });
+    } catch (error) {
+        console.error("Error removing coupon:", error);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: "An error occurred while removing the coupon."
+        });
+    }
+}
+
 module.exports = {
     getCart,
     addToCart,
@@ -330,4 +484,6 @@ module.exports = {
     orderConfirmationPage,
     placeOrder,
     getInvoice,
+    applyCoupon,
+    removeCoupon,
 }

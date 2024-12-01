@@ -52,7 +52,7 @@ const updateOrderStatus = async (req, res) => {
         }
         order.status = status
         await order.save()
-        if(order.paymentMethod==="Razorpay" && (order.status === "Cancelled" || order.status === "Returned")){
+        if ((order.paymentMethod === "Razorpay" || order.paymentMethod === "Wallet") && (order.status === "Cancelled" || order.status === "Returned")) {
             const wallet = await Wallet.findOne({userId})
             if(wallet){
                 wallet.balance += order.finalAmount

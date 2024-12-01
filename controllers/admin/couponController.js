@@ -22,7 +22,7 @@ const getCouponPage = async (req, res) => {
 
 
 const addCoupon = async (req, res) => {
-    const { code, discountType, discountAmount, expiryDate, usageLimit } = req.body;
+    const { code, discountType, discountAmount, expiryDate, usageLimit, maxDiscount } = req.body;
 
     
     if (!code || code.length < 5 || code.length > 10) {
@@ -40,7 +40,9 @@ const addCoupon = async (req, res) => {
     if (!usageLimit || usageLimit < 1) {
         return res.status(HttpStatus.BAD_REQUEST).json({ error: "Usage limit must be at least 1." });
     }
-
+    // if (!maxDiscount || maxDiscount > 1) {
+    //     return res.status(HttpStatus.BAD_REQUEST).json({ error: "minimum purchase limit must be at least 1." });
+    // }
     try {
         const existingCoupon = await Coupon.findOne({ code });
         if (existingCoupon) {
@@ -53,7 +55,8 @@ const addCoupon = async (req, res) => {
             expiryDate,
             usageLimit,
             userCount: 0,
-            isActive: true
+            isActive: true,
+            // maxDiscount
         });
         await newCoupon.save();
         console.log("Coupon saved in DB");

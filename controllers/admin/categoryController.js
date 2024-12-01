@@ -1,4 +1,5 @@
 const Category = require('../../models/categorySchema')
+const Product = require('../../models/productSchema')
 const HttpStatus = require('../../utils/httpStatusCodes')
 
 
@@ -112,7 +113,60 @@ const editCategory = async (req, res) => {
     }
 }
 
+const addCategoryOffer = async (req,res)=>{
+    try {
+        const percentage = parseInt(req.body.percentage)
+        const categoryId = req.body.categoryId
+        const category = await Category.findById(categoryId)
+        if(!category){
+            return res.status(HttpStatus.NOT_FOUND).json({status:false,message:"Category not found"})
+        }
+        const products = await Product.find({category:categoryId})
+        const hasProductOffer = products.some((product)=>product.productOffer>percentage)
+        if(hasProductOffer){
+            return res.json({status:false,message:"Product within this category already have product offer"})
+        }
+        await Category.updateOne({_id:categoryId},{$set:{categoryOffer:percentage}})
+        //category offer w not need to give offer in product
+        for(const product of products){
+            product.salePrice -= Math.floor(product.regularPrice*(percentage/100))
+            product.productOffer = 0;
+            
+            await product.save()
+        }
+        res.json({status:true})
+    } catch (error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({status:false,message:"Internal server error"})
+    }
+}
 
+
+
+
+
+const removeCategoryOffer = async (req,res)=>{
+    try {
+        const categoryId = req.body.categoryId
+        const category = await Category.findById(categoryId)
+        if(!category){
+            return res.status(HttpStatus.NOT_FOUND).json({status:false,message:"Category not found"})
+        }
+        const percentage = category.categoryOffer
+        const products = await Product.find({category:category._id})
+        if(products.length>0){
+            for(const product of products){
+                product.salePrice += Math.floor(product.regularPrice*(percentage/100))
+                product.productOffer = 0
+                await product.save()
+            }
+        }
+        category.categoryOffer = 0
+        await category.save()
+        res.json({status:true})
+    } catch (error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({status:false,message:"Internal server error"})
+    }
+}
 module.exports = {
     categoryInfo,
     addCategory,
@@ -120,4 +174,6 @@ module.exports = {
     getUnlistCategory,
     getEditCategory,
     editCategory,
+    addCategoryOffer,
+    removeCategoryOffer,
 }

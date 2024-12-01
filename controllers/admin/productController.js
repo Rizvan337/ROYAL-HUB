@@ -217,10 +217,39 @@ const deleteSingleImage = async (req, res) => {
     }
 }
 
+const addProductOffer = async (req,res)=>{
+    try {
+        const {productId,percentage} = req.body
+        const product = await Product.findById({_id:productId})
+        const category = await Category.findOne({_id:product.category})
+        if(category.categoryOffer> percentage){
+            return res.json({status:false,message:"This products category has already has category offer"})
+        }
+        product.salePrice = product.salePrice - Math.floor(product.regularPrice*(percentage/100))
+        product.productOffer = parseInt(percentage)
+        category.categoryOffer = 0
+        await product.save()
+        res.json({status:true})
+    } catch (error) {
+        console.log(error)
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server error"}) 
+    }
+}
 
 
-
-
+const removeProductOffer = async (req,res)=>{
+    try {
+        const {productId} = req.body
+        const product = await Product.findById({_id:productId})
+        const percentage = product.productOffer
+        product.salePrice += Math.floor(product.regularPrice*(percentage/100))
+        product.productOffer = 0
+        await product.save()
+        res.json({status:true})
+    } catch (error) {
+        res.redirect('/pageerror')
+    }
+}
 
 module.exports = {
     getProductAddPage,
@@ -231,4 +260,6 @@ module.exports = {
     getEditProduct,
     editProduct,
     deleteSingleImage,
+    addProductOffer,
+    removeProductOffer,
 }   

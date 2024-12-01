@@ -6,6 +6,7 @@ const categoryController = require('../controllers/admin/categoryController')
 const productController = require('../controllers/admin/productController')
 const orderController = require('../controllers/admin/orderController')
 const couponController = require('../controllers/admin/couponController')
+const salesreportController = require('../controllers/admin/salesreportController')
 const { adminAuth } = require('../middlewares/auth')
 const multer = require('multer')
 const storage = require('../helpers/multer')
@@ -33,8 +34,8 @@ router.get('/listCategory', adminAuth, categoryController.getListCategory)
 router.get('/unlistCategory', adminAuth, categoryController.getUnlistCategory)
 router.get('/editCategory', adminAuth, categoryController.getEditCategory)
 router.post('/editCategory/:id', adminAuth, categoryController.editCategory)
-
-
+router.post('/addCategoryOffer', adminAuth, categoryController.addCategoryOffer)
+router.post('/removeCategoryOffer', adminAuth, categoryController.removeCategoryOffer)
 //Product management
 router.get('/addProducts', adminAuth, productController.getProductAddPage)
 router.post('/addProducts', adminAuth, uploads.array('images', 4), productController.addProducts)
@@ -44,7 +45,8 @@ router.get('/unblockProduct', adminAuth, productController.unblockProduct)
 router.get('/editProduct', adminAuth, productController.getEditProduct);
 router.post('/editProduct/:id', adminAuth, uploads.array("images", 4), productController.editProduct)
 router.post('/deleteImage', adminAuth, productController.deleteSingleImage)
-
+router.post('/addProductOffer', adminAuth, productController.addProductOffer)
+router.post('/removeProductOffer', adminAuth, productController.removeProductOffer)
 //orderManagement
 router.get('/orderList', adminAuth, orderController.getAllOrders)
 router.get('/orders/:orderId', adminAuth, orderController.getOrderDetails)
@@ -54,6 +56,6 @@ router.post('/orders/:id/update-status', orderController.updateOrderStatus);
 router.get('/coupons',adminAuth,couponController.getCouponPage)
 router.post('/coupons/add',adminAuth,couponController.addCoupon)
 router.post('/coupons/delete/:id',adminAuth,couponController.removeCoupon)
-// router.post('/coupons/update/:id',adminAuth,couponController.updateCouponStatus)
-// router.post('/coupons/edit/:id',adminAuth,couponController.editCoupons)
+//sales-report
+router.get('/salesReport',adminAuth,salesreportController.getSalesReport)
 module.exports = router 

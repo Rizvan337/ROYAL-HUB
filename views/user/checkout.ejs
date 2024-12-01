@@ -162,6 +162,57 @@
                 margin-bottom: 20px;
             }
         }
+
+        .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.coupon-list {
+    list-style: none;
+    padding: 0;
+}
+
+.coupon-item {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.close-btn, .copy-btn {
+    background-color: #ff6f61;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.remove-btn{
+    background-color: #db1705;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
     </style>
 </head>
 <body>
@@ -191,15 +242,24 @@
         <div class="summary-section">
             <h3 class="section-title">Order Summary</h3>
             <div>
-                <label>Coupon code:</label>
+                <!-- <label>Coupon code:</label>
                 <input type="text" name="coupon" placeholder="Enter coupon">
-                <button class="apply-btn"><i class="fas fa-tag"></i> Apply</button>
+                <button class="apply-btn"><i class="fas fa-tag"></i> Apply</button> -->
+                <label>Coupon code:</label>
+                <input type="text" id="couponInput" name="couponCode" placeholder="Enter coupon">
+                <%if(cart.coupon.code===null){%>
+                <button type="button" class="apply-btn" onclick="applyCoupon()">Apply</button>
+                <%}else{%>
+                    <button type="button" class="remove-btn" onclick="removeCoupon()">Remove</button>
+                    <%}%>
+                <button type="button" class="apply-btn" onclick="openModal()">View Coupons</button>
             </div>
 
             <table class="summary-table">
                 <tr><td>Subtotal:</td><td>₹<%= subtotal %></td></tr>
-                <tr><td>Tax:</td><td>₹<%= tax %></td></tr>
-                <tr><td>Total Amount:</td><td>₹<%= totalAmount %></td></tr>
+                <!-- <tr><td>Tax:</td><td>₹<%= tax %></td></tr> -->
+                <tr><td>Discount:</td><td>₹<%= discount||0 %></td></tr>
+                <tr><td>Total Amount:</td><td>₹<%= grandTotal %></td></tr>
             </table>
 
             <h3 class="section-title">Choose Payment Method</h3>
@@ -230,5 +290,142 @@
         </div>
     </div>
 </form>
+
+ <!-- Coupon Modal -->
+ <!-- Coupon Modal -->
+<div id="couponModal" class="modal">
+    <div class="modal-content">
+        <h3 class="modal-header">Available Coupons</h3>
+        <ul class="coupon-list">
+            <% coupon.forEach(coupon => { %>
+                <li class="coupon-item">
+                    <span><%= coupon.code %> - <%= coupon.description %></span>
+                    <button class="copy-btn" onclick="copyCouponCode('<%= coupon.code %>')">Copy</button>
+                </li>
+            <% }) %>
+        </ul>
+        <button class="close-btn" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+
+function openModal() {
+    document.getElementById('couponModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('couponModal').style.display = 'none';
+}
+
+function copyCouponCode(code) {
+    navigator.clipboard.writeText(code).then(function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Copied!',
+            text: 'Coupon code copied to clipboard!',
+            confirmButtonText: 'OK'
+        });
+    }, function(err) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Error copying coupon code: ' + err,
+            confirmButtonText: 'Try Again'
+        });
+    });
+}
+
+
+function applyCoupon() {
+    const couponCode = document.getElementById('couponInput').value;
+
+    fetch('/applyCoupon', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ couponCode })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon:'success',
+                title:'Success!',
+                text:data.message,
+                showConfirmButton: false,  
+    timer: 2000
+            })
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000);
+        } else {
+            Swal.fire({
+                icon:'Error',
+                title:'Error!',
+                text:data.message,
+                confirmButtonText:'Try Again'
+            })
+        }
+    })
+    .catch(error => {
+        console.error('Error applying coupon:', error);
+        alert('An error occurred while applying the coupon.');
+    });
+}
+
+
+
+async function removeCoupon() {
+    try {
+        const couponCode = document.getElementById('couponInput').value;
+        const response = await fetch('/removeCoupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ couponCode })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: result.message,
+                showConfirmButton: false,  
+    timer: 2000
+            });
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: result.message || 'Failed to remove coupon.',
+                confirmButtonText: 'Try Again'
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'An unexpected error occurred.',
+            confirmButtonText: 'OK'
+        });
+        console.error("Error removing coupon:", error);
+    }
+}
+
+</script>
 </body>
 </html>

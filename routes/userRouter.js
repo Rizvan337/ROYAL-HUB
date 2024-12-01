@@ -72,6 +72,8 @@ router.get('/checkout', cartController.getCheckoutPage);
 router.post('/checkout', cartController.orderConfirmationPage)
 router.post('/placeOrder', cartController.placeOrder)
 router.get('/invoice/:orderId', cartController.getInvoice)
+router.post('/applyCoupon',cartController.applyCoupon)
+router.post('/removeCoupon',cartController.removeCoupon)
 //my-orders
 router.get('/my-orders', profileController.myOrders)
 router.get('/orders/:id',userAuth,profileController.getUserOrderDetails)
@@ -139,10 +141,17 @@ router.post('/verify', async (req, res) => {
         const address = await Address.findById(selectedAddress)
         const cart = await Cart.findOne({ user: userId }).populate({ path: 'items.item', select: 'productName salePrice stock' });
 
-        const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
-        const tax = Math.round(subtotal * 0.09);
-        const totalAmount = subtotal + tax;
+        // const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
+        // const discount = Math.round(subtotal * 0.09);
+        // const totalAmount = subtotal + tax;
 
+
+
+
+        const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
+        const discount = cart.coupon.discount
+        const grandTotal = cart.grandTotal
+        const totalPrice = cart.totalPrice
         // Save the order
         const newOrder = new Order({
             user: userId,
@@ -151,9 +160,10 @@ router.post('/verify', async (req, res) => {
                 quantity: item.qty,
                 price: item.item.salePrice,
             })),
-            totalPrice: subtotal,
-            tax,
-            finalAmount: totalAmount,
+            grandTotal,
+            discount,
+            finalAmount: grandTotal,
+            totalPrice,
             address,
             paymentMethod,
             razorpay_order_id,

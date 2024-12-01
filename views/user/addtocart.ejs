@@ -67,6 +67,11 @@
     border-radius: 15px; /* Add rounded corners */
 }
 
+.disabled-link {
+    pointer-events: none;  /* Disable click */
+    color: gray;           /* Change color to indicate disabled */
+    cursor: not-allowed;   /* Show "not allowed" cursor */
+}
 
 </style>
 <!-- <!DOCTYPE html> -->
@@ -209,6 +214,7 @@
                                         </td>
                                     </tr>
                                 <% }); %>
+                                <%var k = true%>
                             <% } else { %>
                                 <tr>
                                     <td colspan="5" style="text-align: center;">Your cart is empty.</td>
@@ -228,7 +234,13 @@
 <!-- <li>Total <span>$<%= cart && typeof cart.totalPrice === 'number' ? cart.totalPrice.toFixed(2) : "0.00" %></span></li> -->
 
                     </ul>
-                    <a href="/checkout" class="primary-btn">Proceed to checkout</a>
+                    <%if(k===true){%>
+                        <a href="/checkout" class="primary-btn ">Proceed to checkout</a>
+                    <%}else{%>
+                        <a href="/checkout" class="primary-btn disabled-link">Proceed to checkout</a>
+                        <%}%>
+                        
+                    
                 </div>
             </div>
         </div>
@@ -325,6 +337,9 @@ function removeFromCart(productId) {
             document.querySelector('.cart__total span:last-child').innerText = `$${newSubtotal.toFixed(2)}`;
 
             swal("Item Removed", "The item has been removed from your cart.", "success");
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000);
         } else {
             swal("Error", "Failed to remove item from cart.", "error");
         }

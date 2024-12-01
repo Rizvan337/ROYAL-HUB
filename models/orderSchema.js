@@ -27,7 +27,7 @@ const orderSchema = new Schema({
     }],
     totalPrice: {
         type: Number,
-        required: true,
+        required: false,
     },
     discount: {
         type: Number,
@@ -60,10 +60,8 @@ const orderSchema = new Schema({
     couponApplied: {
         type: Boolean,
         default: false
-    }, tax: {
-        type: Number,
-        required: true
-    }, paymentMethod: {
+    }, 
+     paymentMethod: {
         type: String,
         required: true,
     },
