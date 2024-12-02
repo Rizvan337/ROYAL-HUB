@@ -57,5 +57,7 @@ router.get('/coupons',adminAuth,couponController.getCouponPage)
 router.post('/coupons/add',adminAuth,couponController.addCoupon)
 router.post('/coupons/delete/:id',adminAuth,couponController.removeCoupon)
 //sales-report
-router.get('/salesReport',adminAuth,salesreportController.getSalesReport)
+router.get('/sales-report', salesreportController.salesReport);
+router.get('/sales/download/pdf', salesreportController.generatePDFReport);
+router.get('/sales/download/excel', salesreportController.generateExcelReport);
 module.exports = router 

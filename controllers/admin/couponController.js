@@ -8,8 +8,8 @@ const getCouponPage = async (req, res) => {
         const skip = (page - 1) * limit;
         const totalCoupons = await Coupon.countDocuments()
         const coupons = await Coupon.find().sort({_id:-1}).skip(skip).limit(limit) 
-        const activeCoupons = coupons.filter(coupon => coupon.isActive === 'Active').length;
-        const expiredCoupons = coupons.filter(coupon => coupon.isActive === 'Expired').length;
+        const activeCoupons = coupons.filter(coupon => coupon.isActive === true).length;
+        const expiredCoupons = coupons.filter(coupon => coupon.isActive === false).length;
         const totalDiscounts = coupons.reduce((total, coupon) => total + (coupon.used * parseFloat(coupon.value)), 0);
 
         res.render('coupons', { activeCoupons, expiredCoupons, totalDiscounts, coupons,totalPages: Math.ceil(totalCoupons / limit),
@@ -40,9 +40,9 @@ const addCoupon = async (req, res) => {
     if (!usageLimit || usageLimit < 1) {
         return res.status(HttpStatus.BAD_REQUEST).json({ error: "Usage limit must be at least 1." });
     }
-    // if (!maxDiscount || maxDiscount > 1) {
-    //     return res.status(HttpStatus.BAD_REQUEST).json({ error: "minimum purchase limit must be at least 1." });
-    // }
+    if (!maxDiscount || maxDiscount < 1) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ error: "minimum purchase limit must be at least 1." });
+    }
     try {
         const existingCoupon = await Coupon.findOne({ code });
         if (existingCoupon) {
@@ -56,7 +56,7 @@ const addCoupon = async (req, res) => {
             usageLimit,
             userCount: 0,
             isActive: true,
-            // maxDiscount
+            maxDiscount
         });
         await newCoupon.save();
         console.log("Coupon saved in DB");

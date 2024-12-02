@@ -338,9 +338,6 @@ const getInvoice = async (req, res) => {
 const applyCoupon = async (req, res) => {
     try {
         const { couponCode } = req.body;
-
-        // Retrieve user information from the session
-        
         const user = req.session.user;
         if (!user) {
             return res.status(400).json({
@@ -350,8 +347,6 @@ const applyCoupon = async (req, res) => {
         }
 
         const userId = user._id;
-
-        // Retrieve the cart for the user
         const cart = await Cart.findOne({ user: userId });
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({
@@ -360,15 +355,13 @@ const applyCoupon = async (req, res) => {
             });
         }
 
-        // Check if a coupon is already applied to the cart
         if (cart.coupon.code) {
             return res.status(400).json({
                 success: false,
                 message: "A coupon is already applied to this cart."
             });
         }
-
-        // // Find the coupon in the database
+//finding coupon
         const coupon = await Coupon.findOne({ code: couponCode });
         if (!coupon) {
             return res.status(400).json({
@@ -386,16 +379,17 @@ const applyCoupon = async (req, res) => {
             });
         }
 
-        // Check if the cart's total price meets the coupon's minimum purchase amount (if applicable)
-        // const cartTotal = cart.totalPrice;
-        // if (cartTotal < coupon.minPurchaseAmount) {
-        //     return res.status(400).json({
-        //         success: false,
-        //         message: `Minimum purchase amount of ₹${coupon.minPurchaseAmount} is required to apply this coupon.`
-        //     });
-        // }
 
-        // Check if the coupon usage limit is reached
+        const cartTotal = cart.totalPrice;
+        console.log("Discount",coupon.maxDiscount)
+        if (cartTotal < coupon.maxDiscount) {
+            return res.status(400).json({
+                success: false,
+                message: `Minimum purchase amount of ₹${coupon.maxDiscount} is required to apply this coupon.`
+            });
+        }
+
+        // Checking limit of coupon
         if (coupon.usageLimit !== null && coupon.userCount >= coupon.usageLimit) {
             return res.status(400).json({
                 success: false,
@@ -403,41 +397,25 @@ const applyCoupon = async (req, res) => {
             });
         }
 
-        // Apply discount logic
-        // let discountAmount = 0;
-        // if (coupon.discountType === "percentage") {
-        //     discountAmount = (cartTotal * coupon.discountAmount) / 100;
-        //     if (coupon.maxDiscount && discountAmount > coupon.maxDiscount) {
-        //         discountAmount = coupon.maxDiscount;
-        //     }
-        // } else if (coupon.discountType === "fixed") {
-        //     discountAmount = coupon.discountAmount;
-        // }
         let discountAmount = 0
         if(coupon.discountType ==="fixed"){
             discountAmount = coupon.discountAmount;
         }
-
-        // Update coupon usage count and users who used it
         coupon.userCount += 1;
         coupon.usersUsed.push(userId);
 
-        // Update the cart with the coupon details and discount
         cart.coupon.code = couponCode;
         cart.coupon.discount = discountAmount;
         cart.grandTotal = cart.grandTotal - discountAmount;
-
-        // Save the updated cart and coupon
         await cart.save();
         await coupon.save();
 
-        // Return the updated information
         return res.status(200).json({
             success: true,
             message: `Coupon applied successfully. You saved ₹${discountAmount}.`,
             discountAmount,
             grandTotal: cart.grandTotal,
-            // totalPrice: cart.totalPrice
+            
         });
 
     } catch (error) {

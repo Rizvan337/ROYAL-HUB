@@ -32,14 +32,14 @@
           </div>
         </div>
       </div>
-      <div class="col-lg-4 col-md-12">
+      <!-- <div class="col-lg-4 col-md-12">
         <div class="card text-white bg-primary mb-3">
           <div class="card-header">Total Discounts Used</div>
           <div class="card-body">
             <h5 class="card-title">$<%= totalDiscounts.toFixed(2) %></h5>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Add Coupon Form -->
@@ -50,14 +50,14 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="code" class="form-label">Coupon Code</label>
-              <input type="text" class="form-control" id="code" name="code" required minlength="5" maxlength="10">
+              <input type="text" class="form-control" id="code" name="code" required minlength="5" maxlength="10" pattern="[a-zA-Z0-9]+">
               <div class="invalid-feedback">Coupon Code must be 5-10 characters.</div>
             </div>
             <div class="col-md-6 mb-3">
               <label for="discountType" class="form-label">Discount Type</label>
               <select class="form-control" id="discountType" name="discountType" required>
                 <option value="">Select a Type</option>
-                <option value="percentage">Percentage</option>
+                <!-- <option value="percentage">Percentage</option> -->
                 <option value="fixed">Fixed Amount</option>
               </select>
               <div class="invalid-feedback">Please select a discount type.</div>
@@ -77,11 +77,11 @@
               <input type="number" class="form-control" id="usageLimit" name="usageLimit" min="1" required>
               <div class="invalid-feedback">Please enter a usage limit (minimum 1).</div>
             </div>
-            <!-- <div class="col-md-6 mb-3">
+            <div class="col-md-6 mb-3">
               <label for="minimumPurchaseAmount" class="form-label">Min Purchase Amount</label>
-              <input type="number" class="form-control" id="minAmount" name="minAmount"  required>
+              <input type="number" class="form-control" id="minAmount" name="maxDiscount"  required>
               <div class="invalid-feedback">Please enter a valid positive amount.</div>
-            </div> -->
+            </div>
           </div>
           <button type="submit" class="btn btn-success w-100">Add Coupon</button>
         </form>
@@ -100,7 +100,7 @@
               <th>Type</th>
               <th>Amount</th>
               <th>Expiry Date</th>
-              <th>Usage Limit</th>
+              <th>Used/Usage Limit</th>
               <th>Active</th>
               <th>Actions</th>
             </tr>
@@ -112,7 +112,8 @@
                 <td><%= coupon.discountType %></td>
                 <td><%= coupon.discountAmount %></td>
                 <td><%= coupon.expiryDate.toISOString().split('T')[0] %></td>
-                <td><%= coupon.usageLimit %></td>
+                <td><%= coupon.usersUsed.length %> / <%= coupon.usageLimit %></td>
+
                 <td><%= coupon.isActive ? 'Yes' : 'No' %></td>
                
                 <td>

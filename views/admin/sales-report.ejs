@@ -6,9 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Report</title>
-    <link rel="stylesheet" href="/css/admin.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+       
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f3f4f6;
@@ -60,7 +60,7 @@
         }
         
         table th {
-            background-color: #4b5155;
+            background-color: #769eb8;
             color: white;
             padding: 15px;
             text-transform: uppercase;
@@ -99,29 +99,47 @@
             color: #7f8c8d;
             font-size: 18px;
         }
+    
+.filter{
+    background-color: #3a5668;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+}
+.filter:hover {
+            background-color: #2c3e50;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Sales Report</h1>
         <form method="GET" action="/admin/sales-report" class="filter-form">
-            <label for="startDate">Start Date:</label>
-            <input type="date" id="startDate" name="startDate" value="<%= startDate || '' %>">
-            
-            <label for="endDate">End Date:</label>
-            <input type="date" id="endDate" name="endDate" value="<%= endDate || '' %>">
-            
-            <label for="filterType">Filter:</label>
-            <select id="filterType" name="filterType">
-                <option value="daily" <%= filterType === 'daily' ? 'selected' : '' %>>Daily</option>
-                <option value="weekly" <%= filterType === 'weekly' ? 'selected' : '' %>>Weekly</option>
-                <option value="monthly" <%= filterType === 'monthly' ? 'selected' : '' %>>Monthly</option>
-                <option value="custom" <%= filterType === 'custom' ? 'selected' : '' %>>Custom Range</option>
+            <label for="reportType">Report Type:</label>
+            <select id="reportType" name="reportType">
+                <option value="daily" <%= reportType === 'daily' ? 'selected' : '' %>>Daily</option>
+                <option value="weekly" <%= reportType === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                <option value="monthly" <%= reportType === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                <option value="custom" <%= reportType === 'custom' ? 'selected' : '' %>>Custom Date</option>
             </select>
 
-            <button type="submit" class="primary-btn">Generate Report</button>
-        </form>
+            <% if (reportType === 'custom') { %>
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" value="<%= startDate %>">
 
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" value="<%= endDate %>">
+            <% } %>
+
+            <button class="filter" type="submit">Filter</button>
+        </form>
+        
         <% if (salesData.length > 0) { %>
             <table>
                 <thead>
@@ -132,6 +150,8 @@
                         <th>Total Delivered</th>
                         <th>Total Returned</th>
                         <th>Total Shipped</th>
+                        <th>Total Discount</th>
+                        <th>Total Coupon Discount</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -143,6 +163,8 @@
                             <td><%= data.totalDelivered %></td>
                             <td><%= data.totalReturned %></td>
                             <td><%= data.totalShipped %></td>
+                            <td>$<%= data.totalDiscount.toFixed(2) %></td>
+                            <td>$<%= data.totalCouponDiscount.toFixed(2) %></td>
                         </tr>
                     <% }) %>
                 </tbody>
@@ -158,14 +180,19 @@
     <script>
         document.getElementById('download-pdf').addEventListener('click', function() {
             Swal.fire('Generating PDF...', '', 'info');
-            window.location.href = '/admin/sales-report/download?format=pdf&startDate=<%= startDate %>&endDate=<%= endDate %>';
+            const url = '/admin/sales/download/pdf?format=pdf&startDate=' + encodeURIComponent('<%= startDate %>') + '&endDate=' + encodeURIComponent('<%= endDate %>') + '&reportType=' + encodeURIComponent('<%= reportType %>');
+            window.location.href = url
         });
 
         document.getElementById('download-excel').addEventListener('click', function() {
             Swal.fire('Generating Excel file...', '', 'info');
-            window.location.href = '/admin/sales-report/download?format=excel&startDate=<%= startDate %>&endDate=<%= endDate %>';
+            const url = '/admin/sales/download/excel?format=excel&startDate=' + encodeURIComponent('<%= startDate %>') + '&endDate=' + encodeURIComponent('<%= endDate %>') + '&reportType=' + encodeURIComponent('<%= reportType %>');
+            window.location.href = url
         });
     </script>
+
     <%- include("../../views/partials/admin/footer") %>
 </body>
 </html>
+
+    
