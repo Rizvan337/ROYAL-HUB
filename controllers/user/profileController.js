@@ -546,6 +546,7 @@ const getWallet = async (req, res) => {
                 totalPages,
                 hasNextPage: pageNumber < totalPages,
                 hasPrevPage: pageNumber > 1,
+               
             },
             moment,
         });

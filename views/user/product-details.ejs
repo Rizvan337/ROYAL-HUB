@@ -90,8 +90,8 @@
                                 </ul>
                             </li>
                             <li><a href="./blog.html">Blog</a></li>
-                            <li><a href="./contact.html">Contacts</a></li>
-                        </ul> -->
+                            <li><a href="/contact.html">Contacts</a></li> -->
+                        </ul>
                     </nav>
                 </div>
                 <div class="col-lg-3 col-md-3">
@@ -426,7 +426,15 @@ function updateHiddenQuantity(input) {
                         }
                     });
                 })
-                .catch(error => console.error('Error adding to cart:', error));
+                .catch (error=> {
+    Swal.fire({
+        // toast:true,
+      icon: 'error',
+      title: 'Error',
+      text: 'Please try again with Login.',
+      confirmButtonText: 'OK',
+    });
+  })
             });
         });
     });

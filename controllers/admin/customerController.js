@@ -1,5 +1,5 @@
 const User = require('../../models/userSchema');
-
+const HttpStatus = require('../../utils/httpStatusCodes')
 //display customer details
 const customerInfo = async (req, res) => {
     try {
@@ -48,9 +48,9 @@ const customerBlocked = async (req, res) => {
     try {
         let userId = req.query.id;
         await User.updateOne({ _id: userId }, { $set: { isBlocked: true } })
-        res.redirect('/admin/users')
+        res.json({success:true})
     } catch (error) {
-        res.redirect('/pageerror')
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
     }
 }
 
@@ -59,9 +59,9 @@ const customerunBlocked = async (req, res) => {
     try {
         let userId = req.query.id;
         await User.updateOne({ _id: userId }, { $set: { isBlocked: false } })
-        res.redirect('/admin/users')
+        res.json({success:true})
     } catch (error) {
-        res.redirect('/pageerror')
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
     }
 }
 

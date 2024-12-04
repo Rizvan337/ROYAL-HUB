@@ -27,24 +27,21 @@
                       </tr>
                     </thead>
                     <tbody>
-                        <%for(let i=0;i<data.length;i++){%>
-                            <tr>
-                                <td><%=data[i].name%></td>
-                                <td><%=data[i].email%></td>
-                                <td><%=data[i].phone%></td>
-                                <td> 
-                                    <%if(data[i].isBlocked===false){%>
-                                        <button class="btn" style="width: 80px; background-color: red;" onclick="confirmation('<%= data[i]._id %>')">
-                                            Block
-                                        </button>
-                                        <%}else{%>
-                                        <button class="btn btn-success" style="width: 80px;background-color: rgb(100, 170, 100); ">
-                                            <a href="/admin/unblockCustomer?id=<%=data[i]._id%>" class="text-white" style="text-decoration: none;">Unblock</a>
-                                        </button> 
-                                        <%}%>
+                        
+                        <% data.forEach((user) => { %>
+                            <tr id="row-<%= user._id %>">
+                                <td><%= user.name %></td>
+                                <td><%= user.email %></td>
+                                <td><%= user.phone %></td>
+                                <td>
+                                    <% if (!user.isBlocked) { %>
+                                        <button class="btn btn-danger" onclick="blockUser('<%= user._id %>')">Block</button>
+                                    <% } else { %>
+                                        <button class="btn btn-success" onclick="unblockUser('<%= user._id %>')">Unblock</button>
+                                    <% } %>
                                 </td>
                             </tr>
-                            <%}%>
+                        <% }) %>
                     </tbody>
                   </table>
         </div>
@@ -62,22 +59,65 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
- function confirmation(userId) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Are you sure?',
-            text: 'You are about to block this user!',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, block!',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = `/admin/blockCustomer?id=${userId}`;
+            async function blockUser(userId) {
+                try {
+                    const response = await fetch(`/admin/blockCustomer?id=${userId}`, { method: 'POST' });
+                    if (response.ok) {
+                        document.querySelector(`#row-${userId} td:last-child`).innerHTML = `
+                            <button class="btn btn-success" onclick="confirmUnblockUser('${userId}')">Unblock</button>`;
+                        Swal.fire('Blocked!', 'The user has been blocked.', 'success');
+                    }
+                } catch (error) {
+                    Swal.fire('Error!', 'Failed to block user.', 'error');
+                }
             }
-        });
-    }
+        
+            async function unblockUser(userId) {
+                try {
+                    const response = await fetch(`/admin/unblockCustomer?id=${userId}`, { method: 'POST' });
+                    if (response.ok) {
+                        document.querySelector(`#row-${userId} td:last-child`).innerHTML = `
+                            <button class="btn btn-danger" onclick="confirmBlockUser('${userId}')">Block</button>`;
+                        Swal.fire('Unblocked!', 'The user has been unblocked.', 'success');
+                    }
+                } catch (error) {
+                    Swal.fire('Error!', 'Failed to unblock user.', 'error');
+                }
+            }
+        
+            function confirmBlockUser(userId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are you sure?',
+                    text: 'You are about to block this user!',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, block!',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        blockUser(userId);
+                    }
+                });
+            }
+        
+            function confirmUnblockUser(userId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are you sure?',
+                    text: 'You are about to unblock this user!',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, unblock!',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#d33'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        unblockUser(userId);
+                    }
+                });
+            }
         </script>
         <%- include("../../views/partials/admin/footer") %>
 

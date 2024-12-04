@@ -24,8 +24,8 @@ router.get('/logout', adminController.logout)
 
 //User Management
 router.get('/users', adminAuth, customerController.customerInfo)
-router.get('/blockCustomer', adminAuth, customerController.customerBlocked)
-router.get('/unblockCustomer', adminAuth, customerController.customerunBlocked)
+router.post('/blockCustomer', adminAuth, customerController.customerBlocked)
+router.post('/unblockCustomer', adminAuth, customerController.customerunBlocked)
 
 //Category management
 router.get('/category', adminAuth, categoryController.categoryInfo)

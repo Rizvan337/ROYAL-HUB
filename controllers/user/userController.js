@@ -8,6 +8,42 @@ const HttpStatus = require('../../utils/httpStatusCodes')
 const slugify = require('slugify')
 
 
+
+// const sendMessage = async (req, res) => {
+//     const { name, email, message } = req.body;
+
+//     try {
+//         // Create transporter object
+//         const transporter = nodemailer.createTransport({
+//             service: 'gmail',
+//             port: 587,
+//             secure: false,
+//             requireTLS: true,
+//             auth: {
+//                 user: process.env.NODEMAILER_EMAIL,
+//                 pass: process.env.NODEMAILER_PASSWORD
+//             }
+//         })
+
+//         // Set up email data
+//         const mailOptions = {
+//            from: email,
+//             to: process.env.NODEMAILER_EMAIL,
+//             subject: `Contact Form Message from ${name}`,
+//             text: `You have a new message from ${name} (${email}):\n\n${message}`,
+//         };
+
+//         // Send email
+//         await transporter.sendMail(mailOptions);
+
+//         // Response on success
+//         res.status(200).send('Message sent successfully!');
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).send('Failed to send message. Please try again later.');
+//     }
+// };
+
 const shoptrue = async (req, res) => {
     const { search, category, price, sort } = req.query;
     let filter = {};
@@ -158,6 +194,7 @@ const loadHomepage = async (req, res) => {
     try {
 
         const user = req.session.user
+        
         const categories = await Category.find({ isListed: true })
         let productData = await Product.find({
             isBlocked: false,
@@ -432,6 +469,6 @@ module.exports = {
     loadShop,
     productDetails,
     shoptrue,
-
+    // sendMessage,
 }
 

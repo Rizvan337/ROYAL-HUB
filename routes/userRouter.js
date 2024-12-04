@@ -15,7 +15,7 @@ const upload = multer({ dest: 'public/uploads/' });
 const Razorpay = require('razorpay')
 const crypto = require("crypto")
 
-
+// router.post('/send-message', userController.sendMessage);
 router.get('/', userController.loadHomepage)
 router.get('/shop', userController.loadShop)
 router.get('/pageNotFound', userController.pageNotFound)
