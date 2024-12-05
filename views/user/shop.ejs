@@ -6,7 +6,8 @@
   .pagination {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: -20px;
+    font-size: 13px;
 }
 
 .pagination a {
@@ -95,16 +96,17 @@
     color: #28a745;
     font-weight: 700;
   }
-
+  
   .breadcrumb__text {
     background: #f3f2ee;
     padding: 20px;
     border-radius: 5px;
     margin-bottom: 20px;
+    padding-left: 90px;
   }
 
   .breadcrumb__text a {
-    color: #007bff;
+    color: #000000;
     text-decoration: none;
   }
 
@@ -186,7 +188,20 @@
   }
   .sort-filter{
     transform: translate(1000px,-360px);
-  }
+  }.shop__sidebar__categories ul {
+  padding: 15px; 
+}
+
+.shop__sidebar__categories ul li {
+  margin-bottom: 8px; 
+}
+
+.card-heading {
+  padding-bottom: 10px; 
+}
+.formfilter{
+  margin-top: -20px;
+}
 </style>
 
 <div class="breadcrumb__text">
@@ -214,7 +229,7 @@
           </div>
         </div>
         <div class="sort-filter">
-            <form method="GET" action="/shop">
+            <form class="formfilter" method="GET" action="/shop">
               <input type="hidden" name="search" value="<%= search %>">
               <input type="hidden" name="category" value="<%= categoryFilter %>">
               <select name="sort" onchange="this.form.submit()">

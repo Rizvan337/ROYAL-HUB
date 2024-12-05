@@ -5,7 +5,7 @@ const User = require('../../models/userSchema');
 const PDFDocument = require('pdfkit'); 
 const moment = require('moment')
 const ExcelJS = require('exceljs')
-
+const HttpStatus = require('../../utils/httpStatusCodes')
 const salesReport = async (req, res) => {
     const { reportType, startDate, endDate } = req.query;
     
@@ -39,6 +39,9 @@ const salesReport = async (req, res) => {
                 totalDelivered: { $sum: { $cond: [{ $eq: ["$status", "Delivered"] }, 1, 0] } },
                 totalReturned: { $sum: { $cond: [{ $eq: ["$status", "Returned"] }, 1, 0] } },
                 totalShipped: { $sum: { $cond: [{ $eq: ["$status", "Shipped"] }, 1, 0] } },
+                totalProcessing: { $sum: { $cond: [{ $eq: ["$status", "Processing"] }, 1, 0] } },
+                totalConfirmed: { $sum: { $cond: [{ $eq: ["$status", "Confirmed"] }, 1, 0] } },
+                totalPending: { $sum: { $cond: [{ $eq: ["$status", "Pending"] }, 1, 0] } },
                 totalDiscount: { $sum: "$discount" },
                 totalCouponDiscount: { $sum: { $cond: [{ $eq: ["$couponApplied", true] }, "$discount", 0] } }
             }}
@@ -52,17 +55,18 @@ const salesReport = async (req, res) => {
         }
 
         req.session.Data=Data
-        
+        const orders = await Order.find({}).sort({createdOn:-1})
         res.render('sales-report', {
             salesData: salesData,
             reportType: reportType,
             startDate: startDate || moment().format('YYYY-MM-DD'),
             endDate: endDate || moment().format('YYYY-MM-DD'),
-            reportTypeName: reportTypeName
+            reportTypeName: reportTypeName,
+            orders,
         });
     } catch (error) {
         console.error('Error fetching sales data:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Internal Server Error');
     }
 };
 
@@ -96,6 +100,9 @@ const generatePDFReport = (req, res) => {
         doc.text(`Total Discount: ${Data.totalDiscount}`);
         doc.text(`Total Shipped: ${Data.totalShipped}`);
         doc.text(`Total Returned: ${Data.totalReturned}`);
+        doc.text(`Total Processing: ${Data.totalProcessing}`);
+        doc.text(`Total Confirmed: ${Data.totalConfirmed}`);
+        doc.text(`Total Pending: ${Data.totalPending}`);
         doc.text(`Total Coupon Discount: ${Data.totalCouponDiscount}`);
     });
     
@@ -118,6 +125,9 @@ const generateExcelReport = async (req, res) => {
             { header: 'Total Delivered', key: 'totalDelivered', width: 15 },
             { header: 'Total Returned', key: 'totalReturned', width: 15 },
             { header: 'Total Shipped', key: 'totalShipped', width: 15 },
+            { header: 'Total Confirmed', key: 'totalConfirmed', width: 15 },
+            { header: 'Total Processing', key: 'totalProcessing', width: 15 },
+            { header: 'Total Pending', key: 'totalPending', width: 15 },
             { header: 'Total Discount', key: 'totalDiscount', width: 15 },
             { header: 'Total Coupon Discount', key: 'totalCouponDiscount', width: 20 }
         ];
@@ -128,8 +138,11 @@ const generateExcelReport = async (req, res) => {
                 totalOrders: data.totalOrders,
                 totalCancelled: data.totalCancelled,
                 totalDelivered: data.totalDelivered,
+                totalPending: data.totalPending,
                 totalReturned: data.totalReturned,
                 totalShipped: data.totalShipped,
+                totalConfirmed: data.totalConfirmed,
+                totalProcessing: data.totalProcessing,
                 totalDiscount: data.totalDiscount,
                 totalCouponDiscount: data.totalCouponDiscount
             });
@@ -142,7 +155,7 @@ const generateExcelReport = async (req, res) => {
         res.end();
     } catch (error) {
         console.error('Error generating Excel report:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Internal Server Error');
     }
 };
 

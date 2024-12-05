@@ -73,7 +73,7 @@
                            <div class="col-lg-4">
                             <div class="mb-4">
                                 <label class="form-label">Stock</label>
-                                <input placeholder="Enter stock" name="stock" type="number" class="form-control border" min="0">
+                                <input placeholder="Enter stock" name="stock" type="text" class="form-control border">
                                 <div id="stock-error" class="error-message"></div>
                             </div>
                         </div>
@@ -318,7 +318,7 @@ function validateForm() {
     const description = document.getElementById('descriptionid').value.trim();
     const regularPrice = document.getElementsByName('regularPrice')[0].value.trim();
     const salePrice = document.getElementsByName('salePrice')[0].value.trim();
-    
+    const stock = document.getElementsByName('stock')[0].value.trim();
     const category = document.getElementsByName('category')[0].value.trim();
     const images = document.getElementById('input1').files;
     const quantity = document.getElementsByName('quantity')[0].value.trim();
@@ -354,6 +354,14 @@ function validateForm() {
     // Sale Price Validation 
     if (salePrice !== "" && (isNaN(salePrice) || parseFloat(salePrice) <= 0)) {
         displayErrorMessage('salePrice-error', 'Sale price should be a positive number.');
+        isValid = false;
+    }
+    //stock validation
+    if (stock === "") {
+        displayErrorMessage('stock-error', 'Please enter the stock.');
+        isValid = false;
+    } else if (!/^\d+$/.test(stock)) {
+        displayErrorMessage('stock-error', 'stock should be a valid whole number.');
         isValid = false;
     }
 
