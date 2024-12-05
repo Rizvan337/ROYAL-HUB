@@ -286,7 +286,8 @@ const editProfile = async (req, res) => {
 
 const myOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ user: req.session.user }).sort({ createdOn: -1 })
+        
+        const orders = await Order.find({ user: req.session.user }).populate({path:'orderItems.product',select:'productImage productName'}).sort({ createdOn: -1 })
         res.render('my-orders', { orders: orders, moment })
     } catch (error) {
         console.error(error)
@@ -297,7 +298,7 @@ const myOrders = async (req, res) => {
 const getUserOrderDetails = async (req,res)=>{
     try {
         const { id } = req.params
-        const order = await Order.findById(id).populate('orderItems.product')
+        const order = await Order.findById(id).populate('orderItems.product').populate('address')
         res.render('user-orderdetails',{order,moment})
     } catch (error) {
         console.error('Error fetching order details:', error);

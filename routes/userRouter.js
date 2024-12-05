@@ -86,6 +86,9 @@ router.post('/whishlist/remove',userAuth,whishListController.removeFromWhishlist
 //wallet
 router.get('/getWallet',userAuth,profileController.getWallet)
 router.post('/wallet/add-funds',userAuth,profileController.addWalletMoney)
+
+
+
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,

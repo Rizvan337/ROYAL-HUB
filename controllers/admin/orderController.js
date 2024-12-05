@@ -21,7 +21,7 @@ const getAllOrders = async (req, res) => {
 const getOrderDetails = async (req, res) => {
     const { orderId } = req.params
     try {
-        const order = await Order.findById(orderId).populate('user').populate('orderItems.product')
+        const order = await Order.findById(orderId).populate('user').populate('orderItems.product').populate('address')
         if (!order) {
             res.status(HttpStatus.NOT_FOUND).send('Order not found')
         }

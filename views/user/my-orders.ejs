@@ -1,255 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Orders</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
       font-family: 'Nunito', sans-serif;
       background-color: #f3f6f9;
+      margin: 0;
+    }
+
+    header,
+    footer {
+      background-color: #eceff3;
+      color: rgb(15, 12, 12);
+      padding: 20px;
       display: flex;
-      height: 100vh;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    header nav a {
+      color: rgb(12, 9, 9);
+      text-decoration: none;
+      margin-left: 50px;
+      font-size: 18px;
     }
 
     .container {
       display: flex;
-      flex: 1;
-      overflow: hidden;
+      margin-top: 20px;
     }
 
     aside {
       width: 250px;
-      background-color: #e6eaf0;
-      color: white;
-      display: flex;
-      flex-direction: column;
+      background-color: hsl(214, 53%, 94%);
+      color: rgb(17, 12, 12);
+      height: 100vh;
+      position: sticky;
+      top: 0;
       padding-top: 20px;
-      transition: width 0.3s;
-      overflow-y: auto;
     }
 
-    aside .nav-item {
-      padding: 15px 20px;
-      transition: background-color 0.3s ease;
+    aside ul {
+      list-style: none;
+      padding: 0;
     }
 
-    aside .nav-link {
-      color: rgb(19, 1, 1);
+    aside li {
+      margin-bottom: 15px;
+    }
+
+    aside a {
+      color: rgb(37, 36, 36);
       text-decoration: none;
-      display: flex;
-      align-items: center;
+      padding: 15px 20px;
+      display: block;
+      font-size: 18px;
     }
 
-    aside .nav-link:hover {
-      background-color: #345dce;
-      color: white;
+    aside a:hover {
+      background-color: #457b9d;
     }
 
     .main-content {
       flex: 1;
       padding: 20px;
-      overflow-y: auto;
     }
 
     .orders-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .order-card {
       background-color: white;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      align-items: center;
     }
 
-    h2 {
-      color: #1d3557;
-      font-size: 26px;
-      margin-bottom: 20px;
-    }
-
-    .btn {
-      background-color: #1d3557;
-      color: white;
-      padding: 10px 20px;
+    .order-image {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
       border-radius: 8px;
-      text-decoration: none;
-      display: inline-block;
-      transition: background-color 0.3s ease;
     }
 
-    .btn:hover {
-      background-color: #457b9d;
-    }
-    .nav-lin{
-      color: red;
-      
+    .order-details {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
     }
 
-    .cancel-btn {
-      background-color: #ec0417;
+    .order-header {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1d3557;
+      margin-bottom: 8px;
+    }
+
+    .order-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .order-actions {
+  display: flex;
+  padding: 10px;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 10px; /* Space between buttons */
+}
+
+.order-actions button {
+  padding: 10px 20px; /* Smaller padding for a compact look */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px; /* Smaller text size */
+  width: auto; /* Adjust width to fit content */
+}
+
+.view-details-btn {
+  background-color: #1d3557;
+  color: white;
+}
+
+.download-btn {
+  background-color: #457b9d;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #e63946;
+  color: white;
+}
+
+.return-btn {
+  background-color: #2a9d8f;
+  color: white;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+    }
+
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .status-delivered {
+      background-color: #2a9d8f;
       color: white;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background-color 0.3s ease;
     }
 
-    .cancel-btn:hover {
-      background-color: #d62828;
+    .status-cancelled {
+      background-color: #e63946;
+      color: white;
     }
 
-    @media (max-width: 768px) {
-      aside {
-        width: 70px;
-      }
-
-      .main-content {
-        margin-left: 70px;
-      }
-
-      aside .nav-link {
-        justify-content: center;
-      }
-
-      aside .nav-link i {
-        margin: 0;
-      }
+    .status-pending {
+      background-color: #f4a261;
+      color: white;
+    }
+    .total{
+      margin-top: 20px;
     }
   </style>
+
 </head>
+
 <body>
+  <header>
+    <div class="logo">My Orders</div>
+    <nav>
+      <a href="/userProfile">Profile</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </header>
+
   <div class="container">
     <aside>
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link active" href="/userProfile">
-            <i class="fas fa-user-circle me-2"></i>
-            <span>My Profile</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/addressManage">
-            <i class="fas fa-map-marker-alt me-2"></i>
-            <span>My Address</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/my-orders">
-            <i class="fas fa-box me-2"></i>
-            <span>Orders</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/getWallet">
-            <i class="fas fa-wallet me-2"></i>
-            <span>Wallet</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-lin text-danger" href="/logout">
-            <i class="fas fa-sign-out-alt me-2"></i>
-            <span>Logout</span>
-          </a>
-        </li>
+      <ul>
+        <li><a class="nav-link" href="/userProfile"><i class="fas fa-user-circle"></i> My Profile</a></li>
+        <li><a class="nav-link" href="/addressManage"><i class="fas fa-map-marker-alt"></i> My Address</a></li>
+        <li><a class="nav-link" href="/my-orders"><i class="fas fa-box"></i> Orders</a></li>
+        <li><a class="nav-link" href="/getWallet"><i class="fas fa-wallet"></i> Wallet</a></li>
+        <li><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
       </ul>
     </aside>
 
     <div class="main-content">
       <div class="orders-container">
-<h2>My Orders</h2>
-      <% if (orders && orders.length > 0) { %>
-        <table id="ordersTable" class="display">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Date</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% orders.forEach(order => { %>
-              <tr>
-                <td><a href="/orders/<%= order._id %>" class="order-id-link"><%= order.orderId %></a></td>
-                <td><%= moment(order.invoiceDate).format('MMMM Do YYYY') %></td>
-                <td>$<%= order.finalAmount.toFixed(2) %></td>
-                <td><span id="status-<%= order._id %>"><%= order.status %></span></td>
-                <td>
+        <% if (orders.length) { %>
+          <% orders.forEach(order => { %>
+            <div class="order-card">
+              <img class="order-image" src="/uploads/re-image/<%= order.orderItems[0].product.productImage[0] %>" alt="<%= order.orderItems[0].product.productName %>">
+              <div class="order-details">
+                <div class="order-header">Order ID: <%= order.orderId %></div>
+                <div class="order-info">
+                  <span><b>Date:</b> <%= moment(order.invoiceDate).format('MMMM Do YYYY') %></span>
+                  
+                </div>
+                <p><b>Status:</b> <span class="status-badge <%= order.status === 'Delivered' ? 'status-delivered' : order.status === 'Cancelled' ? 'status-cancelled' : 'status-pending' %>"><%= order.status %></span></p>
+                <span class="total"><b>Total:</b> $<%= order.finalAmount.toFixed(2) %></span>
+                <div class="order-actions">
+                  <button class="view-details-btn" onclick="window.location.href='/orders/<%= order._id %>'">View Details</button>
+                  <button class="download-btn" onclick="downloadInvoice('<%= order._id %>')">Download Invoice</button>
                   <% if (order.status === 'Delivered') { %>
-                    <button class="cancel-btn" onclick="returnOrder('<%= order._id %>')">Return</button>
-                  <% } else if (order.status !== 'Cancelled'&&order.status !== 'Returned') { %>
+                    <button class="return-btn" onclick="returnOrder('<%= order._id %>')">Return</button>
+                  <% } else if (order.status !== 'Cancelled' && order.status !== 'Returned') { %>
                     <button class="cancel-btn" onclick="cancelOrder('<%= order._id %>')">Cancel</button>
                   <% } %>
-                </td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      <% } else { %>
-        <p>No orders found.</p>
-      <% } %>
-      <a href="/userProfile" class="btn">Back to Profile</a>
+                </div>
+              </div>
+            </div>
+            
+          <% }) %>
+        <% } else { %>
+          <p>No orders found.</p>
+        <% } %>
+      </div>
     </div>
   </div>
-</div>
 
+  <footer>
+    <p>&copy; 2024 My Orders App</p>
+  </footer>
 
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-  $(document).ready(function () {
-    $('#ordersTable').DataTable({
-      responsive: true,
-      order: [[1, 'desc']],
-      columnDefs: [{ orderable: false, targets: [4] }],
-    });
-  });
-
-  async function cancelOrder(orderId) {
-// Use SweetAlert for confirmation
-const { isConfirmed } = await Swal.fire({
-  title: 'Are you sure?',
-  text: "Do you really want to cancel this order?",
-  icon: 'warning',
-  showCancelButton: true,
-  toast:true,
-  confirmButtonText: 'Yes, cancel it!',
-  cancelButtonText: 'No, keep it'
-});
-
-if (isConfirmed) {
-  try {
-    const response = await fetch(`/orders/${orderId}/cancel`, { method: 'POST' });
-    const result = await response.json();
-    if (result.success) {
-      // Update status on successful cancellation
-      document.querySelector(`#status-${orderId}`).textContent = 'Cancelled';
-      Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success'); // Show success message
-    } else {
-      // Handle failure response
-      Swal.fire('Error', 'Failed to cancel the order. Please try again.', 'error');
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    async function cancelOrder(orderId) {
+      const { isConfirmed } = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you really want to cancel this order?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, cancel it!',
+        cancelButtonText: 'No, keep it'
+      });
+      if (isConfirmed) {
+        try {
+          const response = await fetch(`/orders/${orderId}/cancel`, { method: 'POST' });
+          const result = await response.json();
+          if (result.success) {
+            Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success');
+            location.reload();
+          } else {
+            Swal.fire('Error', 'Failed to cancel the order.', 'error');
+          }
+        } catch (error) {
+          Swal.fire('Error', 'Something went wrong!', 'error');
+        }
+      }
     }
-  } catch (error) {
-    console.error('Error cancelling order:', error);
-    // Use SweetAlert for error handling
-    Swal.fire('Error', 'An error occurred. Please try again.', 'error');
-  }
-}
-}
+
+
+
+
+
+    
 async function returnOrder(orderId) {
   const {isConfirmed} = await Swal.fire({
     title: 'Are you sure?',
@@ -279,9 +316,10 @@ async function returnOrder(orderId) {
   }
 }
 
-</script>
+    function downloadInvoice(orderId) {
+      window.location.href = `/orders/${orderId}/invoice/download`;
+    }
+  </script>
 </body>
-</html>
 
-</body>
 </html>

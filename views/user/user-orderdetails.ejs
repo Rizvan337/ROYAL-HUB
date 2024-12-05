@@ -3,175 +3,145 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Orders</title>
-<style>
-  
-  body {
-    font-family: "Arial", sans-serif;
-    background-color: #f5f6fa;
-    margin: 0;
-    padding: 0;
-  }
-
-  .order-details-container {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 25px;
-    background: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .order-details-container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  }
-
-  h2, h3 {
-    color: #333;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
-
-  h2 {
-    border-bottom: 2px solid #4CAF50;
-    padding-bottom: 10px;
-  }
-
-  .order-id {
-    color: #4CAF50;
-    font-size: 1.3rem;
-    font-style: italic;
-  }
-
-  
-  .order-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
-    font-size: 15px;
-    color: #555;
-  }
-
-  .order-table th, .order-table td {
-    padding: 15px;
-    border: 1px solid #ddd;
-    text-align: center;
-  }
-
-  .order-table th {
-    background-color: #007bff;
-    color: #ffffff;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-
-  .order-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-
-  .order-table td {
-    font-size: 14px;
-  }
-
-  
-  .status-badge {
-    display: inline-block;
-    padding: 8px 15px;
-    border-radius: 8px;
-    color: white;
-    font-weight: 700;
-    text-transform: capitalize;
-  }
-
-  .status-pending {
-    background-color: #f39c12;
-  }
-
-  .status-processing {
-    background-color: #3498db;
-  }
-
-  .status-confirmed {
-    background-color: #1f921f;
-  }
-  .status-shipped {
-    background-color: #2ecc71;
-  }
-
-  .status-delivered {
-    background-color: #1abc9c;
-  }
-
-  .status-cancelled {
-    background-color: #e74c3c;
-  }
-
-  .status-return-request {
-    background-color: #e67e22;
-  }
-
-  
-  p {
-    margin: 10px 0;
-    font-size: 14px;
-    color: #666;
-  }
-
-  p strong {
-    color: #333;
-    font-weight: 600;
-  }
-
-  
-  .btn {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 8px;
-    background-color: #4CAF50;
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-
-  .btn:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
-  }
-
-  
-  @media (max-width: 768px) {
-    .order-details-container {
-      padding: 20px;
+  <title>Order Details</title>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      background-color: #f1f3f5;
+      margin: 0;
+      padding: 0;
     }
 
-    .order-table th, .order-table td {
-      padding: 10px;
+    .order-details-container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 25px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     h2, h3 {
-      font-size: 1.2rem;
+      color: #1d3557;
+      font-weight: bold;
+      margin-bottom: 15px;
     }
 
-    .btn {
-      font-size: 14px;
-      padding: 8px 15px;
+    h2 {
+      border-bottom: 2px solid #1d3557;
+      padding-bottom: 10px;
     }
-  }
-</style>
+
+    .order-id, p {
+      color: #333;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .order-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      font-size: 15px;
+      color: #555;
+    }
+
+    .order-table th {
+      background-color: #1d3557;
+      color: white;
+      padding: 12px;
+      text-transform: uppercase;
+    }
+
+    .order-table td {
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    .order-table tbody tr:hover {
+      background-color: #f1f3f5;
+    }
+
+    .product-photo {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .status-badge {
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+
+    .status-pending { background-color: #f39c12; }
+    .status-processing { background-color: #3498db; }
+    .status-confirmed { background-color: #1d3557; }
+    .status-shipped { background-color: #2ecc71; }
+    .status-delivered { background-color: #1abc9c; }
+    .status-cancelled { background-color: #e74c3c; }
+    .status-return-request { background-color: #e67e22; }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 5px;
+      background-color: #1d3557;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background-color: #457b9d;
+    }
+
+    @media (max-width: 768px) {
+      .order-details-container {
+        padding: 20px;
+      }
+
+      .order-table th, .order-table td {
+        padding: 10px;
+      }
+
+      h2, h3 {
+        font-size: 1.2rem;
+      }
+
+      .btn {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
 
 <div class="order-details-container">
   <h2>Order Details</h2>
   <p class="order-id">Order ID: <%= order.orderId %></p>
 
-  
+  <div class="user-address">
+    <p><strong>Delivery Address:</strong> 
+      <% if (order.address) { %>
+        <%= order.address.street %>, <%= order.address.city %>, <%= order.address.state %>, <%= order.address.zip %>
+      <% } else { %> Not Provided <% } %>
+    </p>
+  </div>
+
   <table class="order-table">
     <thead>
       <tr>
         <th>Product</th>
+        <th>Photo</th>
         <th>Quantity</th>
         <th>Price</th>
       </tr>
@@ -180,6 +150,7 @@
       <% order.orderItems.forEach(item => { %>
         <tr>
           <td><%= item.product.productName %></td>
+          <td><img class="product-photo" src="/uploads/re-image/<%= item.product.productImage[0] %>" alt="<%= item.product.productName %>"></td>
           <td><%= item.quantity %></td>
           <td>$<%= item.price.toFixed(2) %></td>
         </tr>
@@ -187,7 +158,6 @@
     </tbody>
   </table>
 
- 
   <h3>Order Status: 
     <span class="status-badge status-<%= order.status.toLowerCase() %>">
       <%= order.status %>
@@ -197,9 +167,8 @@
   <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
   <p><strong>Invoice Date:</strong> <%= moment(order.invoiceDate).format('MMMM Do YYYY') %></p>
 
-  
   <a href="/my-orders" class="btn">Back to Orders</a>
 </div>
 
 </body>
-</html> 
+</html>
