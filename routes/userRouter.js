@@ -79,6 +79,7 @@ router.get('/my-orders', profileController.myOrders)
 router.get('/orders/:id',userAuth,profileController.getUserOrderDetails)
 router.post('/orders/:orderId/cancel', profileController.cancelOrder)
 router.post('/orders/:orderId/return',profileController.returnOrder)
+router.get('/orders/:orderId/invoice/download',profileController.downloadInvoice)
 //whishlist
 router.get('/whishlist',userAuth,whishListController.getWhishListPage)
 router.post('/addToWhishlist',userAuth,whishListController.addToWhishList)
@@ -153,7 +154,8 @@ router.post('/verify', async (req, res) => {
 
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
         const discount = cart.coupon.discount
-        const grandTotal = cart.grandTotal
+        const deliverycharge = 50
+        const grandTotal = cart.grandTotal + deliverycharge
         const totalPrice = cart.totalPrice
         // Save the order
         const newOrder = new Order({

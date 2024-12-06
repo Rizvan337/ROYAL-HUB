@@ -239,7 +239,7 @@
         </div>
 
         <!-- Summary Section -->
-        <div class="summary-section">
+        <div class="summary-section">   
             <h3 class="section-title">Order Summary</h3>
             <div>
                 <!-- <label>Coupon code:</label>
@@ -256,10 +256,10 @@
             </div>
 
             <table class="summary-table">
-                <tr><td>Subtotal:</td><td>₹<%= subtotal %></td></tr>
-                <!-- <tr><td>Tax:</td><td>₹<%= tax %></td></tr> -->
-                <tr><td>Discount:</td><td>₹<%= discount||0 %></td></tr>
-                <tr><td>Total Amount:</td><td>₹<%= grandTotal %></td></tr>
+                <tr><td>Subtotal:</td><td>$<%= subtotal %></td></tr>
+                <tr><td>Delivery charge:</td><td>$<%= deliverycharge %></td></tr>
+                <tr><td>Discount:</td><td>$<%= discount||0 %></td></tr>
+                <tr><td>Total Amount:</td><td>$<%= grandTotal %></td></tr>
             </table>
 
             <h3 class="section-title">Choose Payment Method</h3>
@@ -426,6 +426,31 @@ async function removeCoupon() {
     }
 }
 
+
+
+
+
+
+
+document.querySelector('.checkout-btn').addEventListener('click', async function (e) {
+        e.preventDefault(); 
+        
+        const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+        const grandTotal = '<%= grandTotal %>'; 
+
+        if (selectedPaymentMethod === "COD" && grandTotal > 1000) {
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'COD Restriction',
+                text: 'Orders above ₹1000 cannot use Cash on Delivery. Please select a different payment method.',
+                confirmButtonText: 'Okay'
+            });
+        } else {
+            
+            document.querySelector('form').submit();
+        }
+    });
 </script>
 </body>
 </html>

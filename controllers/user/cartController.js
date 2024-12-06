@@ -184,11 +184,12 @@ const getCheckoutPage = async (req, res) => {
             path: 'items.item',
             select: 'productName salePrice'
         });
-        const grandTotal = cart.grandTotal
+        const deliverycharge = 50;
+        const grandTotal = cart.grandTotal+deliverycharge
         console.log("grandTotal",grandTotal);
         const discount = cart.coupon.discount
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
-        const tax = Math.round(subtotal * 0.09)
+        
         // const totalAmount = subtotal + tax;
         // console.log(totalAmount, subtotal);
 
@@ -197,7 +198,7 @@ const getCheckoutPage = async (req, res) => {
             addresses,
             cartItems: cart.items,
             subtotal,
-            tax,
+            deliverycharge,
             // totalAmount,
             coupon,
             discount,
@@ -223,9 +224,9 @@ const orderConfirmationPage = async (req, res) => {
         const cart = await Cart.findOne({ user: userId }).populate({ path: 'items.item', select: 'productName salePrice' })
         
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0)
-        
+        const deliverycharge = 50;
         const discount = cart.coupon.discount
-        const grandTotal = cart.grandTotal
+        const grandTotal = cart.grandTotal + deliverycharge
         
         if(paymentMethod === "Wallet"){
             const wallet = await Wallet.findOne({userId})
@@ -239,13 +240,23 @@ const orderConfirmationPage = async (req, res) => {
                 })
                 await wallet.save()
             }else{
-                res.status(500).json({ success: false, message: 'Insufficient wallet balance' });
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Insufficient wallet balance' });
             }
         }
+
+        if (paymentMethod === "COD" && grandTotal > 1000) {
+            return res.status(HttpStatus.OK).json({ 
+                success: false, 
+                message: 'Orders above ₹1000 cannot use Cash on Delivery. Please select a different payment method.' 
+            });
+        }
+        
+
         res.render('order-confirmation', {
             address,
             cartItems: cart.items,
             subtotal,
+            deliverycharge,
             discount,
             grandTotal,
             paymentMethod
@@ -268,7 +279,8 @@ const placeOrder = async (req, res) => {
 
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
         const discount = cart.coupon.discount
-        const grandTotal = cart.grandTotal
+        const deliverycharge = 50;
+        const grandTotal = cart.grandTotal + deliverycharge
         const totalPrice = cart.totalPrice
         const newOrder = new Order({
             user: userId,
@@ -279,6 +291,7 @@ const placeOrder = async (req, res) => {
             })),
             grandTotal,
             discount,
+            deliverycharge,
             finalAmount: grandTotal,
             totalPrice,
             address,

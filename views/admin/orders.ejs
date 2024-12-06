@@ -26,7 +26,7 @@
               <%= order.user && order.user.name ? order.user.name : 'Unknown User' %>
             </td>
             <td>
-              <%= moment(order.createdAt).format('MMMM Do YYYY') %>
+              <%= moment(order.invoiceDate).format('MMMM Do YYYY') %>
             </td>
             <td>
               <form action="/admin/orders/<%= order._id %>/update-status" method="POST" class="d-flex align-items-center">

@@ -197,6 +197,8 @@
         <%= order.status %>
       </span>
     </h3>
+    <h6>Discount: $<%= order.discount %></h6>
+    <h6>Delivery Charge: $50 </h6>
     <h3>Total: $<%= order.finalAmount.toFixed(2) %></h3>
   </div>
 

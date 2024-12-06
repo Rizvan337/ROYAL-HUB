@@ -163,6 +163,8 @@
       <%= order.status %>
     </span>
   </h3>
+  <h3>Discount: $<%= order.discount %></h3>
+  <h3>Delivery charge: $<%= order.deliverycharge %>50</h3>
   <h3>Total Amount: $<%= order.finalAmount.toFixed(2) %></h3>
   <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
   <p><strong>Invoice Date:</strong> <%= moment(order.invoiceDate).format('MMMM Do YYYY') %></p>

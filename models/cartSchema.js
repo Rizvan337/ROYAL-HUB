@@ -30,7 +30,10 @@ const cartSchema = new mongoose.Schema({
       type: String,
       default: "placed"
     },
-
+deliverycharge:{
+  type:Number,
+  default:50
+},
 
   }],
   grandTotal: {

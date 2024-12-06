@@ -7,8 +7,11 @@ const bcrypt = require('bcrypt')
 const env = require('dotenv').config()
 const session = require('express-session')
 const HttpStatus = require('../../utils/httpStatusCodes')
+const path = require('path');
+const fs = require('fs');
 const moment = require('moment');
 const Wallet = require('../../models/walletSchema')
+const PDFDocument = require('pdfkit')
 
 //generate otp
 function generateOtp() {
@@ -285,10 +288,14 @@ const editProfile = async (req, res) => {
 }
 
 const myOrders = async (req, res) => {
+    const { page = 1, limit = 5 } = req.query; 
     try {
         
-        const orders = await Order.find({ user: req.session.user }).populate({path:'orderItems.product',select:'productImage productName'}).sort({ createdOn: -1 })
-        res.render('my-orders', { orders: orders, moment })
+        const orders = await Order.find({ user: req.session.user }).skip((page - 1) * limit)
+        .limit(parseInt(limit)).populate({path:'orderItems.product',select:'productImage productName'}).sort({ createdOn: -1 })
+        const totalOrders = await Order.countDocuments({ user: req.session.user });
+        res.render('my-orders', { orders: orders, moment ,currentPage: parseInt(page),
+            totalPages: Math.ceil(totalOrders / limit),})
     } catch (error) {
         console.error(error)
     }
@@ -400,6 +407,96 @@ if(order.paymentMethod==="Razorpay"){
     }
 }
 
+
+const downloadInvoice = async (req, res) => {
+    try {
+      const { orderId } = req.params;
+  
+      const order = await Order.findById(orderId).populate('orderItems.product').populate('user');
+      if (!order) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: 'Order not found' });
+      }
+  
+      const invoicesDir = path.join(__dirname, '../invoices');
+      if (!fs.existsSync(invoicesDir)) {
+        fs.mkdirSync(invoicesDir, { recursive: true });
+      }
+  
+      const pdfPath = path.join(invoicesDir, `invoice-${orderId}.pdf`);
+  
+      const doc = new PDFDocument({ margin: 50 });
+      const writeStream = fs.createWriteStream(pdfPath);
+      doc.pipe(writeStream);
+  
+      // Add Invoice Header
+      doc
+        .fontSize(20)
+        .font('Helvetica-Bold')
+        .text('Invoice', { align: 'center' })
+        .moveDown(1);
+  
+      // Add Order Information
+      doc
+        .fontSize(12)
+        .font('Helvetica')
+        .text(`Order ID: ${order._id}`, { align: 'left' })
+        .text(`Date: ${new Date(order.invoiceDate).toLocaleDateString()}`, { align: 'left' })
+        .text(`Customer: ${order.user.name || 'N/A'}`, { align: 'left' })
+        .text(`Status: ${order.status}`, { align: 'left' })
+        .moveDown(2);
+  
+      // Add Table Header
+      doc
+        .fontSize(12)
+        .font('Helvetica-Bold')
+        .text('Product Name', 50, doc.y, { width: 200 })
+        .text('Quantity', 250, doc.y, { width: 100, align: 'center' })
+        .text('Price', 350, doc.y, { width: 100, align: 'right' })
+        .moveTo(50, doc.y + 5)
+        .lineTo(500, doc.y + 5)
+        .stroke()
+        .moveDown(0.5);
+  
+      // Add Order Items
+      order.orderItems.forEach((item) => {
+        doc
+          .fontSize(12)
+          .font('Helvetica')
+          .text(item.product.productName, 50, doc.y, { width: 200 })
+          .text(item.quantity.toString(), 250, doc.y, { width: 100, align: 'center' })
+          .text(`Rs. ${item.price.toFixed(2)}`, 350, doc.y, { width: 100, align: 'right' });
+      });
+  
+      // Add Total
+      doc
+        .moveDown(1)
+        .fontSize(12)
+        .font('Helvetica-Bold')
+        .text(`Total: Rs. ${order.finalAmount.toFixed(2)}`, { align: 'right' });
+  
+      // Footer
+      doc
+        .moveDown(2)
+        .fontSize(10)
+        .font('Helvetica-Oblique')
+        .text('Thank you for your order!', { align: 'center' });
+  
+      doc.end();
+  
+      writeStream.on('finish', () => {
+        return res.download(pdfPath);
+      });
+  
+      writeStream.on('error', (error) => {
+        console.error('Error writing the file:', error);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Could not generate invoice');
+      });
+    } catch (error) {
+      console.error('Error generating invoice:', error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Could not generate invoice');
+    }
+  };
+  
 //address management
 const getAddresses = async (req, res) => {
     const userId = req.session.user._id;
@@ -606,6 +703,7 @@ module.exports = {
     getUserOrderDetails,
     cancelOrder,
     returnOrder,
+    downloadInvoice,
     verifyResetOtp,
     getEditProfile,
     editProfile,

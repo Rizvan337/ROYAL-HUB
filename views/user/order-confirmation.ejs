@@ -78,12 +78,13 @@
             <% cartItems.forEach(item => { %>
                 <tr>
                     <td><%= item.item.productName %> (x<%= item.qty %>)</td>
-                    <td>₹<%= item.qty * item.item.salePrice %></td>
+                    <td>$<%= item.qty * item.item.salePrice %></td>
                 </tr>
             <% }) %>
-            <tr><td>Subtotal:</td><td>₹<%= subtotal %></td></tr>
-            <tr><td>Discount:</td><td>₹<%= discount %></td></tr>
-            <tr><td>Total:</td><td>₹<%= grandTotal %></td></tr>
+            <tr><td>Subtotal:</td><td>$<%= subtotal %></td></tr>
+            <tr><td>Delivery charge:</td><td>$<%= deliverycharge %></td></tr>
+            <tr><td>Discount:</td><td>$<%= discount %></td></tr>
+            <tr><td>Total:</td><td>$<%= grandTotal %></td></tr>
         </table>
 
         <!-- Payment Method -->

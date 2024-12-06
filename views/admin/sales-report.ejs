@@ -379,12 +379,7 @@
 
     <script>
         function showProductDetails(orderId) {
-            Swal.fire({
-                title: `Product Details for Order ${orderId}`,
-                text: "Here you can display the detailed product information.",
-                icon: "info",
-                confirmButtonText: "Close"
-            });
+            window.location.href = `/admin/orders/${orderId}`
         }
 
 

@@ -192,6 +192,32 @@ button:hover {
     .total{
       margin-top: 20px;
     }
+
+
+    .pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination a {
+  padding: 10px 15px;
+  text-decoration: none;
+  background-color: #1d3557;
+  color: white;
+  border-radius: 5px;
+}
+
+.pagination a.active {
+  background-color: #457b9d;
+  font-weight: bold;
+}
+
+.pagination a:hover {
+  background-color: #2a9d8f;
+}
+
   </style>
 
 </head>
@@ -250,6 +276,22 @@ button:hover {
     </div>
   </div>
 
+
+
+
+
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+      <a href="?page=<%= currentPage - 1 %>">Previous</a>
+    <% } %>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+    <% } %>
+    <% if (currentPage < totalPages) { %>
+      <a href="?page=<%= currentPage + 1 %>">Next</a>
+    <% } %>
+  </div>
+  
   <footer>
     <p>&copy; 2024 My Orders App</p>
   </footer>
