@@ -77,17 +77,17 @@ try {
 const removeFromWhishlist = async (req,res)=>{
     try {
         const {productId} = req.body
-        console.log(req.body)
+       
         const userId = req.session.user
-        console.log(userId)
+       
         const whishlist = await Whishlist.findOne({user:userId})
-        console.log("1");
+       
         
         if(!whishlist){
             return res.status(HttpStatus.NOT_FOUND).json({ message: "Wishlist not found" });
         }
         const productIndex =  whishlist.products.findIndex((item)=>item.product.toString()===productId)
-        console.log("2");
+       
         
         if(productIndex > -1){
             whishlist.products.splice(productIndex,1)

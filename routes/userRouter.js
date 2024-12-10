@@ -97,6 +97,7 @@ const razorpay = new Razorpay({
 
 // Razorpay payment initiation route
 router.post('/razorPay', async (req, res) => {
+    
     const { amount } = req.body;
 
     const options = {
@@ -107,6 +108,7 @@ router.post('/razorPay', async (req, res) => {
 
     try {
         const order = await razorpay.orders.create(options);
+       
         res.json({
             key: process.env.RAZORPAY_KEY_ID, // Send public key
             amount: amount,
@@ -121,8 +123,9 @@ router.post('/razorPay', async (req, res) => {
 
 // Razorpay payment verification route
 router.post('/verify', async (req, res) => {
+    console.log("hi")
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, selectedAddress, paymentMethod } = req.body;
-
+console.log("verify",req.body)
     const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
     try {
@@ -134,7 +137,45 @@ router.post('/verify', async (req, res) => {
             .digest('hex');
 
         if (generated_signature !== razorpay_signature) {
-            return res.status(400).json({ success: false, message: 'Invalid payment signature' });
+            const user = req.session.user;
+            const userId = user._id;
+
+            const cart = await Cart.findOne({ user: userId }).populate({
+                path: 'items.item',
+                select: 'productName salePrice stock',
+            });
+
+            const address = await Address.findById(selectedAddress);
+
+            const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
+            const discount = cart.coupon.discount;
+            const deliverycharge = 50;
+            const grandTotal = cart.grandTotal + deliverycharge;
+            const totalPrice = cart.totalPrice;
+
+            const failedOrder = new Order({
+                user: userId,
+                orderItems: cart.items.map(item => ({
+                    product: item.item._id,
+                    quantity: item.qty,
+                    price: item.item.salePrice,
+                })),
+                grandTotal,
+                discount,
+                finalAmount: grandTotal,
+                totalPrice,
+                address,
+                paymentMethod,
+                razorpay_order_id,
+                razorpay_payment_id: null,
+                status: 'Pending',
+                createdOn: Date.now(),
+            });
+
+            await failedOrder.save();
+            console.log("failed razorpay and save order",failedOrder)
+
+            return res.status(400).json({ success: false, message: 'Invalid payment signature', orderId: failedOrder._id });
         }
 
         // Fetch user and cart details
@@ -199,6 +240,99 @@ router.post('/verify', async (req, res) => {
         res.status(500).json({ status: 'failed', message: 'Error during payment verification or order processing' });
     }
 });
+
+
+
+
+
+
+router.post('/handlePaymentFailure', async (req, res) => {
+    const { razorpay_order_id, paymentError, selectedAddress, paymentMethod } = req.body;
+
+    try {
+        const user = req.session.user;
+        const userId = user._id;
+
+        const cart = await Cart.findOne({ user: userId }).populate('items.item');
+        const address = await Address.findById(selectedAddress);
+
+        const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
+        const discount = cart.coupon ? cart.coupon.discount : 0;
+        const deliverycharge = 50;
+        const grandTotal = subtotal + deliverycharge - discount;
+
+        const pendingOrder = new Order({
+            user: userId,
+            orderItems: cart.items.map(item => ({
+                product: item.item._id,
+                quantity: item.qty,
+                price: item.item.salePrice,
+            })),
+            grandTotal,
+            discount,
+            finalAmount: grandTotal,
+            address,
+            paymentMethod,
+            razorpay_order_id,
+            status: "Failed",
+            paymentError,
+            createdOn: Date.now(),
+        });
+
+        await pendingOrder.save();
+
+        res.status(200).json({ success: true, message: "Payment failed, order saved as pending." });
+    } catch (error) {
+        console.error("Error handling payment failure:", error);
+        res.status(500).json({ success: false, message: "Error handling payment failure." });
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+//razorpay retrying payment
+router.get('/retryOrder/:orderId', async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.orderId);
+
+        if (!order || order.status !== 'Failed') {
+            return res.status(400).json({ success: false, message: 'Invalid order or order is not failed.' });
+        }
+
+        const options = {
+            amount: order.grandTotal * 100,
+            currency: 'INR',
+            receipt: `retry_${order._id}`,
+        };
+
+        const newRazorpayOrder = await razorpay.orders.create(options);
+
+        order.razorpay_order_id = newRazorpayOrder.id;
+        await order.save();
+
+        res.json({
+            success: true,
+            amount: newRazorpayOrder.amount,
+            razorpay_order_id: newRazorpayOrder.id,
+            selectedAddress: order.address,
+        });
+    } catch (error) {
+        console.error('Error fetching order for retry:', error);
+        res.status(500).json({ success: false, message: 'Error fetching order for retry' });
+    }
+});
+
+
+
 
 
 

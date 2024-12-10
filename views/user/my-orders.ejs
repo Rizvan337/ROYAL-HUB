@@ -217,6 +217,18 @@ button:hover {
 .pagination a:hover {
   background-color: #2a9d8f;
 }
+.retry-btn {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.retry-btn:hover {
+    background-color: #e68900;
+}
 
   </style>
 
@@ -258,7 +270,10 @@ button:hover {
                 <span class="total"><b>Total:</b> $<%= order.finalAmount.toFixed(2) %></span>
                 <div class="order-actions">
                   <button class="view-details-btn" onclick="window.location.href='/orders/<%= order._id %>'">View Details</button>
-                  <% if (order.status === 'Delivered') { %>
+                  <% if (order.status === 'Failed') { %>
+                    <button class="retry-btn" onclick="retryPayment('<%= order._id %>','<%=order.finalAmount.toFixed(2)%>')">Retry</button>
+                   
+                  <% } else if (order.status === 'Delivered' || order.status === 'Confirmed') { %>
                   <button class="download-btn" onclick="downloadInvoice('<%= order._id %>')">Download Invoice</button>
                   
                     <button class="return-btn" onclick="returnOrder('<%= order._id %>')">Return</button>
@@ -362,6 +377,126 @@ async function returnOrder(orderId) {
     function downloadInvoice(orderId) {
       window.location.href = `/orders/${orderId}/invoice/download`;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    async function retryPayment(orderId, totalAmount) {
+    try {
+        // Fetch the order details from the server
+        const orderResponse = await fetch("/razorPay", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount: totalAmount })
+        });
+
+        if (!orderResponse.ok) {
+            console.error('Failed to fetch order:', orderResponse.statusText);
+            return;
+        }
+
+        const order = await orderResponse.json();
+        alert(order.id);
+
+        // Razorpay options for the transaction
+        const options = {
+            key: "rzp_test_O848cmRqiiSDQM", // Test key, replace with your live key in production
+            amount: order.amount,
+            currency: "INR",
+            name: "Test Company",
+            description: "Test Transaction",
+            order_id: order.id,
+            handler: async function (response) {
+                console.log("Payment success response:", response);
+
+                // Validate the necessary response data
+                if (!response.razorpay_order_id || !response.razorpay_payment_id || !response.razorpay_signature) {
+                    console.error("Missing required payment response data");
+                    return;
+                }
+
+                try {
+                   
+                    const verifyResponse = await fetch('/verify', {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            selectedAddress, 
+                            paymentMethod   
+                        }),
+                    });
+
+                    if (!verifyResponse.ok) {
+                        console.error('Failed to verify payment:', verifyResponse.statusText);
+                        return;
+                    }
+
+                    const verificationResult = await verifyResponse.json();
+
+                    // Handle payment verification result
+                    if (verificationResult.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Payment verified and order placed successfully!",
+                        });
+                        window.location.href = `/invoice/${verificationResult.orderId}`;
+                    } else {
+                        Swal.fire("Error", "Payment verification failed.", "error");
+                    }
+                } catch (error) {
+                    console.error("Error during verification request:", error);
+                    Swal.fire("Error", "Something went wrong during payment verification.", "error");
+                }
+            },
+            prefill: {
+                name: "Rizvan",
+                email: "rizvanichu17@gmail.com",
+                contact: "1234567890",
+            },
+        };
+
+        // Initialize Razorpay instance
+        const rzp1 = new Razorpay(options);
+
+        // Handle payment failure event
+        rzp1.on('payment.failed', function (response) {
+            console.error("Payment failed:", response.error.description);
+            Swal.fire("Payment Failed", response.error.description, "error");
+
+            // Handle payment failure on the server (if necessary)
+            fetch("/handlePaymentFailure", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    razorpay_order_id: order.id,
+                    paymentError: response.error.description,
+                    selectedAddress,  // Ensure selectedAddress is defined
+                    paymentMethod     // Ensure paymentMethod is defined
+                }),
+            });
+        });
+
+        // Open Razorpay payment modal
+        rzp1.open();
+
+    } catch (error) {
+        console.error("Error during payment processing:", error);
+        Swal.fire("Error", "Something went wrong during payment processing.", "error");
+    }
+}
+
   </script>
 </body>
 

@@ -24,11 +24,11 @@ const addToCart = async (req, res) => {
         if (!cart) {
             cart = new Cart({ user: userId, items: [] })
         }
-        console.log(cart)
+       
         const existingItemIndex = cart.items.findIndex(item => item.item.toString() === productId)
         const requestedQuantity = parseInt(quantity)
 
-        console.log(existingItemIndex, requestedQuantity)
+        
 
         if (existingItemIndex > -1) {
             const currentQuantity = cart.items[existingItemIndex].qty;
@@ -68,7 +68,7 @@ const addToCart = async (req, res) => {
     })
     }
         await cart.save();
-        console.log('item added to cart', cart);
+       
 
        return res.status(HttpStatus.OK).json({ message: "Product added to cart successfully" });
     } catch (error) {
@@ -178,7 +178,7 @@ const getCheckoutPage = async (req, res) => {
             return res.redirect('/login');
         }
         const addresses = await Address.find({ userId });
-        console.log(user, userId);
+       
 
         const cart = await Cart.findOne({ user: userId }).populate({
             path: 'items.item',
@@ -186,7 +186,7 @@ const getCheckoutPage = async (req, res) => {
         });
         const deliverycharge = 50;
         const grandTotal = cart.grandTotal+deliverycharge
-        console.log("grandTotal",grandTotal);
+       
         const discount = cart.coupon.discount
         const subtotal = cart.items.reduce((total, item) => total + item.qty * item.item.salePrice, 0);
         
@@ -394,7 +394,7 @@ const applyCoupon = async (req, res) => {
 
 
         const cartTotal = cart.totalPrice;
-        console.log("Discount",coupon.maxDiscount)
+       
         if (cartTotal < coupon.maxDiscount) {
             return res.status(400).json({
                 success: false,

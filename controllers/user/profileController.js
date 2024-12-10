@@ -160,12 +160,12 @@ const newPassword = async (req, res) => {
 
 
             const updateResult = await User.updateOne({ email: email }, { $set: { password: passwordHash } })
-            console.log("Update result:", updateResult)
+           
             if (updateResult.modifiedCount > 0) {
 
                 req.session.destroy((err) => {
                     if (err) {
-                        console.log("Error destroying session", err)
+                        
                         res.redirect('/pageNotFound')
                     } else {
                         console.log("Session destroyed successfully. Redirecting to login.");
@@ -192,7 +192,7 @@ const userProfile = async (req, res) => {
     try {
         const userId = req.session.user._id
         const userData = await User.findById(userId)
-        console.log(userId);
+        
 
         res.render('userProfile', { user: userData })
     } catch (error) {
@@ -333,10 +333,10 @@ const cancelOrder = async (req, res) => {
             }
           }
 
-          console.log(order.paymentMethod === "Razorpay" || order.paymentMethod === "Wallet")
+         
           if(order.paymentMethod === "Razorpay" || order.paymentMethod === "Wallet"){
             const wallet = await Wallet.findOne({userId})
-            console.log("Wallet:",wallet)
+           
           if(wallet){
             
             wallet.balance += order.finalAmount
@@ -347,7 +347,7 @@ const cancelOrder = async (req, res) => {
                 description:"Refund for cancel order"
             })
           await wallet.save()
-          console.log("After refund, wallet amount:", wallet.balance);
+        
           }
         }
         if (req.io) {
@@ -562,9 +562,9 @@ const changeEmail = async (req, res) => {
     try {
 
         const { email } = req.body
-        console.log(req.body);
+       
         const userExists = await User.findOne({ email })
-        console.log(userExists);
+       
 
         if (userExists) {
             const otp = generateOtp()

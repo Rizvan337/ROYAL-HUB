@@ -200,7 +200,7 @@ const loadHomepage = async (req, res) => {
             isBlocked: false,
             category: { $in: categories.map(category => category._id) }, quantity: { $gt: 0 }
         })
-        console.log(productData);
+       
 
         productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         productData = productData.slice(0, 4);
@@ -401,7 +401,7 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body
         const findUser = await User.findOne({ isAdmin: 0, email })
-        console.log(findUser)
+       
         if (!findUser) {
             return res.render("login", { message: "User not found" })
         }
@@ -444,7 +444,7 @@ const productDetails = async (req, res) => {
         if (!productDetails) {
             return res.status(HttpStatus.NOT_FOUND).render('page-404'); // Handle missing product
         }
-        console.log(productDetails)
+        
         return res.render('product-details', { proData: productDetails })
     } catch (error) {
         console.error("Error fetching product details:", error);
