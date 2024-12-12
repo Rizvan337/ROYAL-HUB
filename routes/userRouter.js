@@ -41,7 +41,7 @@ router.post('/resend-forgot-otp', profileController.resendOtp)
 router.post('/reset-password', profileController.newPassword)
 
 
-router.get('/shopTrue', userController.shoptrue)
+
 
 //userProfile
 router.get('/userProfile', userAuth, profileController.userProfile)
@@ -64,14 +64,14 @@ router.post('/verify-email-otp', userAuth, profileController.verifyEmailOtp)
 router.post('/update-email', userAuth, profileController.updateEmail)
 //Cart 
 router.post('/addToCart', userAuth, cartController.addToCart)
-router.get('/cart', cartController.getCart)
-router.post('/updateCart/:productId', cartController.updateCart)
-router.post('/removeCart/:productId', cartController.deleteFromCart)
+router.get('/cart',userAuth, cartController.getCart)
+router.post('/updateCart/:productId',userAuth, cartController.updateCart)
+router.post('/removeCart/:productId',userAuth, cartController.deleteFromCart)
 // Checkout Page
-router.get('/checkout', cartController.getCheckoutPage);
-router.post('/checkout', cartController.orderConfirmationPage)
-router.post('/placeOrder', cartController.placeOrder)
-router.get('/invoice/:orderId', cartController.getInvoice)
+router.get('/checkout',userAuth, cartController.getCheckoutPage);
+router.post('/checkout',userAuth, cartController.orderConfirmationPage)
+router.post('/placeOrder',userAuth, cartController.placeOrder)
+router.get('/invoice/:orderId',userAuth, cartController.getInvoice)
 router.post('/applyCoupon',cartController.applyCoupon)
 router.post('/removeCoupon',cartController.removeCoupon)
 //my-orders

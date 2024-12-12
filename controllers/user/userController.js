@@ -9,110 +9,6 @@ const slugify = require('slugify')
 
 
 
-// const sendMessage = async (req, res) => {
-//     const { name, email, message } = req.body;
-
-//     try {
-//         // Create transporter object
-//         const transporter = nodemailer.createTransport({
-//             service: 'gmail',
-//             port: 587,
-//             secure: false,
-//             requireTLS: true,
-//             auth: {
-//                 user: process.env.NODEMAILER_EMAIL,
-//                 pass: process.env.NODEMAILER_PASSWORD
-//             }
-//         })
-
-//         // Set up email data
-//         const mailOptions = {
-//            from: email,
-//             to: process.env.NODEMAILER_EMAIL,
-//             subject: `Contact Form Message from ${name}`,
-//             text: `You have a new message from ${name} (${email}):\n\n${message}`,
-//         };
-
-//         // Send email
-//         await transporter.sendMail(mailOptions);
-
-//         // Response on success
-//         res.status(200).send('Message sent successfully!');
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).send('Failed to send message. Please try again later.');
-//     }
-// };
-
-const shoptrue = async (req, res) => {
-    const { search, category, price, sort } = req.query;
-    let filter = {};
-    let sortOption = {};
-
-    if (search) {
-        filter.productName = { $regex: search, $options: 'i' };
-    }
-    if (category) {
-        filter.category = category;
-    }
-    if (price) {
-        const [minPrice, maxPrice] = price.split('-');
-        filter.salePrice = {
-            $gte: parseInt(minPrice) || 0,
-            $lte: maxPrice ? parseInt(maxPrice) : Infinity
-        };
-    }
-
-    switch (sort) {
-        case 'popularity':
-            sortOption = { popularity: -1 }; 
-            break;
-        case 'low_to_high':
-            sortOption = { salePrice: 1 };
-            break;
-        case 'high_to_low':
-            sortOption = { salePrice: -1 };
-            break;
-        case 'avg_rating':
-            sortOption = { rating: -1 }; 
-            break;
-        case 'featured':
-            sortOption = { featured: -1 }; 
-            break;
-        case 'new_arrivals':
-            sortOption = { createdAt: -1 }; 
-            break;
-        case 'a_to_z':
-            sortOption = { productName: 1 };
-            break;
-        case 'z_to_a':
-            sortOption = { productName: -1 };
-            break;
-        default:
-            sortOption = { _id: -1 }; 
-    }
-
-    try {
-       
-        const products = await Product.find(filter).sort(sortOption);
-        const totalProducts = await Product.countDocuments(filter);
-
-        res.render('shoptrue', {
-            products,
-            totalProducts,
-            search,
-            categories: await Category.find(),
-            selectedSort: sort,
-            user: req.session.user
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
-    }
-
-
-}
-
 
 
 const loadShop = async (req, res) => {
@@ -468,7 +364,5 @@ module.exports = {
     logout,
     loadShop,
     productDetails,
-    shoptrue,
-    // sendMessage,
 }
 
