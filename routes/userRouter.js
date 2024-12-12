@@ -88,7 +88,20 @@ router.post('/whishlist/remove',userAuth,whishListController.removeFromWhishlist
 router.get('/getWallet',userAuth,profileController.getWallet)
 router.post('/wallet/add-funds',userAuth,profileController.addWalletMoney)
 
-
+router.get('/api/search-suggestions', async (req, res) => {
+    try {
+      const query = req.query.query || '';
+      const suggestions = await Product.find(
+        { productName: { $regex: query, $options: 'i' } },
+        { productName: 1 } 
+      ).limit(5);
+      res.json(suggestions);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server Error' });
+    }
+  });
+  
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,

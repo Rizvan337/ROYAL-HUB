@@ -185,11 +185,11 @@
   }
 
   #applyFiltersBtn:hover {
-    background-color: #1e7e34;
+    background-color: #87cc97;
     transform: translateY(-2px);
   }
   .sort-filter{
-    transform: translate(1000px,-360px);
+    transform: translate(1010px,-425px);
   }.shop__sidebar__categories ul {
   padding: 15px; 
 }
@@ -205,11 +205,77 @@
   margin-top: -20px;
 }
 
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom:  20px;  
+}
+
+.search-input {
+  width: 70%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.search-bar .btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.search-bar .btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+.clearbtn{
+  
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.clearbtn:hover{
+  background-color: #87cc97;
+    transform: translateY(-2px);
+}
 </style>
 
 <div class="breadcrumb__text">
   <a href="/">Home</a> > <span>Shop</span>
 </div>
+
+
+
+<form method="GET" action="/shop" class="search-bar" style="margin-bottom: 20px;">
+  <input
+    type="text"
+    name="search"
+    placeholder="Search for products..."
+    value="<%= search %>"
+    class="search-input"
+    style="width: 70%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"
+  />
+  <button type="submit" class="btn" style="margin-left: 10px;">Search</button>
+</form>
 
 <section class="filter__section">
   <div class="container">
@@ -219,7 +285,7 @@
         <!-- Categories Accordion -->
         <div class="card">
           <div class="card-heading">
-            <a data-toggle="collapse" data-target="#collapseOne">Categories</a>
+            <a data-toggle="collapse" onclick="window.location.href='/shop';" data-target="#collapseOne">Categories</a>
           </div>
           <div id="collapseOne" class="collapse show">
             <div class="shop__sidebar__categories">
@@ -253,6 +319,13 @@
           <input type="number" id="minPrice" placeholder="Min Price">
           <input type="number" id="maxPrice" placeholder="Max Price">
           <button id="applyFiltersBtn">Apply Filters</button>
+          <button
+          onclick="window.location.href='/shop';"
+          class="clearbtn"
+          style="background-color: #dc3545; margin-top: 10px;"
+        >
+          Clear Filters
+        </button>
         </div>
       </div>
 
@@ -346,6 +419,42 @@
     }
   }
 
+  
+  const searchInput = document.querySelector('.search-input');
+  const suggestionsBox = document.createElement('div');
+  suggestionsBox.style.position = 'absolute';
+  suggestionsBox.style.background = 'white';
+  suggestionsBox.style.border = '1px solid #ddd';
+  suggestionsBox.style.width = searchInput.offsetWidth + 'px';
+
+  searchInput.addEventListener('input', async (e) => {
+    const query = e.target.value.trim();
+    if (query.length > 2) {
+      const response = await fetch(`/api/search-suggestions?query=${query}`);
+      const suggestions = await response.json();
+
+      suggestionsBox.innerHTML = '';
+      suggestions.forEach((item) => {
+        const suggestion = document.createElement('div');
+        suggestion.textContent = item.productName;
+        suggestion.style.padding = '10px';
+        suggestion.style.cursor = 'pointer';
+        suggestion.addEventListener('click', () => {
+          searchInput.value = item.productName;
+          suggestionsBox.innerHTML = '';
+        });
+        suggestionsBox.appendChild(suggestion);
+      });
+
+      searchInput.parentNode.appendChild(suggestionsBox);
+    } else {
+      suggestionsBox.innerHTML = '';
+    }
+  });
+
+  document.body.addEventListener('click', () => {
+    suggestionsBox.innerHTML = '';
+  });
 
 
 </script>
