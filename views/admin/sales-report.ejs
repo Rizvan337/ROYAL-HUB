@@ -315,19 +315,19 @@
                         </div>
                     </div>
                     <!-- Total product offers -->
-                    <div class="carousel-item">
+                    <!-- <div class="carousel-item">
                         <div class="card">
                             <h2>Total Product Offers</h2>
                             <p> 0 </p>
                         </div>
                     </div>
-                    <!-- Total category offers -->
-                    <div class="carousel-item">
+                    Total category offers -->
+                    <!-- <div class="carousel-item">
                         <div class="card">
                             <h2>Total Category Offers</h2>
                             <p> 0</p>
                         </div>
-                    </div>
+                    </div> -->
 
                 </div>
                 <!-- Carousel Controls -->
@@ -360,7 +360,7 @@
                     <% orders.forEach(order => { %>
                         <tr>
                             <td><%= order.orderId %></td>
-                            <td><%= order.createdOn %></td>
+                            <td><%= moment(order.invoiceDate).format('MMMM Do YYYY') %></td>
                             <td><%= order.status %></td>
                             <td>$<%= order.finalAmount %></td>
                             <td>
@@ -394,6 +394,39 @@
             const url = `/admin/sales/download/excel?startDate=${encodeURIComponent('<%= startDate %>')}&endDate=${encodeURIComponent('<%= endDate %>')}&reportType=${encodeURIComponent('<%= reportType %>')}`;
             window.location.href = url;
         });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        document.querySelector('.filter-form').addEventListener('submit', function(event) {
+        // Get the selected start and end date values
+        const startDate = document.querySelector('#startDate').value;
+        const endDate = document.querySelector('#endDate').value;
+
+        const today = new Date().toISOString().split('T')[0]; // Get current date in yyyy-mm-dd format
+
+        // Check if any of the selected dates are in the future
+        if (startDate > today || endDate > today) {
+            event.preventDefault(); // Prevent the form from submitting
+            Swal.fire({
+                title: 'Error!',
+                text: 'You cannot select a future date.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
     </script>
 
     <%- include("../../views/partials/admin/footer") %>

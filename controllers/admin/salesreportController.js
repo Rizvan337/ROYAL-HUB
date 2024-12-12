@@ -20,7 +20,7 @@ const salesReport = async (req, res) => {
         filter.createdOn = { $gte: moment().startOf('month').toDate(), $lte: moment().endOf('month').toDate() };
         reportTypeName = "Monthly Sales Report";
     } else if (reportType === 'custom' && startDate && endDate) {
-        filter.createdOn = { $gte: moment(startDate).toDate(), $lte: moment(endDate).toDate() };
+        filter.createdOn = { $gte: moment(startDate).startOf('day').toDate(), $lte: moment(endDate).endOf('day').toDate() };
         reportTypeName = "Custom Date Sales Report";
     } else {
         filter.createdOn = { $gte: moment().startOf('day').toDate() }; 
@@ -63,6 +63,7 @@ const salesReport = async (req, res) => {
             endDate: endDate || moment().format('YYYY-MM-DD'),
             reportTypeName: reportTypeName,
             orders,
+            moment
         });
     } catch (error) {
         console.error('Error fetching sales data:', error);
