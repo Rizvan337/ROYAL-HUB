@@ -123,9 +123,7 @@ router.post('/razorPay', async (req, res) => {
 
 // Razorpay payment verification route
 router.post('/verify', async (req, res) => {
-    console.log("hi")
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, selectedAddress, paymentMethod } = req.body;
-console.log("verify",req.body)
     const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
     try {
