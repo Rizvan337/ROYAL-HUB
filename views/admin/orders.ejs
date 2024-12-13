@@ -35,7 +35,7 @@
                   class="form-select form-select-sm me-2" 
                   <%= order.status === "Cancelled" ? "disabled title='Order is cancelled and cannot be changed.'" : "" %>
                 >
-                  <% ["Pending", "Processing", "Shipped", "Delivered", "Cancelled","Returned"].forEach(status => { %>
+                  <% ["Pending", "Processing", "Shipped", "Delivered","Confirmed", "Cancelled","Returned"].forEach(status => { %>
                     <option 
                       value="<%= status %>" 
                       <%= order.status === 'Cancelled' ? 'disabled' : '' %>
