@@ -48,7 +48,6 @@ router.get('/userProfile', userAuth, profileController.userProfile)
 //change password
 router.get('/changePassword', userAuth, profileController.changePassword)
 router.post('/changePassword', userAuth, profileController.changePasswordReady)
-router.post('/verify-resetpass-otp', userAuth, profileController.verifyResetOtp)
 //edit profile details
 router.get('/editProfile', userAuth, profileController.getEditProfile)
 router.post('/editProfile', userAuth, profileController.editProfile)

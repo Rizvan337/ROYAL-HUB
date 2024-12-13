@@ -1,97 +1,178 @@
 <%- include("../../views/partials/user/header") %>
-<section class="content-main mt-80 mb-80">
-   <div class="card mx-auto card-login col-4">
-       <div class="card-body">
-           <h4 class="card-title mb-4">Email</h4>
-           <form id="verifyEmailForm" method="post" action="" onsubmit="return validateLoginForm()">
-               <div class="mb-3">
-                   <input class="form-control" name="email" placeholder="Email" type="text" id="email">
-                   <div class="error-message" id="email-error"></div>
-               </div>
-               <div class="mb-4">
-                   <button type="submit" class="btn btn-primary w-100">Verify</button>
-               </div>
-           </form>
-         
-          
-       </div>
-   </div>
-</section>
-<script>
-   function validateLoginForm() {
-       const emailInput = document.getElementById('email');
-       const emailError = document.getElementById('email-error');
-       const emailValue = emailInput.value.trim();
-       const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Password</title>
+    <!-- Bootstrap CSS -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <style>
+        .password-strength {
+            height: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h2 class="mb-4">Change Password</h2>
+                <form id="changePasswordForm">
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="currentPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" required>
+                        <div id="error4" class="text-danger" style="display: none;"></div>
+                        <div class="progress password-strength">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                        <div id="error5" class="text-danger" style="display: none;"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-       if (emailValue === '') {
-           emailError.textContent = 'Please enter your email.';
-           emailInput.classList.add('is-invalid');
-           return false;
-       } else if (!emailValue.match(emailPattern)) {
-           emailError.textContent = 'Please enter a valid email address';
-           emailInput.classList.add('is-invalid');
-           return false;
-       } else {
-           emailError.textContent = '';
-           emailInput.classList.remove('is-invalid');
-           return true;
-       }
-   }
+    <%- include("../../views/partials/user/footer") %>
 
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('changePasswordForm');
+            const newPassword = document.getElementById('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const passwordStrength = document.querySelector('.password-strength .progress-bar');
+            const error4 = document.getElementById('error4');
+            const error5 = document.getElementById('error5');
 
-   $('#verifyEmailForm').on('submit', function (event) {
-        event.preventDefault();
+            function updatePasswordStrength(password) {
+                let strength = 0;
+                if (password.length > 7) strength += 25;
+                if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 25;
+                if (password.match(/\d/)) strength += 25;
+                if (password.match(/[^a-zA-Z\d]/)) strength += 25;
 
-        // Validate the email before sending the AJAX request
-        const isValid = validateLoginForm();
-        if (!isValid) return;
+                passwordStrength.style.width = strength + '%';
+                passwordStrength.setAttribute('aria-valuenow', strength);
 
-        const emailValue = $('#email').val();
-
-        $.ajax({
-            type: 'POST',
-            url: '/change-pass',
-            data: { email: emailValue },
-            success: function (response) {
-                if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'OTP Sent',
-                        text: 'Check your email for the OTP.',
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        window.location.href = response.redirectUrl;
-                    });
-                } else if (response.message === "User with this email already exists") {
-                    // Show alert if user already exists
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'User Exists',
-                        text: 'A user with this email already exists. Please use a different email.',
-                    });
+                if (strength < 50) {
+                    passwordStrength.classList.remove('bg-warning', 'bg-success');
+                    passwordStrength.classList.add('bg-danger');
+                } else if (strength < 75) {
+                    passwordStrength.classList.remove('bg-danger', 'bg-success');
+                    passwordStrength.classList.add('bg-warning');
                 } else {
-                    // Handle other errors
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: response.message,
-                    });
+                    passwordStrength.classList.remove('bg-danger', 'bg-warning');
+                    passwordStrength.classList.add('bg-success');
                 }
-            },
-            error: function () {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Server Error',
-                    text: 'An error occurred. Please try again.',
-                });
             }
+
+            function passValidateChecking() {
+                const passval = newPassword.value;
+                const cpassval = confirmPassword.value;
+                const alpha = /[a-zA-Z]/;
+                const digit = /\d/;
+                
+                if (passval.length < 8) {
+                    error4.style.display = "block";
+                    error4.innerHTML = "Should contain at least 8 characters";
+                } else if (!alpha.test(passval) || !digit.test(passval)) {
+                    error4.style.display = "block";
+                    error4.innerHTML = "Should contain numbers and alphabets";
+                } else {
+                    error4.style.display = "none";
+                    error4.innerHTML = "";
+                }
+                
+                if (passval !== cpassval) {
+                    error5.style.display = "block";
+                    error5.innerHTML = "Passwords do not match";
+                } else {
+                    error5.style.display = "none";
+                    error5.innerHTML = "";
+                }
+            }
+
+            newPassword.addEventListener('input', function() {
+                updatePasswordStrength(this.value);
+                passValidateChecking();
+            });
+
+            confirmPassword.addEventListener('input', passValidateChecking);
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                passValidateChecking();
+
+                if (error4.innerHTML || error5.innerHTML) {
+                    return;
+                }
+
+                
+                fetch('/changePassword', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        currentPassword: document.getElementById('currentPassword').value,
+        newPassword: newPassword.value
+    })
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Password Changed Successfully!',
+            text: 'Your password has been updated.',
+            showConfirmButton: false,
+            timer: 4000 
+        }).then(() => {
+            window.location.href = '/userProfile';
         });
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Failed to Change Password',
+            text: data.message || 'An error occurred while changing your password.',
+            confirmButtonText: 'Try Again'
+        });
+    }
+})
+.catch(error => {
+    console.error('Error:', error)
+    Swal.fire({
+        icon: 'error',
+        title: 'Unexpected Error',
+        text: 'An error occurred while changing the password. Please try again later.',
+        confirmButtonText: 'OK'
     });
+})
+.finally(() => {
+    form.reset();
+    passwordStrength.style.width = '0%';
+    passwordStrength.setAttribute('aria-valuenow', 0);
+    error4.style.display = "none";
+    error5.style.display = "none";
+});
 
-
-</script>
-
+            });
+        });
+    </script>
+</body>
+</html>
 

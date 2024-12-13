@@ -213,41 +213,28 @@ const changePassword = async (req, res) => {
 }
 
 const changePasswordReady = async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
     try {
-        const { email } = req.body
-        const userExists = await User.findOne({ email })
-        if (userExists) {
-            const otp = generateOtp()
-            const emailSent = await sendVerificationEmail(email, otp)
-            if (emailSent) {
-                req.session.userOtp = otp
-                req.session.userData = req.body
-                req.session.email = email
-                res.render('change-pass-otp', { user: userExists })
-                console.log("OTP:", otp);
+        const user = await User.findById(req.session.user);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+        }
 
-            } else {
-                res.json({ success: false, message: "Failed to sent OTP. Please try again" })
-            }
-        } else {
-            res.render('change-pass', { user: null, message: "User with this email already exists" })
-        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        return res.status(200).json({ success: true, message: 'Password changed successfully!' });
     } catch (error) {
-        console.log("Error in change password", error)
-        res.redirect('/pageNotFound')
+        console.error('Error changing password:', error);
+        return res.status(500).json({ success: false, message: 'Server error' });
     }
-}
-const verifyResetOtp = async (req, res) => {
-    try {
-        const enteredOtp = req.body.otp
-        if (enteredOtp === req.session.userOtp) {
-            res.json({ success: true, redirectUrl: '/reset-password' })
-        } else {
-            res.json({ sucess: false, message: "Otp not matching" })
-        }
-    } catch (error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "An Error Occured.Please Try Again" })
-    }
+
+
 }
 
 
@@ -704,7 +691,7 @@ module.exports = {
     cancelOrder,
     returnOrder,
     downloadInvoice,
-    verifyResetOtp,
+    // verifyResetOtp,
     getEditProfile,
     editProfile,
     updateEmail,
