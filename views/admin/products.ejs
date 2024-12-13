@@ -60,11 +60,11 @@
         <thead>
             <tr>
                 <th scope="col"style="width: 100px;"><b>Product name</b></th>
-                <th scope="col"style="width: 100px;"><b>Brand</b></th>
+                <!-- <th scope="col"style="width: 100px;"><b>Brand</b></th> -->
                 <th scope="col"style="width: 100px;"><b>Category</b></th>
                 <th scope="col" style="width: 80px;"><b>Sale Price</b></th>
                 <th scope="col" style="width: 80px;"><b>Stock</b></th>
-                <th class="quantitys" scope="col" style="width: 100px;"><b>Quantity</b></th>
+                <!-- <th class="quantitys" scope="col" style="width: 100px;"><b>Quantity</b></th> -->
                 <th scope="col" style="width: 80px;"><b></b>Offer</th>
                 <th scope="col" style="width: 80px;"><b>Offer price</b></th>
                 <th class="actions" scope="col"style="width: 10px;"><b>Action</b></th>
@@ -75,11 +75,11 @@
         <% for (let i = data.length - 1; i >= 0; i--) { %>      
             <tr>
                 <td><%= data[i].productName %></td>
-                <td></td>
+                <!-- <td></td> -->
                 <td><%= data[i].category.name %></td>
                 <td><%= data[i].salePrice %></td>
                 <td class="<%= data[i].stock < 5 ? 'stock-low' : '' %>"><%= data[i].stock %></td>
-                <td style="text-align: center;"><%= data[i].quantity %></td>
+                <!-- <td style="text-align: center;"><%= data[i].quantity %></td> -->
                 
 
 

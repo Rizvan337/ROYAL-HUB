@@ -274,7 +274,7 @@ button:hover {
                   <% if (order.status === 'Failed') { %>
                     <button class="retry-btn" onclick="retryPayment('<%= order._id %>','<%=order.finalAmount.toFixed(2)%>')">Retry</button>
                    
-                  <% } else if (order.status === 'Delivered' || order.status === 'Confirmed') { %>
+                  <% } else if (order.status === 'Delivered') { %>
                   <button class="download-btn" onclick="downloadInvoice('<%= order._id %>')">Download Invoice</button>
                   
                     <button class="return-btn" onclick="returnOrder('<%= order._id %>')">Return</button>
