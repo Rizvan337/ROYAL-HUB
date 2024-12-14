@@ -200,26 +200,64 @@ const updateCart = async (req, res) => {
 //     }
 // };
 
+// const deleteFromCart = async (req, res) => {
+//     try {
+//         const { productId } = req.params;
+// let product = await Product.findById(productId)
+
+//         Cart.updateOne(
+//             { user: req.session.user },
+//             { $pull: { items: { 'item': productId } } }
+//         )
+// const cart = await Cart.findOne({user:req.session.user})
+// const grandTotal -= product.salePrice
+// await cart.save()
+//             .then(result => {
+//                 res.json({ success: true, message: 'Item removed from cart' });
+//             })
+//             .catch(err => {
+//                 console.error(err);
+//                 res.status(500).json({ success: false, message: 'Failed to remove item' });
+//             });
+
+//     } catch (error) {
+//         console.error(error)
+//         res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ message: "Server error" })
+//     }
+// }
 const deleteFromCart = async (req, res) => {
     try {
         const { productId } = req.params;
-        Cart.updateOne(
-            { user: req.session.user },
-            { $pull: { items: { 'item': productId } } }
-        )
-            .then(result => {
-                res.json({ success: true, message: 'Item removed from cart' });
-            })
-            .catch(err => {
-                console.error(err);
-                res.status(500).json({ success: false, message: 'Failed to remove item' });
-            });
 
+        
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        const updateResult = await Cart.updateOne(
+            { user: req.session.user },
+            { $pull: { items: { item: productId } } }
+        );
+
+        if (updateResult.modifiedCount === 0) {
+            return res.status(404).json({ success: false, message: 'Product not found in cart' });
+        }
+
+        
+        const cart = await Cart.findOne({ user: req.session.user });
+        if (cart) {
+            cart.grandTotal -= product.salePrice; 
+            if (cart.grandTotal < 0) cart.grandTotal = 0; 
+            await cart.save();
+        }
+
+        res.json({ success: true, message: 'Item removed from cart' });
     } catch (error) {
-        console.error(error)
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ message: "Server error" })
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server error' });
     }
-}
+};
 
 
 const getCheckoutPage = async (req, res) => {
@@ -292,7 +330,7 @@ const orderConfirmationPage = async (req, res) => {
                 })
                 await wallet.save()
             }else{
-                res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Insufficient wallet balance' });
+                res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Insufficient wallet balance' });
             }
         }
 

@@ -428,10 +428,6 @@ async function removeCoupon() {
 
 
 
-
-
-
-
 document.querySelector('.checkout-btn').addEventListener('click', async function (e) {
         e.preventDefault(); 
         
@@ -446,12 +442,17 @@ document.querySelector('.checkout-btn').addEventListener('click', async function
                 text: 'Orders above ₹1000 cannot use Cash on Delivery. Please select a different payment method.',
                 confirmButtonText: 'Okay'
             });
-        } else {
+        } 
+        else {
             
             document.querySelector('form').submit();
         }
     });
-    
+
+
+
+
+
 </script>
 </body>
 </html>

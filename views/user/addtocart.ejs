@@ -252,65 +252,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 <script>
-//   function updateQuantity(productId, change) {
-//     const qtyElement = document.querySelector(`[data-id="${productId}"] .qty-value`);
-//     const totalElement = document.querySelector('.cart__total span:last-child'); 
-//     const subtotalElement = document.querySelector('.cart__total span:first-child'); 
-    
-//     if (!qtyElement) {
-//         console.error("Quantity element not found for product ID:", productId);
-//         return;
-//     }
-
-//     let currentQty = parseInt(qtyElement.innerText);
-//     let newQty = currentQty + change;
-//     if (newQty < 1) {
-//         swal("Quantity Error", "You cannot have less than 0 items.", "error");
-//         return; 
-//     }
-//     // if (newQty > product.stock) {
-//     //     swal("Quantity Error", "You cannot add product greater than stock.", "error");
-//     //     return; 
-//     // }
-//     if (newQty > 5) {
-//         swal("Quantity Limit", "You cannot add more than 5 items.", "error");
-//         return; 
-//     }
-
-//     qtyElement.innerText = newQty;
-
-//     const pricePerItem = parseFloat(qtyElement.closest('tr').querySelector('.cart__price').innerText.replace('$', ''));
-//     const newTotal = (newQty * pricePerItem).toFixed(2);
-
-//     // Update the total displayed in the cart row
-//     qtyElement.closest('tr').querySelector('.cart__total').innerText = `$${newTotal}`;
-
-//     // Calculate subtotal
-//     const allCartRows = document.querySelectorAll('.shopping__cart__table tbody tr');
-//     let newSubtotal = 0;
-
-//     allCartRows.forEach(row => {
-//         const itemTotal = parseFloat(row.querySelector('.cart__total').innerText.replace('$', ''));
-//         newSubtotal += itemTotal;
-//     });
-
-//     // Update the totals in the cart summary
-//     subtotalElement.innerText = `$${newSubtotal.toFixed(2)}`;
-//     totalElement.innerText = `$${newSubtotal.toFixed(2)}`; 
-
-//     fetch(`/updateCart/${productId}`, {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ qty: newQty }),
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         console.log(data);
-//     })
-//     .catch(error => console.error('Error:', error));
-// }
 
 
 function updateQuantity(productId, change) {
