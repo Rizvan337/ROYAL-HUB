@@ -275,7 +275,7 @@ const editProfile = async (req, res) => {
 }
 
 const myOrders = async (req, res) => {
-    const { page = 1, limit = 5 } = req.query; 
+    const { page = 1, limit = 6 } = req.query; 
     try {
         
         const orders = await Order.find({ user: req.session.user }).skip((page - 1) * limit)

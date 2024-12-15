@@ -74,7 +74,7 @@ router.get('/invoice/:orderId',userAuth, cartController.getInvoice)
 router.post('/applyCoupon',cartController.applyCoupon)
 router.post('/removeCoupon',cartController.removeCoupon)
 //my-orders
-router.get('/my-orders', profileController.myOrders)
+router.get('/my-orders', profileController.myOrders) 
 router.get('/orders/:id',userAuth,profileController.getUserOrderDetails)
 router.post('/orders/:orderId/cancel', profileController.cancelOrder)
 router.post('/orders/:orderId/return',profileController.returnOrder)
