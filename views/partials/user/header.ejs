@@ -27,175 +27,82 @@
     <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" type="text/css">
     <style>
-        .spad {
-            background-color: rgb(245, 234, 234);
+        .navbar-brand img {
+            width: 100px;
+            height: auto;
         }
-        .header__nav__option .sign-in-link:link,
-        .header__nav__option .sign-in-link:visited {
-            /* font-size: 16px; */
+        .navbar-nav .nav-link {
             color: #333;
-            /* margin-right: -15px; */
-            text-decoration: none;
-            font-weight: 900;
-            /* width: fit-content; */
-            /* display: inline-block; */
+            font-weight: 600;
         }
-
-        .header__nav__option .sign-in-link:hover {
+        .navbar-nav .nav-link:hover {
             color: #dd4618;
         }
-
-
-        .dropdown {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-
-
-
+        .header__nav__option {
+            display: flex;
+            align-items: center;
         }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: rgb(235, 228, 228);
+        .header__nav__option a {
+            margin-left: 15px;
+            color: #333;
+            text-decoration: none;
+        }
+        .header__nav__option img {
+            width: 20px;
+            height: 20px;
+        }
+        .dropdown-menu {
             min-width: 160px;
             box-shadow: 0px 8px 16px 0px rgba(14, 11, 11, 0.945);
-            z-index: 1000;
-            right: 0;
         }
-
-
-        .dropdown-content a {
-            color: rgb(79, 88, 219);
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            width: 100%;
-
-
-        }
-
-        .dropdown-content a:hover {
+        .dropdown-item:hover {
             background-color: #f1f1f1;
         }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
+        @media (max-width: 991px) {
+            .header__nav__option {
+                margin-top: 15px;
+            }
         }
-
-        .header {
-            position: relative;
-            z-index: 500;
-           
-        }
-.header__logo{
-    width: 100px;
-    height: 100px;
-    position: relative;
-    top: -30px;
-    
-}
-
-/* Profile container styling */
-.header__nav__option .dropdown .profile {
-    width: 10px; 
-    height: 10px; 
-    border-radius: 50%; 
-    object-fit: cover; 
-    margin-bottom: 5px; 
-}
-
-/* Align the name with the image */
-.header__nav__option .sign-in-link {
-    font-size: 14px;
-    color: #333;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-/* Dropdown profile links */
-.header__nav__option .dropdown-content {
-    right: 0;
-    min-width: 160px;
-}
-
-/* Ensure consistent dropdown content */
-.header__nav__option .dropdown-content a {
-    padding: 12px 16px;
-    text-align: left;
-    width: 100%;
-}
-      
     </style>
-
-
 </head>
-
 <body>
-
-    <header class="header d-flex justify-content-center h-auto">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <div class="row align-items-center h-auto">
-                <div class="col-lg-3 col-md-3">
-                    <div class="header__logo">
-                        <a href="#"><img src="img/royalwhitelogo.jpeg" alt=""></a>
-                    </div>
+            <a class="navbar-brand" href="#">
+                <img src="img/royalwhitelogo.jpeg" alt="ROYALHUB">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop">Shop</a>
+                    </li>
+                </ul>
+                <div class="header__nav__option">
+                    <% if (user) { %>
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="img/profile.png" alt="Profile" class="rounded-circle" width="32" height="32">
+                                <%= user.name %>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="/userProfile">Profile</a></li>
+                                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                            </ul>
+                        </div>
+                    <% } else { %>
+                        <a href="/signup" class="btn btn-outline-primary me-2">Sign Up</a>
+                        <a href="/login" class="btn btn-primary">Log in</a>
+                    <% } %>
+                    <a href="#" class="search-switch"><img src="img/icon/search.png" alt="Search"></a>
+                    <a href="/whishlist"><img src="img/icon/heart.png" alt="Wishlist"></a>
+                    <a href="./cart"><img src="img/icon/cart.png" alt="Cart"></a>
                 </div>
-                <div class="col-lg-6 col-md-6">
-                    <nav class="header__menu mobile-menu">
-                        <ul>
-                            <li class="active"><a href="/">Home</a></li>
-                            <li class="active"><a href="shop">Shop</a></li>
-                        </ul>
-                    </nav>
-                </div>
-                <div class="col-lg-3 col-md-3 d-flex justify-content:center align-items:center">
-                    <div class="header__nav__option">
-                        <% if (user) { %>
-
-                            <div class="d-flex justify-content:center align-items:center">
-
-                                <div class="dropdown">
-
-                                    <div class="d-flex flex-column align-items-center justify-content-center">
-
-                                        <a href="#"><img class="" src="img/profile.png" alt=""></a>
-                                        <a href="#" class="sign-in-link ">
-                                            <%=user.name %>
-                                        </a>
-                                    </div>
-                                    <div class="dropdown-content">
-                                        <a href="/userProfile">Profile</a>
-                                        <a href="/logout">Logout</a>
-                                    </div>
-                                </div>
-                                <% } else { %>
-                                    <div class="d-flex justify-content-center align-items-center g-4">
-
-                                        <div class="d-flex justify-content-center align-items-center ">
-                                            <a href="/signup" class="sign-in-link">Sign Up</a>
-                                            <a href="/login" class="sign-in-link p-3">Log in</a>
-                                        </div>
-                                        
-                                        <% } %>
-
-                                            <div>
-
-                                                <a href="#" class="search-switch"><img src="img/icon/search.png"
-                                                        alt=""></a>
-                                                <a href="/whishlist"><img src="img/icon/heart.png" alt=""></a>
-                                                <a href="./cart"><img src="img/icon/cart.png" alt="">
-                                                    <span></span></a>
-                                            </div>
-                                    </div>
-
-                            </div>
-                    </div>
-                </div>
-
             </div>
-            <div class="canvas__open"><i class="fa fa-bars"></i></div>
         </div>
-    </header>
+    </nav>
