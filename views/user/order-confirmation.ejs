@@ -213,6 +213,7 @@
     rzp1.open();
     } catch (error) {
     console.error("Error during payment processing:", error);
+    Swal.fire('Error', 'Payment initiation failed.', 'error');
     }
     
     };

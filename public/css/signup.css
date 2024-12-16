@@ -1,145 +1,145 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 .container {
-    display: flex;
-    background-color: #fff;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    overflow: hidden;
-    width: 80%;
-    max-width: 1000px;
-    height: 500px;
+  display: flex;
+  background-color: #fff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  width: 80%;
+  max-width: 1000px;
+  height: 500px;
 }
 
 .signup-form {
-    flex: 1;
-    padding: 40px;
-    background-color: #fff;
+  flex: 1;
+  padding: 40px;
+  background-color: #fff;
 }
 
 .signup-form h2 {
-    font-size: 32px;
-    margin-bottom: 20px;
-    color: #333;
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .signup-form .form-group {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 .signup-form label {
-    font-size: 14px;
-    color: #333;
-    margin-bottom: 5px;
-    display: block;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 5px;
+  display: block;
 }
 
 .signup-form input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    outline: none;
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
 }
 
 .signup-btn {
-    background-color: #ff6b6b;
-    color: #fff;
-    padding: 12px;
-    border: none;
-    width: 100%;
-    margin-top: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+  background-color: #ff6b6b;
+  color: #fff;
+  padding: 12px;
+  border: none;
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .signup-btn:hover {
-    background-color: #ff5c5c;
+  background-color: #ff5c5c;
 }
 
 .or-text {
-    text-align: center;
-    margin: 15px 0;
-    font-size: 14px;
-    color: #888;
+  text-align: center;
+  margin: 15px 0;
+  font-size: 14px;
+  color: #888;
 }
 
 .google-signup-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #4285f4;
-    color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    width: 100%;
-    cursor: pointer;
-    font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4285f4;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .google-signup-btn img {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
 }
 
 .google-signup-btn:hover {
-    background-color: #357ae8;
+  background-color: #357ae8;
 }
 
 .login-text {
-    margin-top: 15px;
-    text-align: center;
-    font-size: 14px;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
 }
 
 .login-text a {
-    color: #4285f4;
-    text-decoration: none;
+  color: #4285f4;
+  text-decoration: none;
 }
 
 .login-text a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .signup-image {
-    flex: 1;
-    background-color: #f8f9fa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  flex: 1;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .signup-image img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }
 
 @media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        height: auto;
-    }
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
 
-    .signup-image {
-        height: 200px;
-    }
+  .signup-image {
+    height: 200px;
+  }
 }
