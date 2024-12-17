@@ -24,10 +24,7 @@ const categorySchema = new mongoose.Schema({
     default: Date.now,
   },
 });
-categorySchema.index(
-  { name: 1 },
-  { unique: true, collation: { locale: 'en', strength: 2 } }
-);
+
 
 const Category = mongoose.model('Category', categorySchema);
 
