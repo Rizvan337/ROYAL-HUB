@@ -28,7 +28,7 @@ router.get(
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 router.get(
-  'https://rizvan.in.net/auth/google/callback',
+  '/auth/google/callback',
   passport.authenticate('google', {
     failureRedirect: '/signup',
     failureMessage: true,
