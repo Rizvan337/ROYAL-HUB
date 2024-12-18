@@ -179,7 +179,7 @@ const signup = async (req, res) => {
     req.session.userOtp = otp;
     req.session.userData = { name, phone, email, password };
 
-    res.render('Verify-otp');
+    res.render('verify-otp');
     console.log('OTP sent', otp);
   } catch (error) {
     console.error('signup error', error);
