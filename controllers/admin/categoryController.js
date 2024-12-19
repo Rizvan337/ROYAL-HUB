@@ -93,7 +93,20 @@ const editCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
     const { categoryName, description } = req.body;
-    const existingCategory = await Category.findOne({ name: categoryName });
+
+    if (!categoryName || !description) {
+      return res.render('edit-category', {
+        category: {
+          _id: categoryId,
+          name: categoryName || '',
+          description: description || '',
+        },
+        error: 'Category name and description cannot be empty.',
+      });
+    }
+
+    const existingCategory = await Category.findOne({ name: { $regex: new RegExp(`^${categoryName}$`, 'i') },
+    _id: { $ne: categoryId } });
     if (existingCategory) {
       return res.render('edit-category', {
         category: {
@@ -101,7 +114,7 @@ const editCategory = async (req, res) => {
           name: categoryName,
           description: description,
         },
-        error: 'Category exists, Please choose another name',
+        error: 'Category already exists, Please choose another name',
       });
     }
     const updateCategory = await Category.findByIdAndUpdate(

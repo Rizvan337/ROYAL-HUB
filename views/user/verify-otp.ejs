@@ -206,36 +206,6 @@ function validateOTPForm(){
 }
 
 
-// function resendOTP(){
-//   clearInterval(timerInterval);
-//   timer = 60;
-//   document.getElementById("otp").disabled = false;
-//   document.getElementById("timerValue").classList.remove("expired");
-//   startTimer();
-//   $.ajax({
-//     type:"POST",
-//     url:"/resend-otp",
-//     success:function(response){
-      
-//      if(response.success){
-//       Swal.fire({
-//         icon:"success",
-//         title:"OTP Resend Successfully",
-//         showConfirmButton:false,
-//         timer:1500,
-//       })
-//      }else{
-//       Swal.fire({
-//         icon:"error",
-//         title:"Error",
-//         text:"An error occured while resending OTP. Please try again",
-//       })
-//      }
-//     }
-//   })
-//   return false
-// }
-
 
 function resendOTP() {
     $.ajax({
