@@ -422,10 +422,10 @@
   
   const searchInput = document.querySelector('.search-input');
   const suggestionsBox = document.createElement('div');
-  suggestionsBox.style.position = 'absolute';
-  suggestionsBox.style.background = 'white';
-  suggestionsBox.style.border = '1px solid #ddd';
-  suggestionsBox.style.width = searchInput.offsetWidth + 'px';
+  // suggestionsBox.style.position = 'absolute';
+  // suggestionsBox.style.background = 'white';
+  // suggestionsBox.style.border = '1px solid #ddd';
+  // suggestionsBox.style.width = searchInput.offsetWidth + 'px';
 
   searchInput.addEventListener('input', async (e) => {
     const query = e.target.value.trim();
@@ -436,7 +436,7 @@
       suggestionsBox.innerHTML = '';
       suggestions.forEach((item) => {
         const suggestion = document.createElement('div');
-        suggestion.textContent = item.productName;
+        // suggestion.textContent = item.productName;
         suggestion.style.padding = '10px';
         suggestion.style.cursor = 'pointer';
         suggestion.addEventListener('click', () => {
