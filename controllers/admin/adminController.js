@@ -18,29 +18,30 @@ const loadLogin = (req, res) => {
   res.render('admin-login', { message: null });
 };
 
-//login to enter to admin dashboard
+// Login to enter the admin dashboard
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const admin = await User.findOne({ email, isAdmin: true });
 
-    if (admin) {
-      const passwordMatch = await bcrypt.compare(password, admin.password);
-
-      if (passwordMatch) {
-        req.session.admin = true;
-        return res.redirect('/admin');
-      } else {
-        return res.redirect('/admin/login');
-      }
-    } else {
-      return res.redirect('/admin/login');
+    if (!admin) {
+      return res.render('admin-login', { message: 'Invalid email or not an admin' });
     }
+
+    const passwordMatch = await bcrypt.compare(password, admin.password);
+
+    if (!passwordMatch) {
+      return res.render('admin-login', { message: 'Incorrect password' });
+    }
+
+    req.session.admin = true;
+    return res.redirect('/admin');
   } catch (error) {
     console.log('Login error', error);
-    return res.redirect('/pageerror');
+    return res.render('admin-login', { message: 'Something went wrong. Please try again.' });
   }
 };
+
 
 //logout
 const logout = async (req, res) => {
