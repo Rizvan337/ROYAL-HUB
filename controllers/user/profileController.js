@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const env = require('dotenv').config();
 const session = require('express-session');
 const HttpStatus = require('../../utils/httpStatusCodes');
+const { validationResult} = require('express-validator');
 const path = require('path');
 const fs = require('fs');
 const moment = require('moment');
@@ -535,7 +536,7 @@ const getAddresses = async (req, res) => {
   const userId = req.session.user._id;
   try {
     const addresses = await Address.find({ userId });
-    res.render('address-manage', { addresses, user: req.session.user });
+    res.render('address-manage', { addresses, user: req.session.user,errors: req.flash('errors') || [], });
   } catch (error) {
     console.error(error);
     res.redirect('/userProfile');
@@ -543,9 +544,38 @@ const getAddresses = async (req, res) => {
 };
 
 // Add a new address
+// const addAddress = async (req, res) => {
+//   const { title, name, phone, street, city, state, zip } = req.body;
+//   const userId = req.session.user._id;
+//   try {
+//     await new Address({
+//       userId,
+//       title,
+//       name,
+//       phone,
+//       street,
+//       city,
+//       state,
+//       zip,
+//     }).save();
+//     res.redirect('/addressManage');
+//   } catch (error) {
+//     console.error(error);
+//     res.redirect('/addressManage');
+//   }
+// };
+
 const addAddress = async (req, res) => {
   const { title, name, phone, street, city, state, zip } = req.body;
   const userId = req.session.user._id;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(HttpStatus.BAD_REQUEST).render('addressManage', {
+      errors: errors.array(),
+      formData: { title, name, phone, street, city, state, zip },
+    });
+  }
+
   try {
     await new Address({
       userId,
@@ -560,7 +590,9 @@ const addAddress = async (req, res) => {
     res.redirect('/addressManage');
   } catch (error) {
     console.error(error);
-    res.redirect('/addressManage');
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('addressManage', {
+      errorMessage: 'An error occurred while saving the address.',
+    });
   }
 };
 
