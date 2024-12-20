@@ -83,14 +83,14 @@
                                    </div>
                                    <div id="salePrice-error" class="error-message"></div>
                                </div>
-                               <div class="col-lg-4">
+                               <!-- <div class="col-lg-4">
                                    <div class="mb-4">
                                        <label class="form-label">Quantity</label>
                                        <input name="quantity" type="text" value="<%=product.quantity%>"
                                            class="form-control border">
                                            <div id="quantity-error" class="error-message"></div>
                                    </div>
-                               </div>
+                               </div> -->
                            </div>
 
 
@@ -240,7 +240,7 @@ function validateForm() {
     const price = document.getElementsByName('regularPrice')[0].value;
     const salePrice = document.getElementsByName('salePrice')[0].value;
     const category = document.getElementsByName('category')[0].value;
-    const quantity = document.getElementsByName('quantity')[0].value;
+    // const quantity = document.getElementsByName('quantity')[0].value;
     const stock = document.getElementsByName('stock')[0].value;
 
     // Check if product name is empty
@@ -256,10 +256,10 @@ function validateForm() {
     }
 
     // Validate quantity and stock
-    if (quantity.trim() === "" || parseInt(quantity) < 0) {
-        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-        isValid = false;
-    }
+    // if (quantity.trim() === "" || parseInt(quantity) < 0) {
+    //     displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+    //     isValid = false;
+    // }
     if (stock.trim() === "" || parseInt(stock) < 0) {
         displayErrorMessage('stock-error', 'Stock must be a valid non-negative number.');
         isValid = false;

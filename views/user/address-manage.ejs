@@ -33,30 +33,67 @@
             </div>
 
             <!-- Edit Address Modal -->
-            <div class="modal fade" id="editAddressModal<%= address._id %>" tabindex="-1">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Edit Address</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                  </div>
-                  <form action="/editAddress/<%= address._id %>" method="POST" class="needs-validation" novalidate>
-                    <div class="modal-body">
-                      <input type="text" class="form-control mb-2" name="title" value="<%= address.title %>" required minlength="3" maxlength="50">
-                      <input type="text" class="form-control mb-2" name="name" value="<%= address.name %>" required pattern="[A-Za-z ]{3,50}">
-                      <input type="tel" class="form-control mb-2" name="phone" value="<%= address.phone %>" required pattern="^[0-9]{10}$">
-                      <input type="text" class="form-control mb-2" name="street" value="<%= address.street %>" required>
-                      <input type="text" class="form-control mb-2" name="city" value="<%= address.city %>" required pattern="[A-Za-z ]{2,30}">
-                      <input type="text" class="form-control mb-2" name="state" value="<%= address.state %>" required pattern="[A-Za-z ]{2,30}">
-                      <input type="text" class="form-control" name="zip" value="<%= address.zip %>" required pattern="^[0-9]{5,6}$">
-                    </div>
-                    <div class="modal-footer">
-                      <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+           <!-- Edit Address Modal -->
+<div class="modal fade" id="editAddressModal<%= address._id %>" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Address</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="/editAddress/<%= address._id %>" method="POST" class="needs-validation" novalidate>
+        <div class="modal-body">
+          <!-- Title Field -->
+          <div class="form-group">
+            <input type="text" class="form-control mb-2" name="title" value="<%= address.title %>" required minlength="3" maxlength="50" pattern="^(?!\s*$)[A-Za-z0-9\s]+$">
+            <div class="invalid-feedback">Title must be between 3 and 50 characters and cannot be empty or contain only spaces.</div>
+          </div>
+
+          <!-- Name Field -->
+          <div class="form-group">
+            <input type="text" class="form-control mb-2" name="name" value="<%= address.name %>" required pattern="^(?!\s*$)[A-Za-z\s]{3,50}$">
+            <div class="invalid-feedback">Name must contain only letters and be 3-50 characters long.</div>
+          </div>
+
+          <!-- Phone Field -->
+          <div class="form-group">
+            <input type="tel" class="form-control mb-2" name="phone" value="<%= address.phone %>" required pattern="^(?!([0-9])\1{9})[0-9]{10}$">
+            <div class="invalid-feedback">Phone must be a 10-digit number and cannot be the same digit repeated.</div>
+          </div>
+
+          <!-- Street Field -->
+          <div class="form-group">
+            <input type="text" class="form-control mb-2" name="street" value="<%= address.street %>" required pattern="^(?!\s*$)[A-Za-z0-9\s]+$">
+            <div class="invalid-feedback">Street address is required and cannot be empty or contain only spaces.</div>
+          </div>
+
+          <!-- City Field -->
+          <div class="form-group">
+            <input type="text" class="form-control mb-2" name="city" value="<%= address.city %>" required pattern="^(?!\s*$)[A-Za-z ]{2,30}">
+            <div class="invalid-feedback">City must contain only letters and be 2-30 characters long.</div>
+          </div>
+
+          <!-- State Field -->
+          <div class="form-group">
+            <input type="text" class="form-control mb-2" name="state" value="<%= address.state %>" required pattern="^(?!\s*$)[A-Za-z ]{2,30}">
+            <div class="invalid-feedback">State must contain only letters and be 2-30 characters long.</div>
+          </div>
+
+          <!-- Zip Code Field -->
+          <div class="form-group">
+            <input type="text" class="form-control" name="zip" value="<%= address.zip %>" required pattern="^(?!00000|11111|99999)[0-9]{5,6}$">
+            <div class="invalid-feedback">Pin Code must be a 5 or 6-digit number and cannot be all zeros or repetitive digits like 11111.</div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
           <% }); %>
         <% } else { %>
           <p class="text-center">No addresses found. Add your first address!</p>
@@ -65,31 +102,65 @@
     </div>
   </div>
 
+  
   <!-- Add Address Modal -->
-  <div class="modal fade" id="addAddressModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add New Address</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <form action="/addAddress" method="POST" class="needs-validation" novalidate>
-          <div class="modal-body">
-            <input type="text" class="form-control mb-2" name="title" placeholder="Address Title" required minlength="3" maxlength="50">
-            <input type="text" class="form-control mb-2" name="name" placeholder="Name" required pattern="[A-Za-z ]{3,50}">
-            <input type="tel" class="form-control mb-2" name="phone" placeholder="Phone" required pattern="^[0-9]{10}$">
-            <input type="text" class="form-control mb-2" name="street" placeholder="Street" required>
-            <input type="text" class="form-control mb-2" name="city" placeholder="City" required pattern="[A-Za-z ]{2,30}">
-            <input type="text" class="form-control mb-2" name="state" placeholder="State" required pattern="[A-Za-z ]{2,30}">
-            <input type="text" class="form-control" name="zip" placeholder="Pin Code" required pattern="^[0-9]{5,6}$">
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-success">Add Address</button>
-          </div>
-        </form>
+<div class="modal fade" id="addAddressModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Address</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+      <% if (errors && errors.length > 0) { %>
+        <div class="alert alert-danger">
+          <ul>
+            <% errors.forEach(error => { %>
+              <li><%= error.msg %></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+      <form id="addAddressForm" action="/addAddress" method="POST" class="needs-validation" novalidate>
+        <div class="modal-body">
+          <div class="form-group">
+            <input type="text" class="form-control mb-2" name="title" placeholder="Address Title" required minlength="3" maxlength="50" pattern="^(?!\s*$)[A-Za-z0-9\s]+$">
+            <div class="invalid-feedback">Title must be between 3 and 50 characters.</div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control mb-2" name="name" placeholder="Name" required pattern="^(?!\s*$)[A-Za-z\s]{3,50}$">
+            <div class="invalid-feedback">Name must contain only letters and be 3-50 characters long.</div>
+          </div>
+          <div class="form-group">
+            <input type="tel" class="form-control mb-2" name="phone" placeholder="Phone" required pattern="^(?!([0-9])\1{9})[0-9]{10}$">
+            <div class="invalid-feedback">Phone must be a 10-digit number and not be same digit for those ten digits.</div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control mb-2" name="street" placeholder="Street" required pattern="^(?!\s*$)[A-Za-z0-9\s]+$">
+            <div class="invalid-feedback">Street address is required.</div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control mb-2" name="city" placeholder="City" required pattern="^(?!\s*$)[A-Za-z ]{2,30}">
+            <div class="invalid-feedback">City must contain only letters and be 2-30 characters long.</div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control mb-2" name="state" placeholder="State" required pattern="^(?!\s*$)[A-Za-z ]{2,30}">
+            <div class="invalid-feedback">State must contain only letters and be 2-30 characters long.</div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" name="zip" placeholder="Pin Code" required pattern="^(?!00000|11111|99999)[0-9]{5,6}$">
+            <div class="invalid-feedback">Pin Code must be a 5 or 6-digit number and cannot be all zeros.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Add Address</button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
+
+
+
 </main>
 
 <script>

@@ -8,6 +8,9 @@ const addToWhishList = async (req, res) => {
     const userId = req.session.user;
     const { productId, quantity } = req.body;
     console.log(req.body);
+    if (!userId) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'User not logged in' });
+    }
     const products = await Product.findById(productId);
     console.log('product find');
 
@@ -48,7 +51,7 @@ const addToWhishList = async (req, res) => {
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: 'Server error' });
   }
-};
+};  
 
 const getWhishListPage = async (req, res) => {
   try {

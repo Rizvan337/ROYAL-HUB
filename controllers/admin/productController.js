@@ -181,7 +181,7 @@ const editProduct = async (req, res) => {
     const updateFields = {
       productName: data.productName,
       description: data.description,
-      category: product.category,
+      category: data.category,
       regularPrice: data.regularPrice,
       salePrice: data.salePrice,
       quantity: data.quantity,

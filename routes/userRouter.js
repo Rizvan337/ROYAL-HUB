@@ -8,6 +8,7 @@ const Address = require('../models/addressSchema');
 const Cart = require('../models/cartSchema');
 const Product = require('../models/productSchema');
 const Order = require('../models/orderSchema');
+const validateAddress = require('../validators/addressValidator');
 const passport = require('passport');
 const { adminAuth, userAuth } = require('../middlewares/auth');
 const multer = require('multer');
@@ -59,7 +60,7 @@ router.get('/editProfile', userAuth, profileController.getEditProfile);
 router.post('/editProfile', userAuth, profileController.editProfile);
 //address management
 router.get('/addressManage', userAuth, profileController.getAddresses);
-router.post('/addAddress', userAuth, profileController.addAddress);
+router.post('/addAddress', userAuth, validateAddress, profileController.addAddress);
 router.post('/editAddress/:id', userAuth, profileController.editAddress);
 router.get('/deleteAddress/:id', userAuth, profileController.deleteAddress);
 //Change email

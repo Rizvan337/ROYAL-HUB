@@ -346,7 +346,13 @@
                   <h6><%= product.productName %></h6>
                   <h5>$<%= product.salePrice %></h5>
                   <!-- <button  class="btn" type="button" onclick="addToCart('<%=product._id%>')">Add to Cart</button> -->
-                  
+                  <button
+                  class="btn wishlist-btn"
+                  data-product-id="<%= product._id %>"
+                  onclick="toggleWishlist('<%= product._id %>')"
+                >
+                  Add to Wishlist
+                </button>
                 </div>
               </div>
             </div>
@@ -422,10 +428,10 @@
   
   const searchInput = document.querySelector('.search-input');
   const suggestionsBox = document.createElement('div');
-  suggestionsBox.style.position = 'absolute';
-  suggestionsBox.style.background = 'white';
-  suggestionsBox.style.border = '1px solid #ddd';
-  suggestionsBox.style.width = searchInput.offsetWidth + 'px';
+  // suggestionsBox.style.position = 'absolute';
+  // suggestionsBox.style.background = 'white';
+  // suggestionsBox.style.border = '1px solid #ddd';
+  // suggestionsBox.style.width = searchInput.offsetWidth + 'px';
 
   searchInput.addEventListener('input', async (e) => {
     const query = e.target.value.trim();
@@ -436,7 +442,7 @@
       suggestionsBox.innerHTML = '';
       suggestions.forEach((item) => {
         const suggestion = document.createElement('div');
-        suggestion.textContent = item.productName;
+        // suggestion.textContent = item.productName;
         suggestion.style.padding = '10px';
         suggestion.style.cursor = 'pointer';
         suggestion.addEventListener('click', () => {
@@ -456,6 +462,43 @@
     suggestionsBox.innerHTML = '';
   });
 
+
+
+
+
+
+  function toggleWishlist(productId) {
+  fetch(`/addToWhishlist`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ productId }),
+  })
+  
+    .then(response => {
+      if (response.ok) {
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'Added to Wishlist!',
+          text: 'The product has been successfully added to your wishlist.',
+          showConfirmButton: true,
+          
+        }).then(() => {
+          location.reload(); 
+        });
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: 'The product is already in Wishlist',
+          showConfirmButton: true,
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
 
 </script>
 
