@@ -491,27 +491,63 @@ const applyCoupon = async (req, res) => {
     });
   }
 };
-
 const removeCoupon = async (req, res) => {
   try {
-    const { couponCode } = req.body;
     const user = req.session.user;
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.',
+      });
+    }
+
     const userId = user._id;
     const cart = await Cart.findOne({ user: userId });
-    if (!cart) {
-      res.status(HttpStatus.NOT_FOUND).json({ message: 'Cart not found' });
+
+    if (!cart || !cart.coupon.code) {
+      return res.status(400).json({
+        success: false,
+        message: 'No coupon applied to this cart.',
+      });
     }
+
+    console.log('Cart:', cart); 
+    console.log('Coupon Code:', cart?.coupon?.code); 
+
+    const coupon = await Coupon.findOne({ code: cart.coupon.code });
+    if (!coupon) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid coupon code.',
+      });
+    }
+
+    console.log('Coupon Found:', coupon); 
+
+    // Update coupon usage
+    const userIndex = coupon.usersUsed.findIndex(
+      (id) => id.toString() === userId.toString()
+    );
+
+    if (userIndex !== -1) {
+      // Decrement user count and remove the user from the `usersUsed` array
+      coupon.userCount = Math.max(0, coupon.userCount - 1);
+      coupon.usersUsed.splice(userIndex, 1);
+      await coupon.save();
+    }
+
     cart.coupon.code = null;
     cart.coupon.discount = 0;
-    cart.grandTotal = cart.totalPrice;
+    cart.grandTotal = cart.totalPrice; 
     await cart.save();
-    return res.status(HttpStatus.OK).json({
+
+    return res.status(200).json({
       success: true,
-      message: 'Coupon removed successfully',
+      message: 'Coupon removed successfully.',
     });
   } catch (error) {
     console.error('Error removing coupon:', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+    return res.status(500).json({
       success: false,
       message: 'An error occurred while removing the coupon.',
     });
