@@ -71,10 +71,10 @@ const addCoupon = async (req, res) => {
       .status(HttpStatus.BAD_REQUEST)
       .json({ error: 'Usage limit must be at least 1.' });
   }
-  if (!maxDiscount || maxDiscount < 1) {
+  if (!maxDiscount || maxDiscount < 1 && discountAmount >= maxDiscount) {
     return res
       .status(HttpStatus.BAD_REQUEST)
-      .json({ error: 'minimum purchase limit must be at least 1.' });
+      .json({ error: 'minimum purchase limit must be at least 1 and must be greater than min purchase amount.' });
   }
   try {
     const existingCoupon = await Coupon.findOne({ code });

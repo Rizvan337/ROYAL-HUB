@@ -44,7 +44,7 @@ const couponSchema = new Schema({
   },
   maxDiscount: {
     type: Number,
-    default: null,
+    required: true,
   },
 });
 

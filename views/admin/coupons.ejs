@@ -147,37 +147,45 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    document.getElementById('addCouponForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const data = Object.fromEntries(formData);
-      try {
-        const response = await fetch('/admin/coupons/add', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
-        const result = await response.json();
-        if (response.ok) {
-          Swal.fire('Success', result.message, 'success').then(() => location.reload());
-        } else {
-          Swal.fire('Error', result.error, 'error');
-        }
-      } catch (error) {
-        Swal.fire('Error', 'Server error', 'error');
-      }
+   document.getElementById('addCouponForm').addEventListener('submit', async function (e) {
+  e.preventDefault(); 
+
+  const form = this;
+  const discountAmount = parseFloat(document.getElementById('discountAmount').value);
+  const minAmount = parseFloat(document.getElementById('minAmount').value);
+
+  if (discountAmount >= minAmount) {
+    Swal.fire('Error', 'Discount amount should be less than the minimum purchase amount.', 'error');
+    return; 
+  }
+
+  if (!form.checkValidity()) {
+    form.classList.add('was-validated'); 
+    return; 
+  }
+
+  const formData = new FormData(this);
+  const data = Object.fromEntries(formData);
+
+  try {
+    const response = await fetch('/admin/coupons/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
     });
 
+    const result = await response.json();
 
-
-    document.getElementById('addCouponForm').addEventListener('submit', function (e) {
-    const form = this;
-    if (!form.checkValidity()) {
-      e.preventDefault();
-      e.stopPropagation();
-      form.classList.add('was-validated');
+    if (response.ok) {
+      Swal.fire('Success', result.message, 'success').then(() => location.reload());
+    } else {
+      Swal.fire('Error', result.error, 'error');
     }
-  });
+  } catch (error) {
+    Swal.fire('Error', 'Server error', 'error');
+  }
+});
+;
     document.querySelectorAll('.delete-coupon').forEach(button => {
       button.addEventListener('click', async function () {
         const couponId = this.getAttribute('data-id');
