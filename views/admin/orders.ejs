@@ -26,7 +26,8 @@
               <%= order.user && order.user.name ? order.user.name : 'Unknown User' %>
             </td>
             <td>
-              <%= moment(order.invoiceDate).format('MMMM Do YYYY') %>
+             <%= order.invoiceDate.toISOString().split('T')[0] %>
+
             </td>
             <td>
               <form action="/admin/orders/<%= order._id %>/update-status" method="POST" class="d-flex align-items-center">
@@ -82,9 +83,17 @@ $(document).on('change', 'select[name="status"]', function() {
     const button = form.find('button[type="submit"]');
     button.prop('disabled', $(this).val() === $(this).find('option[selected]').val());
   });
-
+  $.fn.dataTable.ext.type.order['custom-date-desc'] = function(a, b) {
+  return new Date(b) - new Date(a);
+};
   $(document).ready(function() {
     $('#ordersTable').DataTable({
+      columnDefs: [
+    {
+      targets: 2, // Date column index
+      type: 'custom-date-desc',
+    },
+  ],
       pageLength: 5,
       lengthMenu: [5, 10, 20, 50],
       order: [[2, 'desc']],
