@@ -39,10 +39,18 @@ const orderSchema = new Schema({
     required: true,
     default: 0,
   },
+  // address: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: 'Address',
+  //   required: true,
+  // },
   address: {
-    type: Schema.Types.ObjectId,
-    ref: 'Address',
-    required: true,
+    name: { type: String, required: true },
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zip: { type: String, required: true },
+    phone: { type: String, required: true },
   },
   invoiceDate: {
     type: Date,

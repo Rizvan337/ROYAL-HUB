@@ -19,7 +19,7 @@ const getOrderDetails = async (req, res) => {
   const { orderId } = req.params;
   try {
     const order = await Order.findById(orderId)
-      .populate('user')
+      // .populate('user')
       .populate('orderItems.product')
       .populate('address');
     if (!order) {

@@ -356,23 +356,6 @@ const cancelOrder = async (req, res) => {
       await wallet.save();
     }
     
-    // if (
-    //   order.paymentMethod === 'Razorpay' ||
-    //   order.paymentMethod === 'Wallet'
-    // ) {
-    //   const wallet = await Wallet.findOne({ userId });
-
-    //   if (wallet) {
-    //     wallet.balance += order.finalAmount;
-    //     wallet.transactions.push({
-    //       amount: order.finalAmount,
-    //       type: 'credit',
-    //       orderId: order._id,
-    //       description: 'Refund for cancel order',
-    //     });
-    //     await wallet.save();
-    //   }
-    // }
     if (req.io) {
       req.io.emit('orderStatusChanged', {
         orderId: order._id,
@@ -564,27 +547,7 @@ const getAddresses = async (req, res) => {
   }
 };
 
-// Add a new address
-// const addAddress = async (req, res) => {
-//   const { title, name, phone, street, city, state, zip } = req.body;
-//   const userId = req.session.user._id;
-//   try {
-//     await new Address({
-//       userId,
-//       title,
-//       name,
-//       phone,
-//       street,
-//       city,
-//       state,
-//       zip,
-//     }).save();
-//     res.redirect('/addressManage');
-//   } catch (error) {
-//     console.error(error);
-//     res.redirect('/addressManage');
-//   }
-// };
+
 
 const addAddress = async (req, res) => {
   const { title, name, phone, street, city, state, zip } = req.body;

@@ -130,11 +130,13 @@
   <p class="order-id">Order ID: <%= order.orderId %></p>
 
   <div class="user-address">
-    <p><strong>Delivery Address:</strong> 
-      <% if (order.address) { %>
-        <%= order.address.street %>, <%= order.address.city %>, <%= order.address.state %>, <%= order.address.zip %>
-      <% } else { %> Not Provided <% } %>
+    <h3>Shipping Address</h3>
+    <p>
+      <%= order.address.name %><br>
+      <%= order.address.street %>, <%= order.address.city %>, <%= order.address.state %>, <%= order.address.zip %><br>
+      Phone: <%= order.address.phone %>
     </p>
+    
   </div>
 
   <table class="order-table">

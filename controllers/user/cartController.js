@@ -455,6 +455,12 @@ const placeOrder = async (req, res) => {
     const userId = user._id;
 
     const address = await Address.findById(selectedAddress);
+    if (!address) {
+      return res.status(400).json({
+        success: false,
+        message: 'Address not found. Please select a valid address.',
+      });
+    }
     const cart = await Cart.findOne({ user: userId }).populate({
       path: 'items.item',
       select: 'productName salePrice stock',
@@ -489,7 +495,16 @@ const placeOrder = async (req, res) => {
       deliverycharge,
       finalAmount: grandTotal,
       totalPrice,
-      address,
+      // address,
+      address: {
+        title: address.title,
+        name: address.name,
+        phone: address.phone,
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        zip: address.zip,
+      },
       paymentMethod,
       status: 'Pending',
       createdOn: Date.now(),
