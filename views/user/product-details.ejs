@@ -62,7 +62,18 @@
       width: 150px;
       height: 50px;
 }
-
+.wishlist-btn{
+    background-color: black;
+    color: white;
+    text-transform: uppercase;
+      font-size: 14px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.3s;
+      width: 150px;
+      height: 50px;
+}
 
 </style>
 
@@ -198,11 +209,17 @@
                             <h3> $<%=proData.salePrice%><span><%=proData.productOffer%></span></h3>
                             <p><%=proData.description%>.</p>
 
+                            <button
+                  class="btn wishlist-btn"
+                  data-product-id="<%= proData._id %>"
+                  onclick="toggleWishlist('<%= proData._id %>')"
+                >
+                  Add to Wishlist
+                </button>
 
                             <h6 class="quantity  my-3" ><%= proData.stock==0?'Sold out':'Only '+proData.stock+' left'%></h6>
                             <!-- <p>Available stock: <%= proData.stock%></p> -->
 
-                            
                             <!-- <div class="product__details__option"> -->
                                 <!-- <div class="product__details__option__size">
                                     <span>Size:</span>
@@ -438,6 +455,41 @@ function updateHiddenQuantity(input) {
             });
         });
     });
+
+
+
+    function toggleWishlist(productId) {
+  fetch(`/addToWhishlist`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ productId }),
+  })
+  
+    .then(response => {
+      if (response.ok) {
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'Added to Wishlist!',
+          text: 'The product has been successfully added to your wishlist.',
+          showConfirmButton: true,
+          
+        }).then(() => {
+          location.reload(); 
+        });
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: 'The product is already in Wishlist',
+          showConfirmButton: true,
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
 
 </script>
 

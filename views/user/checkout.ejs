@@ -426,31 +426,93 @@ async function removeCoupon() {
     }
 }
 
-
-
 document.querySelector('.checkout-btn').addEventListener('click', async function (e) {
-        e.preventDefault(); 
-        
-        const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
-        const grandTotal = '<%= grandTotal %>'; 
+    e.preventDefault(); 
+    
+    // Check if an address is selected
+    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+    if (!selectedAddress) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Address Required',
+            text: 'Please select an address before proceeding.',
+            confirmButtonText: 'Okay'
+        });
+        return; // Exit the function if no address is selected
+    }
 
-        if (selectedPaymentMethod === "COD" && grandTotal > 1000) {
-            
+    // Check if a payment method is selected
+    const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+    if (!selectedPaymentMethod) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Payment Method Required',
+            text: 'Please select a payment method before proceeding.',
+            confirmButtonText: 'Okay'
+        });
+        return; // Exit the function if no payment method is selected
+    }
+
+    // Get the selected payment method value and grand total
+    const paymentMethodValue = selectedPaymentMethod.value;
+    const grandTotal = '<%= grandTotal %>'; // Assuming grandTotal is dynamically passed from the server
+
+    // COD restriction: check if the payment method is COD and grandTotal exceeds ₹1000
+    if (paymentMethodValue === "COD" && grandTotal > 1000) {
+        Swal.fire({
+            icon: 'error',
+            title: 'COD Restriction',
+            text: 'Orders above ₹1000 cannot use Cash on Delivery. Please select a different payment method.',
+            confirmButtonText: 'Okay'
+        });
+        return; // Prevent further processing if COD is not allowed
+    } 
+
+    // Wallet payment method: check if wallet balance is sufficient
+    else if (paymentMethodValue === 'Wallet') {
+        try {
+            const response = await fetch('/api/wallet/balance', { method: 'GET' });
+            const walletData = await response.json();
+
+            if (response.ok) {
+                const walletBalance = walletData.balance;
+
+                if (walletBalance >= grandTotal) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Wallet Payment',
+                        text: `You have sufficient balance in your wallet. ₹${grandTotal} will be deducted when you confirm the order.`,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.querySelector('form').submit(); // Submit the form after confirmation
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Insufficient Wallet Balance',
+                        text: 'You do not have enough balance in your wallet to place this order. Please choose a different payment method.',
+                        confirmButtonText: 'Okay'
+                    });
+                }
+            } else {
+                throw new Error(walletData.message || 'Failed to fetch wallet balance');
+            }
+        } catch (error) {
+            console.error('Error fetching wallet balance:', error);
             Swal.fire({
                 icon: 'error',
-                title: 'COD Restriction',
-                text: 'Orders above ₹1000 cannot use Cash on Delivery. Please select a different payment method.',
+                title: 'Error',
+                text: 'An error occurred while fetching your wallet balance. Please try again later.',
                 confirmButtonText: 'Okay'
             });
-        } 
-        else {
-            
-            document.querySelector('form').submit();
         }
-    });
-
-
-
+    } 
+    // If a valid payment method is selected and no issues with wallet balance or COD restrictions
+    else {
+        document.querySelector('form').submit(); // Submit the form
+    }
+});
 
 
 </script>

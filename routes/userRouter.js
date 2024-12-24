@@ -9,6 +9,7 @@ const Cart = require('../models/cartSchema');
 const Product = require('../models/productSchema');
 const Order = require('../models/orderSchema');
 const Coupon = require('../models/couponSchema');
+const Wallet = require('../models/walletSchema');
 const validateAddress = require('../validators/addressValidator');
 const passport = require('passport');
 const { adminAuth, userAuth } = require('../middlewares/auth');
@@ -101,6 +102,33 @@ router.post(
 //wallet
 router.get('/getWallet', userAuth, profileController.getWallet);
 router.post('/wallet/add-funds', userAuth, profileController.addWalletMoney);
+
+
+
+
+
+
+
+
+
+router.get('/api/wallet/balance', async (req, res) => {
+  try {
+      const userId = req.session.user; 
+      const wallet = await Wallet.findOne({ userId });
+
+      if (wallet) {
+          res.status(200).json({ balance: wallet.balance });
+      } else {
+          res.status(404).json({ message: 'Wallet not found' });
+      }
+  } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+
 
 router.get('/api/search-suggestions', async (req, res) => {
   try {
