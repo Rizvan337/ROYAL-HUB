@@ -334,24 +334,45 @@ const cancelOrder = async (req, res) => {
         await product.save();
       }
     }
-
-    if (
-      order.paymentMethod === 'Razorpay' ||
-      order.paymentMethod === 'Wallet'
-    ) {
-      const wallet = await Wallet.findOne({ userId });
-
-      if (wallet) {
-        wallet.balance += order.finalAmount;
-        wallet.transactions.push({
-          amount: order.finalAmount,
-          type: 'credit',
-          orderId: order._id,
-          description: 'Refund for cancel order',
+    if (order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet') {
+      let wallet = await Wallet.findOne({ userId });
+    
+      if (!wallet) {
+        wallet = new Wallet({
+          userId,
+          balance: 0, 
+          transactions: [],
         });
-        await wallet.save();
       }
+    
+      wallet.balance += order.finalAmount;
+      wallet.transactions.push({
+        amount: order.finalAmount,
+        type: 'credit',
+        orderId: order._id,
+        description: 'Refund for cancel order',
+      });
+    
+      await wallet.save();
     }
+    
+    // if (
+    //   order.paymentMethod === 'Razorpay' ||
+    //   order.paymentMethod === 'Wallet'
+    // ) {
+    //   const wallet = await Wallet.findOne({ userId });
+
+    //   if (wallet) {
+    //     wallet.balance += order.finalAmount;
+    //     wallet.transactions.push({
+    //       amount: order.finalAmount,
+    //       type: 'credit',
+    //       orderId: order._id,
+    //       description: 'Refund for cancel order',
+    //     });
+    //     await wallet.save();
+    //   }
+    // }
     if (req.io) {
       req.io.emit('orderStatusChanged', {
         orderId: order._id,

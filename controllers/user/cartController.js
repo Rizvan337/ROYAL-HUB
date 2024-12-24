@@ -280,13 +280,11 @@ const deleteFromCart = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    // Find the product by ID to check if it exists
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    // Find the cart based on the user session
     const cart = await Cart.findOne({ user: req.session.user }).populate(
       'items.item',
       'salePrice stock'
@@ -296,7 +294,6 @@ const deleteFromCart = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Cart not found' });
     }
 
-    // Find the item index in the cart
     const itemIndex = cart.items.findIndex(
       (item) => item.item._id.toString() === productId
     );
@@ -305,28 +302,23 @@ const deleteFromCart = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Item not found in cart' });
     }
 
-    // Remove the item from the cart
     cart.items.splice(itemIndex, 1);
 
-    // Recalculate the subtotal after removal
     const subtotal = cart.items.reduce(
       (total, item) => total + item.qty * item.item.salePrice,
       0
     );
 
-    // Handle coupon validation and discount
     if (cart.coupon?.code) {
       const coupon = await Coupon.findOne({ code: cart.coupon.code });
 
       if (!coupon || subtotal < coupon.maxDiscount) {
-        // Invalidate the coupon if the subtotal is below the minimum spend
         if (coupon) {
           const userIndex = coupon.usersUsed.findIndex(
             (id) => id.toString() === req.session.user.toString()
           );
 
           if (userIndex !== -1) {
-            // Decrement user count and remove the user from the `usersUsed` array
             coupon.userCount = Math.max(0, coupon.userCount - 1);
             coupon.usersUsed.splice(userIndex, 1);
             await coupon.save();
@@ -335,15 +327,10 @@ const deleteFromCart = async (req, res) => {
         cart.coupon = { code: null, discount: 0 };
       } 
          else {
-        // Apply the fixed discount
         cart.coupon.discount = Math.min(coupon.discountAmount, subtotal);
       }
     }
-
-    // Save the updated cart
     await cart.save();
-
-    // Respond with success
     res.json({ success: true, message: 'Item removed from cart', cart });
   } catch (error) {
     console.error('Error removing item from cart:', error);
@@ -372,17 +359,12 @@ const getCheckoutPage = async (req, res) => {
       0
     );
     const grandTotal = cart.grandTotal + deliverycharge;
-
-    // const totalAmount = subtotal + tax;
-    // console.log(totalAmount, subtotal);
-
     const coupon = await Coupon.find({});
     res.render('checkout', {
       addresses,
       cartItems: cart.items,
       subtotal,
       deliverycharge,
-      // totalAmount,
       coupon,
       discount,
       grandTotal,
@@ -403,7 +385,7 @@ const orderConfirmationPage = async (req, res) => {
 
     const cart = await Cart.findOne({ user: userId }).populate({
       path: 'items.item',
-      select: 'productName salePrice',
+      select: 'productName salePrice stock',
     });
 
 
@@ -416,7 +398,7 @@ const orderConfirmationPage = async (req, res) => {
         });
       }
     }
-    
+
     const subtotal = cart.items.reduce(
       (total, item) => total + item.qty * item.item.salePrice,
       0
