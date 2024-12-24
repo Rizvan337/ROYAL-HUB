@@ -8,6 +8,7 @@ const Address = require('../models/addressSchema');
 const Cart = require('../models/cartSchema');
 const Product = require('../models/productSchema');
 const Order = require('../models/orderSchema');
+const Coupon = require('../models/couponSchema');
 const validateAddress = require('../validators/addressValidator');
 const passport = require('passport');
 const { adminAuth, userAuth } = require('../middlewares/auth');
@@ -234,6 +235,30 @@ router.post('/verify', async (req, res) => {
     const deliverycharge = 50;
     const grandTotal = cart.grandTotal + deliverycharge;
     const totalPrice = cart.totalPrice;
+
+
+
+ // Check if a coupon is applied and update its usage
+ if (cart.coupon.code) {
+  const coupon = await Coupon.findOne({ code: cart.coupon.code });
+
+  if (coupon) {
+    // Update coupon usage count
+    if (coupon.userCount < coupon.usageLimit) {
+      coupon.userCount += 1;
+      coupon.usersUsed.push(userId);
+      await coupon.save();
+    } else {
+      // Handle usage limit exceeded
+      return res.status(400).json({
+        success: false,
+        message: 'Coupon usage limit exceeded',
+      });
+    }
+  }
+}
+
+
     // Save the order
     const newOrder = new Order({
       user: userId,
@@ -268,7 +293,11 @@ router.post('/verify', async (req, res) => {
       }
     }
 
-    await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } });
+    // await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } });
+    await Cart.findOneAndUpdate(
+      { user: userId },
+      { $set: { items: [], coupon: { code: null, discount: 0 } } } // Remove items and coupon
+    );
 
     res.json({
       success: true,
