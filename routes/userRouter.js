@@ -293,10 +293,10 @@ router.post('/verify', async (req, res) => {
       }
     }
 
-    // await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } });
+    
     await Cart.findOneAndUpdate(
       { user: userId },
-      { $set: { items: [], coupon: { code: null, discount: 0 } } } // Remove items and coupon
+      { $set: { items: [], coupon: { code: null, discount: 0 } } } 
     );
 
     res.json({
