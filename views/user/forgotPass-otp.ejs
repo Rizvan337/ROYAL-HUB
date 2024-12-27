@@ -71,10 +71,10 @@
        </div>
      </form>
      <div class="form-group otp-timer-wrapper">
-       <div class="otp-timer" id="otpTimer"></div>
+       <div class="otp-timer" id="otpTimer">1:00</div>
      </div>
      <div class="form-group">
-       <button type="button" class="btn btn-link resend-button" onclick="resendOtp()">Resend OTP</button>
+       <button type="button" class="btn btn-link resend-button" id="resendOtpButton" onclick="resendOtp()" disabled>Resend OTP</button>
      </div>
      <%if(locals.message && message.length>0){%>
        <div class="alert alert-danger mt-3">
@@ -107,6 +107,9 @@ function updateTimerColor(percentage){
 
   function startOtpTimer(){
     const timerElement = document.getElementById('otpTimer')
+    const resendButton = document.getElementById('resendOtpButton');
+  resendButton.disabled = true;
+  timerElement.textContent = "1:00";
     otpTimerInterval = setInterval(function() {
       const minutes = Math.floor(timer/60)
       const seconds = timer%60
@@ -116,6 +119,7 @@ function updateTimerColor(percentage){
         clearInterval(otpTimerInterval)
         timerElement.textContent = 'Expired';
         timerElement.style.backgroundColor = 'red'
+        resendButton.disabled = false;
       }
     },1000);
   }
@@ -132,14 +136,22 @@ function updateTimerColor(percentage){
 
 function  validateOtpForm(){
   const otpInput = document.getElementById('otp').value
-
-   
+  const timerElement = document.getElementById('otpTimer');
+    // Check if OTP has expired
+  if (timerElement.textContent === 'Expired') {
+    Swal.fire({
+      icon: "error",
+      title: "OTP Expired",
+      text: "Your OTP has expired. Please request a new one."
+    });
+    return false; // Prevent the form from submitting
+  }
   $.ajax({
     type:"POST",
     url:"/verify-passForgot-otp",
     data:{otp:otpInput},
     success:function(response){
-      
+
      if(response.success){
       Swal.fire({
         icon:"success",
@@ -172,9 +184,9 @@ function  validateOtpForm(){
 
 
   function resendOtp(){
-    clearInterval(otpTimerInterval)
-    timer = 60;
-    startOtpTimer();
+    const resendButton = document.getElementById('resendOtpButton');
+    if (resendButton.disabled) return;
+    initializeOtpTimer();
 
 
     $.ajax({
@@ -206,7 +218,7 @@ function  validateOtpForm(){
     }
   })  
   }
-
+  initializeOtpTimer();
 </script>
 <%- include("../../views/partials/user/footer") %>
 

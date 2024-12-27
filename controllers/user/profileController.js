@@ -67,7 +67,7 @@ const securePassword = async (password) => {
 //forgot password page
 const getForgotPassPage = async (req, res) => {
   try {
-    res.render('forgot-password', { user: req.user || null });
+    res.render('forgot-password', { user: req.user || null ,message:''});
   } catch (error) {
     res.redirect('/pageNotFound');
   }
@@ -85,6 +85,7 @@ const forgotEmail = async (req, res) => {
       if (emailSent) {
         req.session.userOtp = otp;
         req.session.email = email;
+        req.session.otpGeneratedAt = Date.now();
         res.render('forgotPass-otp', { user: req.user || null });
         console.log('OTP:', otp);
       } else {
@@ -93,6 +94,7 @@ const forgotEmail = async (req, res) => {
     } else {
       res.render('forgot-password', {
         message: 'User with this email does not found',
+        user: req.user || null,
       });
     }
   } catch (error) {
@@ -104,6 +106,12 @@ const forgotEmail = async (req, res) => {
 const verifyForgotPassOtp = async (req, res) => {
   try {
     const enteredOtp = req.body.otp;
+    const otpGeneratedAt = req.session.otpGeneratedAt;
+    const otpExpiryTime = 60 * 1000; 
+    if (Date.now() - otpGeneratedAt > otpExpiryTime) {
+      res.render('forgotPass-otp', { message: 'Your OTP has expired' });
+      return;
+    }
     if (enteredOtp === req.session.userOtp) {
       res.json({ success: true, redirectUrl: '/reset-password' });
     } else {
@@ -133,6 +141,7 @@ const resendOtp = async (req, res) => {
   try {
     const otp = generateOtp();
     req.session.userOtp = otp;
+    req.session.otpGeneratedAt = Date.now();
     const email = req.session.email;
     console.log('Resending OTP to email:', email);
     const emailSent = await sendVerificationEmail(email, otp);
