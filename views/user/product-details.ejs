@@ -44,9 +44,9 @@
     
 }
 
-.imagefit{
+/* .imagefit{
     
-  width: 100%; /* or a specific size */
+  width: 100%; 
   height: 300px;
   object-fit: contain;
 }
@@ -73,6 +73,81 @@
       transition: background-color 0.3s, transform 0.3s;
       width: 150px;
       height: 50px;
+} */
+/* Enhance button UI */
+.addbut, .wishlist-btn {
+    background-color: #000; /* Black color for uniformity */
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 16px; /* Slightly larger for better readability */
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    width: 100%; /* Full width on smaller screens */
+    padding: 12px 0; /* Ensure enough height for the button */
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center; /* Center the text */
+    margin-bottom: 15px; /* Space between buttons */
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+}
+
+/* Hover state with slight scaling */
+.addbut:hover, .wishlist-btn:hover {
+    background-color: #444;
+    transform: translateY(-4px); /* More noticeable hover effect */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+
+/* Active state with a subtle press effect */
+.addbut:active, .wishlist-btn:active {
+    background-color: #222;
+    transform: translateY(2px); /* Button presses down on click */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lighter shadow on active */
+}
+
+/* Make buttons more flexible on larger screens */
+@media (min-width: 768px) {
+    .addbut, .wishlist-btn {
+        width: auto; /* Let the buttons shrink to fit content on larger screens */
+        max-width: 350px; /* Set a maximum width */
+        padding: 14px 25px; /* More padding for larger screens */
+        font-size: 18px; /* Larger font on bigger screens */
+    }
+}
+
+/* On small screens, adjust padding and font size */
+@media (max-width: 576px) {
+    .addbut, .wishlist-btn {
+        padding: 14px 0; /* More vertical padding */
+        font-size: 14px; /* Smaller text size on mobile */
+    }
+}
+
+
+
+.pro-qty input {
+    width: 60px; 
+    height: 40px;
+    font-size: 16px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.pro-qty input:focus {
+    outline: none;
+    border-color: #000; 
+}
+
+
+.imagefit {
+    width: 100%; 
+    height: auto;
+    object-fit: contain; 
 }
 
 </style>
@@ -153,13 +228,7 @@
                                     </div>
                                 </a>
                             </li>
-                            <!-- <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tabs-4" role="tab">
-                                    <div class="product__thumb__pic set-bg" data-setbg="img/shop-details/thumb-4.png">
-                                        <i class="fa fa-play"></i>
-                                    </div>
-                                </a>
-                            </li> -->
+                            
                         </ul>
                     </div>
                     <div class="col-lg-6 col-md-9">
@@ -179,12 +248,7 @@
                                     <img loading="lazy" id="magnifyImg3" src="/uploads/re-image/<%=proData.productImage[2]%>" alt="Image of <%= proData.productName %>">
                                 </div>
                             </div>
-                            <!-- <div class="tab-pane" id="tabs-4" role="tabpanel">
-                                <div class="product__details__pic__item">
-                                    <img src="img/shop-details/product-big-4.png" alt="">
-                                    <a href="https://www.youtube.com/watch?v=8PJ3_p7VqHw&list=RD8PJ3_p7VqHw&start_radio=1" class="video-popup"><i class="fa fa-play"></i></a>
-                                </div>
-                            </div> -->
+                            
                         </div>
                     </div>
                 </div>
@@ -218,43 +282,7 @@
                 </button>
 
                             <h6 class="quantity  my-3" ><%= proData.stock==0?'Sold out':'Only '+proData.stock+' left'%></h6>
-                            <!-- <p>Available stock: <%= proData.stock%></p> -->
-
-                            <!-- <div class="product__details__option"> -->
-                                <!-- <div class="product__details__option__size">
-                                    <span>Size:</span>
-                                    <label for="xxl">xxl
-                                        <input type="radio" id="xxl">
-                                    </label>
-                                    <label class="active" for="xl">xl
-                                        <input type="radio" id="xl">
-                                    </label>
-                                    <label for="l">l
-                                        <input type="radio" id="l">
-                                    </label>
-                                    <label for="sm">s
-                                        <input type="radio" id="sm">
-                                    </label>
-                                </div>
-                                <div class="product__details__option__color">
-                                    <span>Color:</span>
-                                    <label class="c-1" for="sp-1">
-                                        <input type="radio" id="sp-1">
-                                    </label>
-                                    <label class="c-2" for="sp-2">
-                                        <input type="radio" id="sp-2">
-                                    </label>
-                                    <label class="c-3" for="sp-3">
-                                        <input type="radio" id="sp-3">
-                                    </label>
-                                    <label class="c-4" for="sp-4">
-                                        <input type="radio" id="sp-4">
-                                    </label>
-                                    <label class="c-9" for="sp-9">
-                                        <input type="radio" id="sp-9">
-                                    </label>
-                                </div>
-                            </div> -->
+                            
                             <div class="product__details__cart__option">
                                 <% if (proData.stock > 0) { %>
                                     
@@ -282,15 +310,7 @@
                                         Add To Cart
                                     </button>
                                 <% } %>
-                            <!-- <div class="product__details__last__option">
-                                <h5><span>Guaranteed Safe Checkout</span></h5>
-                                <img src="img/shop-details/details-payment.png" alt="">
-                                <ul>
-                                    <li><span>SKU:</span> 3812912</li>
-                                    <li><span>Categories:</span> Clothes</li>
-                                    <li><span>Tag:</span> Clothes, Skin, Body</li>
-                                </ul>
-                            </div> -->
+                           
                         </div>
                     </div>
                 </div>
